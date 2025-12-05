@@ -1,0 +1,211 @@
+@font-face {
+    font-family: 'NanumGothic';
+    src: url('/static/font/NanumGothic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    overflow-y: scroll; /* 스크롤바 항상 보이기 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0 auto;
+    padding: 0 20px; /* 페이지 양쪽에 20px 여백 추가 */
+    max-width: 1400px; /* 최대 너비를 설정하여 중앙 정렬 */
+    box-sizing: border-box; /* 패딩 포함 */
+    font-family: 'NanumGothic', sans-serif;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+header {
+    background: linear-gradient(90deg, #a3d9b1, #87ceeb);
+    color: white;
+    padding: 45px 10px; /* 내부 여백 증가 */
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+    width: 100%;
+    height: 130px;
+    position: relative; /* 로고를 중앙에 고정하기 위한 설정 */
+}
+
+header .logo {
+    position: absolute; /* 로고를 중앙에 고정 */
+    left: 50%; /* 가로 중앙으로 이동 */
+    transform: translateX(-50%); /* 정중앙 배치 */
+}
+
+header .logo img {
+    height: 100px;
+    width: 100px;
+}
+
+header nav {
+    flex: 1; /* 네비게이션이 왼쪽 끝으로 밀리도록 */
+}
+
+header nav ul {
+    list-style: none;
+    display: flex; /* 가로로 정렬 */
+    gap: 5px; /* 항목 간 간격 */
+}
+
+header nav ul li {
+    margin: 60px 14px 0px 14px; /* 좌우 간격 */
+}
+
+header nav ul li a {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'NanumGothic','NotoSansKR',  monospace, Corbel, Dotum, AppleGothic, Helvetica, sans-serif;
+}
+
+#login, #logout{
+    position: absolute; /* 위치를 절대적으로 조정 */
+    top: 85px; /* 헤더 상단으로부터 거리 */
+    right: 20px; /* 오른쪽 끝으로부터 거리 */
+    color: white;
+    font-family: 'NanumGothic', 'NotoSansKR', monospace, Corbel, Dotum, AppleGothic, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold; /* 굵은 글씨 */
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 15px; /* 두 버튼 간 간격 */
+}
+
+
+footer {
+    background-color: grey;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 250px;
+    margin-top: 30px;
+}
+
+.common-footer {
+    color: #fff;
+    padding: 34px 0 20px;
+    /*background: #333;*/
+}
+
+.inner-footer {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-menu {
+    display: flex;
+    /*align-items: center;*/
+    justify-content: flex-start;  /* 'justify'를 'flex-start'로 수정 */
+    font-size: 12px;
+    margin: 10px 0 4px;
+}
+
+.info-cont ul {
+    list-style: none; /* 기본 불릿 제거 */
+    margin: 0;        /* 기본 마진 제거 (옵션) */
+    padding: 0;       /* 기본 패딩 제거 (옵션) */
+}
+
+.footer-menu li {
+    /*margin-left: 5px;*/
+}
+
+.footer-menu li:first-child {
+    /*margin-left: 0;*/
+}
+
+.footer-menu li:first-child a {
+    /*padding-left: 0;*/
+}
+
+.footer-menu li:first-child a::before {
+    display: none;
+}
+
+.address {
+    text-align: left;
+    font-style: normal;
+    font-size: 15px;
+    padding-bottom: 18px;
+}
+
+.info-txt {
+    text-align: left;
+    font-size: 24px;
+}
+
+.sns-title{
+    font-size: 20px;
+    text-align: left;
+    padding-bottom: 15px;
+}
+
+.sns-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 100%;
+    margin: 0 2px;
+}
+
+.etc-cont {
+    position: relative;
+    justify-content: left;
+}
+
+.btn-group.sns {
+    justify-content: left;
+    text-align: left;
+    padding-bottom: 80px;
+}
+
+.btn-group.etc {
+    justify-content: left;
+}
+
+.etc-btn {
+    width: 42%;
+    max-width: 160px;
+    height: 40px;
+    display: inline-block;
+    text-align: center;
+    padding: 12px 0 0;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 1);
+    font-size: 13px;
+    line-height: 1.1;
+}
+
+.copy-cont {
+    margin: 10px 0 0;
+    font-size: 9px; /* 'font'를 'font-size'로 수정 */
+    text-align: justify;
+    letter-spacing: 0;
+    color: #a3a3a3;
+}

@@ -1,0 +1,285 @@
+.myPageT {
+    border-bottom: 3px solid #228b22;
+    color: #228b22;
+    padding-bottom: 3px;
+}
+
+/* 전체 래퍼 */
+.wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* 컨테이너 스타일 */
+.container {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+/* 섹션 스타일 */
+.section {
+    margin-bottom: 20px;
+}
+
+.section h4 {
+    font-size: 1.5rem;
+    color: #4CAF50; /* 초록색 포인트 컬러 */
+    margin-bottom: 10px;
+    border-bottom: 2px solid #81d4fa;
+    padding-bottom: 5px;
+}
+
+.section p {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+/* 프로필 이미지 박스 */
+#imageBox {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#imageBox img {
+    border-radius: 50%;
+    border: 3px solid #81d4fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+}
+
+/* 추가 자격증 인증 폼 */
+#addSpecForm {
+    display: none; /* 기본적으로 숨김 */
+    flex-direction: column;
+    align-items: center;
+}
+
+#addSpec input[type="file"],
+#addSpec input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+#addSpec input[type="submit"] {
+    background-color: #a3d9b1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+#addSpec input[type="submit"]:hover {
+    background-color: #65a170; /* 호버 시 색상 */
+}
+
+.end-btn {
+    display: flex; /* 가로 정렬 */
+    justify-content: center; /* 전체를 가운데 정렬 */
+    gap: 70px; /* 요소 간 간격 */
+    margin-top: 10px;
+    width: 350px;
+    text-align: center;
+    font-size: 15px;
+}
+
+/* 추가 버튼 */
+#showSpecForm, #showModForm {
+    background-color: #0c92c7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+    font-weight: bold;
+    width: 350px;
+    text-align: center;
+}
+
+#showSpecForm:hover, #showModForm:hover {
+    background-color: #006386; /* 호버 시 색상 */
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .section h4 {
+        font-size: 1.25rem;
+    }
+
+    #addSpec input[type="file"],
+    #addSpec input[type="text"],
+    #addSpec input[type="submit"] {
+        font-size: 0.9rem;
+    }
+}
+
+/* 전체 컨테이너 스타일 */
+.container {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    width: 100%;
+    max-width: 820px;
+    margin: 30px auto;
+    line-height: 1.6;
+    box-sizing: border-box;
+}
+
+h3 {
+    font-size: 20px;
+    color: #333;
+    border-bottom: 3px solid #76d7b2;
+    padding-bottom: 5px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+    font-weight: bold;
+    width: 100px;
+}
+
+/* 테이블 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    text-align: center; /* 가운데 정렬 */
+    padding: 10px 12px;
+    border-bottom: 1px solid #dcdcdc;
+    vertical-align: middle;
+}
+
+th {
+    font-weight: bold;
+    font-size: 15px;
+    text-transform: uppercase;
+    color: #333;
+}
+
+td input[type="text"],
+td input[type="email"] {
+    width: 90%; /* 간격 조정 */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 13px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+td input[readonly] {
+    background-color: #e6f7ff;
+}
+
+/* '변경' 버튼 스타일 */
+td p, .changeInfo, #checkEmail {
+    display: inline-block;
+    padding: 3px 10px; /* 크기 축소 */
+    background-color: #ffcd4a; /* 밝은 노란색 */
+    color: white;
+    font-size: 12px; /* 더 작은 글씨 */
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+    text-align: left; /* 왼쪽 정렬 */
+}
+
+td p:hover, .changeInfo:hover, #checkEmail:hover {
+    background-color: #f6c700;
+    color: #000;
+}
+
+
+/* 버튼 왼쪽 정렬 */
+td {
+    text-align: left; /* "변경" 버튼 포함 td 내부 요소 왼쪽 정렬 */
+}
+
+/* 링크 스타일 */
+a.link-button {
+    display: inline-block;
+    font-size: 13px;
+    color: #81d4fa;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 5px;
+    transition: color 0.3s;
+}
+
+a.link-button:hover {
+    color: #0288d1;
+    text-decoration: underline;
+}
+
+/* 제출 버튼 스타일 */
+input[type="submit"] {
+    padding: 12px; /* 크기 축소 */
+    background-color: #a3d9b1;
+    color: white;
+    border: none;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    margin: 15px auto 0 auto;
+    display: block;
+}
+
+input[type="submit"]:hover {
+    background-color: #65a170;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    td input[type="text"], td input[type="email"] {
+        font-size: 12px;
+    }
+
+    td p, .changeInfo {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+
+    input[type="submit"] {
+        font-size: 13px;
+        padding: 10px;
+    }
+}

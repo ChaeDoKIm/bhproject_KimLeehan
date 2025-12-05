@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/header-footer-teacher.css"/>
+    <link rel="stylesheet" href="/css/board.css"/>
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <title>방학_문의작성</title>
+
+</head>
+
+<body>
+<header>
+    <nav>
+        <div th:if="${session.teacherLoginId eq null}">
+            <ul>
+                <li><a href="/resume/rwrite">입사지원</a></li>
+                <li><a href="/bWriteFormT">문의</a></li>
+            </ul>
+        </div>
+
+        <div th:if="${session.teacherLoginId ne null}">
+            <ul>
+                <!--        th:href="@{/pView/{pId}(pId=${session.parentLoginId})}" -->
+                <li><a th:href="@{/tMySchedule/{tId}(tId=${session.teacherLoginId})}">스케줄</a></li>
+                <li><a th:href="@{/tStudents/{tId}(tId=${session.teacherLoginId})}">학생관리</a></li>
+                <li><a th:href="@{/tMyInfo/{tId}(tId=${session.teacherLoginId})}">마이 페이지</a></li>
+                <li><a class="bWriteForm" href="/bWriteFormT">문의</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="logo">
+        <a href="/teacher/Tmain"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+
+    <div th:if="${session.teacherLoginId eq null}">
+        <a id="login">로그인</a>
+    </div>
+
+    <div th:if="${session.teacherLoginId ne null}">
+        <input type="hidden" id="loginId" name="loginId" th:value="${session.teacherLoginId}"/>
+        <a href="/tLogout" id="logout">로그아웃</a>
+    </div>
+</header>
+<br><br>
+<h2>문의</h2>
+<br><br>
+<form id="questionForm" action="/bWrite" method="post" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <th>작성자</th>
+            <td >
+                <div th:switch="${session.teacherLoginId}">
+                    <div th:case="null">
+                        <input type="email" name="qWriter" id="qWriter" />
+                        <input type="hidden" name="qCategory" th:value="비회원"/>
+                    </div>
+                    <div th:case="*">
+                        <input type="text" name="qWriter" th:value="${session.teacherLoginId}" readonly/>
+                        <input type="hidden" name="qCategory" th:value="선생님"/>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <input type="hidden" id="tId" th:value="${session.teacherLoginId}">
+        <tr>
+            <th>제목</th>
+            <td><input type="text" name="qTitle"/></td>
+        </tr>
+
+        <tr>
+            <th>문의내용</th>
+            <td>
+                <textarea name="qContents" rows="20" cols="40"></textarea>
+            </td>
+        </tr>
+        <tr>
+        </tr>
+        <tr th:if="${session.teacherLoginId eq null}">
+            <th>비밀번호</th>
+            <td>
+                <input type="password" name="qPass" placeholder="확인용 비밀번호를 입력해 주세요"/>
+            </td>
+        </tr>
+        <tr th:if="${session.teacherLoginId ne null}">
+            <td colspan="2">
+                <input type="hidden" name="qPass"/>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2">
+                <input type="submit" value="등록"/>
+            </th>
+        </tr>
+    </table>
+    <div th:if="${session.teacherLoginId eq null}"><p id="control-modal">내 문의 확인 (비회원용)</p></div>
+    <div th:if="${session.teacherLoginId ne null}"><p id="check-my-faq">내 문의 확인</p></div>
+</form>
+<div id="applyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4>비회원 문의 확인</h4>
+        </div>
+        <div class="modal-body">
+            <input type="text" name="qWriter" id="applyId" placeholder="아이디"/>
+            <input type="password" name="qPass" id="applyPass" placeholder="비밀번호"/>
+            <button id="searchBtn">문의 확인</button>
+            <button id="closeBtn">취소</button>
+        </div>
+    </div>
+</div>
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+
+    </div>
+</footer>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script src="/js/boardmodal.js"></script>
+<script>
+
+    $('#login').click(() => {
+        location.href = '/tLoginForm';
+    })
+
+    $('#logout').click(() => {
+        location.href = '/tLogout';
+    });
+
+    document.querySelector("form").addEventListener("submit", function (event) {
+        event.preventDefault(); // 기본 폼 제출 막기
+
+        let qTitle = document.querySelector("input[name='qTitle']").value.trim();
+        let qContents = document.querySelector("textarea[name='qContents']").value.trim();
+        let qWriterInput = document.querySelector("input[name='qWriter']"); // 작성자 필드 (비회원용)
+        let qWriter = qWriterInput ? qWriterInput.value.trim() : "";
+        let qPassInput = document.querySelector("input[name='qPass']"); // 비밀번호 필드 (비회원용)
+        let qPass = qPassInput ? qPassInput.value.trim() : "";
+        let tId = document.getElementById("tId") ? document.getElementById("tId").value : ""; // 회원 ID
+
+        // **유효성 검사**
+        if (!qTitle) {
+            alert("제목을 작성해주세요.");
+            return;
+        }
+        if (!qContents) {
+            alert("문의 내용을 작성해주세요.");
+            return;
+        }
+
+        // 회원/비회원 구분 (tId가 있으면 회원, 없으면 비회원)
+        if (!tId) { // 비회원
+            if (!qWriter) {
+                alert("작성자를 입력해주세요.");
+                return;
+            }
+            if (!qPass) {
+                alert("비밀번호를 입력해주세요.");
+                return;
+            }
+        }
+
+        // 회원이면 tId 사용, 비회원이면 qWriter를 tId로 설정
+        let userId = tId ? tId : qWriter;
+
+        let formData = new FormData(this); // 폼 데이터 가져오기
+
+        fetch("/bWrite", {
+            method: "POST",
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = `/board/myfaq/${userId}`; // 회원/비회원에 따라 이동
+            } else {
+                alert("등록 실패. 다시 시도해 주세요.");
+            }
+        });
+    });
+</script>
+
+</html>

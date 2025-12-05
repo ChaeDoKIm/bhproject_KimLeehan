@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>문의 상세보기</title>
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <style>
+        /* --------------------
+           Reset & Base
+        -------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            background-color: #f5f6fa;
+            font-family: 'Nanum Gothic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --------------------
+           Layout Shell
+        -------------------- */
+        .detail-shell {
+            width: 100%;
+            max-width: 1100px;      /* 화면 넓게 사용 */
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            padding: 24px 28px 32px;
+        }
+
+        /* --------------------
+           Header
+        -------------------- */
+        .detail-header {
+            margin-bottom: 20px;
+        }
+
+        .console-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .page-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .page-subtext {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        /* --------------------
+           Main Content Layout
+        -------------------- */
+        .content-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr);
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 960px) {
+            .content-layout {
+                grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            }
+        }
+
+        /* --------------------
+           문의 정보 테이블
+        -------------------- */
+        .info-card {
+            background-color: #f9fafb;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            padding: 18px 18px 14px;
+        }
+
+        .info-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 10px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .info-table tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 8px 0;
+            vertical-align: top;
+        }
+
+        .info-table th {
+            width: 95px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #6b7280;
+            padding-right: 10px;
+        }
+
+        .info-table td {
+            font-size: 0.9rem;
+            color: #111827;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .badge-category {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #1f2937;
+            background-color: #e5f2ff;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #ffffff;
+            background-color: #34a853;
+        }
+
+        .badge-status.pending {
+            background-color: #f59e0b;
+        }
+
+        /* --------------------
+           답변 섹션
+        -------------------- */
+        .answer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-header-inline {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 4px;
+        }
+
+        .section-header-inline h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .section-header-inline span {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .answers-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .answer-empty {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            padding: 10px 0;
+        }
+
+        .answer-item {
+            background-color: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 12px 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .answer-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .answer-author {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .answer-date {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .answer-body {
+            font-size: 0.9rem;
+            color: #4b5563;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        /* --------------------
+           답변 폼
+        -------------------- */
+        .answer-form-wrapper {
+            margin-top: 10px;
+        }
+
+        #showAnswerFormBtn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: none;
+            background-color: #e56f6f;
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        #showAnswerFormBtn:hover {
+            background-color: #d75a5a;
+            transform: translateY(-1px);
+        }
+
+        #answerForm {
+            background-color: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 14px 16px 12px;
+            margin-top: 10px;
+        }
+
+        #answerForm textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        #answerForm textarea:focus {
+            outline: none;
+            border-color: #e56f6f;
+            box-shadow: 0 0 0 3px rgba(229, 111, 111, 0.2);
+        }
+
+        #answerForm button[type="submit"] {
+            margin-top: 10px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: none;
+            background-color: #111827;
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        #answerForm button[type="submit"]:hover {
+            background-color: #0b1120;
+            transform: translateY(-1px);
+        }
+
+        /* --------------------
+           Footer / Back Link
+        -------------------- */
+        .footer-row {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background-color: #111827;
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .back-link:hover {
+            background-color: #0b1120;
+            transform: translateY(-1px);
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="detail-shell">
+
+    <!-- 상단 헤더 -->
+    <header class="detail-header">
+        <div class="console-label">Admin Console · Q&A</div>
+        <div class="page-title">문의 상세보기</div>
+        <div class="page-subtext">회원이 남긴 문의 내용을 확인하고, 필요 시 답변을 등록할 수 있습니다.</div>
+    </header>
+
+    <!-- 메인 레이아웃 -->
+    <div class="content-layout">
+
+        <!-- 문의 정보 카드 -->
+        <section class="info-card">
+            <div class="info-title">문의 정보</div>
+            <table class="info-table">
+                <tr>
+                    <th>제목</th>
+                    <td th:text="${board.qTitle}"></td>
+                </tr>
+                <tr>
+                    <th>번호</th>
+                    <td th:text="${board.qId}"></td>
+                </tr>
+                <tr>
+                    <th>작성자</th>
+                    <td th:text="${board.qWriter}"></td>
+                </tr>
+                <tr>
+                    <th>작성일</th>
+                    <td th:text="${#temporals.format(board.qDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+                <tr>
+                    <th>분류</th>
+                    <td>
+                        <span class="badge-category" th:text="${board.qCategory}"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>답변 상태</th>
+                    <td>
+                        <span class="badge-status"
+                              th:classappend="${board.qStatus} == '대기' ? ' pending' : ''"
+                              th:text="${board.qStatus}">
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>내용</th>
+                    <td th:text="${board.qContents}"></td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- 답변 영역 -->
+        <section class="answer-section">
+            <div class="section-header-inline">
+                <h3>답변 내역</h3>
+                <span th:if="${answers.size() > 0}"
+                      th:text="'총 ' + ${answers.size()} + '개'"></span>
+                <span th:if="${answers.size() == 0}">등록된 답변이 없습니다.</span>
+            </div>
+
+            <ul th:if="${answers.size() > 0}" class="answers-list">
+                <li th:each="answer : ${answers}" class="answer-item">
+                    <div class="answer-meta">
+                        <span class="answer-author"
+                              th:text="${answer.aId}"></span>
+                        <span class="answer-date"
+                              th:text="${#temporals.format(answer.ansDate, 'yyyy-MM-dd')}"></span>
+                    </div>
+                    <div class="answer-body" th:text="${answer.ansContents}"></div>
+                </li>
+            </ul>
+
+            <!-- 관리자일 때만 답변 작성 가능 -->
+            <div th:if="${session.adminLoginId != null}" class="answer-form-wrapper">
+                <button id="showAnswerFormBtn" type="button">답변 작성</button>
+
+                <form id="answerForm" th:action="@{/board/answer}" method="post" style="display:none;">
+                    <input type="hidden" name="qId" th:value="${board.qId}">
+                    <textarea name="ansContents" placeholder="답변 내용을 입력하세요"></textarea>
+                    <button type="submit">답변 등록</button>
+                </form>
+            </div>
+
+        </section>
+    </div>
+
+    <!-- 하단: 목록으로 돌아가기 -->
+    <footer class="footer-row">
+        <div th:switch="${session.adminLoginId}">
+            <div th:case="null">
+                <a th:href="@{/board/myfaq/{loginId}(loginId=${board.qWriter})}" class="back-link">
+                    목록으로 돌아가기
+                </a>
+            </div>
+            <div th:case="*">
+                <a href="/board/list" class="back-link">
+                    목록으로 돌아가기
+                </a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // 답변 작성 폼 토글 (관리자에게만 버튼 있음)
+    const answerBtn = document.getElementById("showAnswerFormBtn");
+    if (answerBtn) {
+        answerBtn.addEventListener("click", function () {
+            const form = document.getElementById("answerForm");
+            if (!form) return;
+
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        });
+    }
+</script>
+</body>
+</html>

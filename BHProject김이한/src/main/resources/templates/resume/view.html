@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>이력서 상세보기</title>
+  <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:#f5f6fa; --card:#ffffff; --border:#e5e7eb;
+      --primary:#111827; --muted:#9ca3af;
+      --danger:#e63946; --success:#10b981; --warning:#f39c12;
+    }
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Nanum Gothic","Noto Sans KR",sans-serif;
+    }
+    .admin-shell{
+      width:100%;
+      max-width:800px;
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:0 20px 40px rgba(0,0,0,0.08),
+      0 2px 4px rgba(0,0,0,0.04);
+      padding:24px 24px 28px;
+    }
+    .admin-header{ margin-bottom:18px; }
+    .console-label{
+      font-size:0.7rem; color:#6b7280; margin-bottom:4px;
+    }
+    .page-title{
+      font-size:1.1rem; font-weight:600; color:var(--primary);
+    }
+    .page-subtext{
+      font-size:0.75rem; color:var(--muted); margin-top:4px;
+    }
+    .detail-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:16px;
+      font-size:0.9rem;
+    }
+    .detail-table th,
+    .detail-table td{
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    .detail-table th{
+      width:25%;
+      background-color:#f9fafb;
+      text-align:left;
+      font-weight:600;
+      color:#374151;
+    }
+    .detail-table td{
+      color:#111827;
+    }
+
+    a.file-link{
+      color:#0f4c75;
+      font-weight:600;
+      text-decoration:none;
+    }
+    a.file-link:hover{
+      text-decoration:underline;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:0.7rem;
+      font-weight:700;
+      text-transform:uppercase;
+    }
+    .badge.pending{
+      background-color:#fffbeb;
+      color:#92400e;
+      border:1px solid #fed7aa;
+    }
+    .badge.accept{
+      background-color:#ecfdf5;
+      color:#047857;
+      border:1px solid #bbf7d0;
+    }
+    .badge.reject{
+      background-color:#fef2f2;
+      color:#b91c1c;
+      border:1px solid #fecaca;
+    }
+
+    .action-bar{
+      margin-top:20px;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .left-actions,
+    .right-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background-color:#ffffff;
+      padding:8px 14px;
+      font-size:0.8rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.15s ease;
+    }
+    .btn:hover{
+      box-shadow:0 8px 16px rgba(0,0,0,0.06);
+      transform:translateY(-1px);
+    }
+    .btn-outline{
+      color:#111827;
+    }
+    .btn-accept{
+      background-color:var(--success);
+      border-color:#0f9a7a;
+      color:#ffffff;
+    }
+    .btn-reject{
+      background-color:var(--danger);
+      border-color:#d62839;
+      color:#ffffff;
+    }
+    .btn-pending{
+      background-color:var(--warning);
+      border-color:#e0a800;
+      color:#ffffff;
+    }
+
+    @media(max-width:640px){
+      .admin-shell{ border-radius:0; max-width:100%; min-height:100vh; box-shadow:none; }
+      .action-bar{ flex-direction:column; align-items:stretch; }
+      .left-actions, .right-actions{ justify-content:space-between; }
+    }
+
+
+
+    /* 관리자 메인이동  하단 버튼 영역 (필요하면 사용) */
+    .footer-row {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      appearance: none;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background-color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      cursor: pointer;
+      color: #111827;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      border-color: #34a853;
+      color: #34a853;
+      box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+      transform: translateY(-1px);
+    }
+
+
+
+
+  </style>
+
+
+
+
+
+</head>
+<body>
+<div class="admin-shell">
+  <!-- 헤더 -->
+  <header class="admin-header">
+    <div class="console-label">Admin Console · Recruitment</div>
+    <div class="page-title">이력서 상세 보기</div>
+    <div class="page-subtext">
+      지원자 정보를 확인하고, 채용 여부 상태를 변경할 수 있습니다.
+    </div>
+  </header>
+
+  <!-- 상세 테이블 -->
+  <table class="detail-table">
+    <tr>
+      <th>번호</th>
+      <td th:text="${resume.resId}"></td>
+    </tr>
+    <tr>
+      <th>이름</th>
+      <td th:text="${resume.resName}"></td>
+    </tr>
+    <tr>
+      <th>이메일</th>
+      <td th:text="${resume.resEmail}"></td>
+    </tr>
+    <tr>
+      <th>입사 지원 동기</th>
+      <td th:text="${resume.resCoverLetter}"></td>
+    </tr>
+    <tr>
+      <th>파일 다운로드</th>
+      <td>
+        <a class="file-link"
+           th:href="@{'/upload/resume/' + ${resume.resFileName}}"
+           target="_blank"
+           th:text="${resume.resFileName}"></a>
+      </td>
+    </tr>
+    <tr>
+      <th>현재 상태</th>
+      <td>
+                <span th:switch="${resume.resStatus}">
+                    <span th:case="'합격'" class="badge accept">합격</span>
+                    <span th:case="'반려'" class="badge reject">반려</span>
+                    <span th:case="*"
+                          class="badge pending"
+                          th:text="${resume.resStatus}">대기</span>
+                </span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- 액션 버튼 영역 -->
+  <div class="action-bar">
+    <!-- 왼쪽: 목록으로 -->
+    <div class="left-actions">
+      <button class="btn btn-outline"
+              type="button"
+              onclick="location.href='/resume/list'">
+        목록으로
+      </button>
+    </div>
+
+    <!-- 오른쪽: 상태 변경 버튼 3개 -->
+    <div class="right-actions">
+
+      <!-- 대기 -->
+      <form th:action="@{/resume/status}" method="post" style="display:inline;">
+        <input type="hidden" name="resId" th:value="${resume.resId}">
+        <input type="hidden" name="status" value="대기">
+        <button type="submit" class="btn btn-pending">대기 처리</button>
+      </form>
+
+      <!-- 합격 -->
+      <form th:action="@{/resume/status}" method="post" style="display:inline;">
+        <input type="hidden" name="resId" th:value="${resume.resId}">
+        <input type="hidden" name="status" value="합격">
+        <button type="submit" class="btn btn-accept">합격</button>
+      </form>
+
+      <!-- 반려 -->
+      <form th:action="@{/resume/status}" method="post" style="display:inline;">
+        <input type="hidden" name="resId" th:value="${resume.resId}">
+        <input type="hidden" name="status" value="반려">
+        <button type="submit" class="btn btn-reject">반려</button>
+      </form>
+    </div>
+  </div>
+
+  <br>
+  <div class="footer-row">
+    <button type="button" class="btn" onclick="location.href='/admin/main'">
+      관리자 메인으로
+    </button>
+  </div>
+
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/login.css"/>
+    <!--    <link rel="stylesheet" href="css/style.css">-->
+    <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+
+    <title>선생님 로그인</title>
+</head>
+
+<body>
+<div class="loginForm" id="teacherForm">
+    <form action="/tLogin" method="POST">
+
+        <h2>선생님 로그인</h2>
+        ID <input type="text" id="tId" name="tId"/>
+        <br/>
+        PW <input type="password" id="tPass" name="tPass"/>
+        <br/><br/>
+        <input type="submit" value="로그인"/>
+        <input type="button" class="goBack" value="뒤로가기" onclick="window.location.href='/main';"/>
+
+    </form>
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    window.history.forward();
+
+    // 선생님 로그인
+    $("#teacherLogin").click(() => {
+        $(".loginBtn").hide();
+
+        $(".loginForm#teacherForm").show();
+    });
+
+    // 뒤로가기 클릭
+    $(".goBack").click(() => {
+        $(".loginBtn").show();
+        $(".loginForm").hide();
+    });
+</script>
+
+</html>

@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.kimleehan.bhproject'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//    runtimeOnly 'com.oracle.database.jdbc:ojdbc11'  // 이게 원본
+    
+    // DB오류나서 추가해줬음
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    runtimeOnly 'com.oracle.database.jdbc:ojdbc11:23.4.0.24.05'
+
+
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // https://mvnrepository.com/artifact/com.graphhopper/jsprit-core
+    implementation 'com.graphhopper:jsprit-core:1.8'
+    // https://mvnrepository.com/artifact/com.graphhopper/jsprit-io
+    implementation 'com.graphhopper:jsprit-io:1.8'
+    // https://mvnrepository.com/artifact/com.graphhopper/jsprit-analysis
+    implementation 'com.graphhopper:jsprit-analysis:1.8'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.webjars:sockjs-client:1.0.2'    //SockJS - 웹소켓을 지원하지 않는 브라우저에서 폴백 메커니즘으로 사용됨
+    implementation 'org.webjars:stomp-websocket:2.3.3'  // STOMP클라이언트 - STOMP프로토콜을 사용하여 메시지를 전송/구독
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

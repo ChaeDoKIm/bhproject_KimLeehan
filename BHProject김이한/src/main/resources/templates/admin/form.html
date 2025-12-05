@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+    <title>신규 선생님 등록</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f6fa;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --primary: #111827;
+            --muted: #6b7280;
+            --accent: #d63031;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+            color: #1f2933;
+        }
+
+        /* 카드 전체 래퍼 */
+        .admin-shell {
+            width: 100%;
+            max-width: 860px;
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow:
+                    0 18px 35px rgba(15, 23, 42, 0.09),
+                    0 2px 6px rgba(15, 23, 42, 0.04);
+            padding: 24px 28px 28px;
+        }
+
+        /* 상단 헤더 */
+        .admin-header {
+            margin-bottom: 18px;
+        }
+
+        .console-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .page-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+        }
+
+        .page-subtext {
+            font-size: 0.78rem;
+            color: #9ca3af;
+        }
+
+        /* 폼 영역 */
+        form.teacher-form {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* 2컬럼 그리드 */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: 20px;
+            row-gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1; /* 두 칸 모두 사용 */
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .help-text {
+            font-size: 0.7rem;
+            color: #9ca3af;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="number"],
+        textarea {
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 7px 9px;
+            font-size: 0.82rem;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            background-color: #f9fafb;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #f87171;
+            box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
+            background-color: #ffffff;
+        }
+
+        input[type="file"] {
+            border-radius: 8px;
+            border: 1px dashed #e5e7eb;
+            padding: 7px 9px;
+            font-size: 0.8rem;
+            background-color: #f9fafb;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        /* 라디오/체크박스 그룹 */
+        .option-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin-top: 4px;
+        }
+
+        .option-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: #374151;
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            margin: 0;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        /* 프로필 미리보기 */
+        .profile-preview {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 4px;
+        }
+
+        .profile-preview img {
+            border-radius: 999px;
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            background-color: #f3f4f6;
+        }
+
+        /* 버튼 박스 */
+        .form-footer {
+            margin-top: 6px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button[type="submit"] {
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #e53935, #d81b60);
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 9px 20px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow:
+                    0 10px 18px rgba(220, 38, 38, 0.25),
+                    0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.03);
+            box-shadow:
+                    0 12px 22px rgba(220, 38, 38, 0.32),
+                    0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+            box-shadow:
+                    0 4px 10px rgba(220, 38, 38, 0.2),
+                    0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 반응형 */
+        @media (max-width: 720px) {
+            .admin-shell {
+                border-radius: 0;
+                max-width: 100%;
+                min-height: 100vh;
+                box-shadow: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="admin-shell">
+    <!-- 헤더 -->
+    <header class="admin-header">
+        <div class="console-label">Admin Console · Teacher</div>
+        <div class="page-title">신규 선생님 등록</div>
+        <div class="page-subtext">
+            방학 서비스에 새로 등록할 선생님 정보를 입력해주세요. 필수 항목은 정확하게 기입해야 합니다.
+        </div>
+    </header>
+
+    <!-- 폼 -->
+    <form th:action="@{/addT}" method="post" enctype="multipart/form-data" class="teacher-form">
+        <div class="form-grid">
+
+            <!-- ID -->
+            <div class="form-group">
+                <label for="tId">아이디 *</label>
+                <input type="text" id="tId" name="tId" required/>
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="form-group">
+                <label for="tPass">비밀번호 *</label>
+                <input type="password" id="tPass" name="tPass" required/>
+            </div>
+
+            <!-- 이름 -->
+            <div class="form-group">
+                <label for="tName">이름 *</label>
+                <input type="text" id="tName" name="tName" required/>
+            </div>
+
+            <!-- 연락처 -->
+            <div class="form-group">
+                <label for="tPhone">연락처 *</label>
+                <input type="text" id="tPhone" name="tPhone" placeholder="예) 010-0000-0000" required/>
+            </div>
+
+            <!-- 이메일 -->
+            <div class="form-group">
+                <label for="tEmail">이메일 *</label>
+                <input type="email" id="tEmail" name="tEmail" required/>
+            </div>
+
+            <!-- 성별 -->
+            <div class="form-group">
+                <label>성별 *</label>
+                <div class="option-row">
+                    <label class="option-item">
+                        <input type="radio" id="m" name="tGender" value="남" required/>
+                        <span>남</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="radio" id="f" name="tGender" value="여" required/>
+                        <span>여</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 학력 -->
+            <div class="form-group full">
+                <label for="tEdu">학력 *</label>
+                <input type="text" id="tEdu" name="tEdu" placeholder="예) ㅇㅇ대학교 국어국문학과 졸업" required/>
+            </div>
+
+            <!-- 프로필 -->
+            <div class="form-group full">
+                <label for="tProfile">프로필 이미지</label>
+                <div class="profile-preview">
+                    <img id="preImage" alt="프로필 미리보기"/>
+                    <div style="flex:1">
+                        <input type="file" id="tProfile" name="tProfile" accept="image/*"/>
+                        <p class="help-text">정면 사진 사용을 권장합니다. (선택 사항)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 지역 -->
+            <div class="form-group">
+                <label for="tArea">활동 지역</label>
+                <input type="text" id="tArea" name="tArea" placeholder="예) 서울 송파구 / 온라인"/>
+            </div>
+
+            <!-- 수업 시간 -->
+            <div class="form-group">
+                <label>수업 가능 시간</label>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="number" id="tStartTime" name="tStartTime" placeholder="시작 (예: 10)" min="0" max="23" style="flex:1;"/>
+                    <span style="font-size:0.78rem; color:#9ca3af;">~</span>
+                    <input type="number" id="tEndTime" name="tEndTime" placeholder="종료 (예: 20)" min="0" max="23" style="flex:1;"/>
+                </div>
+            </div>
+
+            <!-- 맡을 학년 -->
+            <div class="form-group">
+                <label for="tGrade">맡을 학년</label>
+                <input type="text" id="tGrade" name="tGrade" placeholder="예) 초등 3–6학년 / 중1–중3"/>
+            </div>
+
+            <!-- 과목 -->
+            <div class="form-group full">
+                <label>과목</label>
+                <div class="option-row">
+                    <label class="option-item">
+                        <input type="checkbox" id="kor" name="tSubject" value="국어"/>
+                        <span>국어</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="eng" name="tSubject" value="영어"/>
+                        <span>영어</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="math" name="tSubject" value="수학"/>
+                        <span>수학</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 레벨 -->
+            <div class="form-group full">
+                <label>레벨</label>
+                <div class="option-row">
+                    <label class="option-item">
+                        <input type="checkbox" id="Basic" name="tLevel" value="초급"/>
+                        <span>초급</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="Intermediate" name="tLevel" value="중급"/>
+                        <span>중급</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="advanced" name="tLevel" value="심화"/>
+                        <span>심화</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 휴무일 -->
+            <div class="form-group full">
+                <label>휴무일</label>
+                <div class="option-row">
+                    <label class="option-item">
+                        <input type="checkbox" id="mon" name="tRestDay" value="월요일"/>
+                        <span>월요일</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="tue" name="tRestDay" value="화요일"/>
+                        <span>화요일</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="wed" name="tRestDay" value="수요일"/>
+                        <span>수요일</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="thu" name="tRestDay" value="목요일"/>
+                        <span>목요일</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="fri" name="tRestDay" value="금요일"/>
+                        <span>금요일</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="sat" name="tRestDay" value="토요일"/>
+                        <span>토요일</span>
+                    </label>
+                    <label class="option-item">
+                        <input type="checkbox" id="sun" name="tRestDay" value="일요일"/>
+                        <span>일요일</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 소개 -->
+            <div class="form-group full">
+                <label for="tDesc">선생님 소개</label>
+                <textarea id="tDesc" name="tDesc" placeholder="수업 스타일, 주요 경력, 지도 철학 등을 간단히 적어주세요."></textarea>
+            </div>
+        </div>
+
+        <!-- 제출 버튼 -->
+        <div class="form-footer">
+            <button type="submit">
+                신규 선생님 등록
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    // 프로필 사진 미리보기
+    $('#tProfile').on('change', function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            $('#preImage').attr('src', e.target.result);
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+
+</body>
+</html>

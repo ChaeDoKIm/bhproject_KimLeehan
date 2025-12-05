@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <title>상담 신청</title>
+</head>
+
+<style>
+    /* 기본 페이지 스타일 */
+    body {
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;  /* 가로 중앙 정렬 */
+        align-items: center;      /* 세로 중앙 정렬 */
+        height: 100vh;            /* 화면 전체 높이를 차지 */
+        flex-direction: column;   /* 세로 방향으로 정렬 */
+        font-family: 'Nanum Gothic', sans-serif;
+    }
+
+    /* 제목 스타일 */
+    h1 {
+        font-size: 32px;
+        color: #333;
+        text-align: center;       /* 텍스트 가운데 정렬 */
+        margin: 0 0 20px 0;       /* 상단 여백 없애고, 폼과의 간격을 주기 위해 하단 여백 */
+    }
+
+    /* 폼 스타일 */
+    form {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;  /* 폼의 최대 너비를 설정 */
+    }
+
+    /* 레이블 스타일 */
+    label {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
+        font-family: 'Nanum Gothic', sans-serif;
+    }
+
+    /* 입력 필드 스타일 */
+    input[type="text"],
+    input[type="email"],
+    input[type="datetime-local"],
+        /*input[type="date"],*/
+        /*input[type="number"],*/
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px 0;
+        border: 1px solid #81d4fa;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    div {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* 버튼 스타일 */
+    button {
+        background-color: #bce9c3;
+        color: black;
+        border: 1px solid #ddd; /* 테두리 */
+        padding: 10px 20px; /* 버튼 내부 여백 */
+        font-size: 16px; /* 버튼 글씨 크기 */
+        cursor: pointer; /* 포인터 커서 */
+        border-radius: 30px; /* 둥근 모서리 */
+        transition: background-color 0.3s ease; /* 배경색 전환 효과 */
+    }
+
+    button:hover {
+        background-color: #228B22; /* 호버 시 배경색 */
+        color: white;
+    }
+
+    /* 작은 화면에서 폼 입력 필드를 적절히 조정 */
+    @media screen and (max-width: 600px) {
+        form {
+            padding: 15px;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        button {
+            font-size: 16px;
+        }
+    }
+</style>
+
+<body>
+<h1>상담 신청서 작성</h1>
+<form th:action="@{/signup/submit}" method="post">
+    <label for="sReqName">이름</label>
+    <input type="text" id="sReqName" name="sReqName" required>
+    <br>
+
+    <label for="sReqPhone">연락처</label>
+    <input type="text" id="sReqPhone" name="sReqPhone" required>
+    <br>
+
+    <label for="sReqEmail">이메일</label>
+    <input type="email" id="sReqEmail" name="sReqEmail" required>
+    <br>
+
+    <label for="sReqType">상담 유형</label>
+    <select id="sReqType" name="sReqType" required>
+        <option value="전화 상담">전화 상담</option>
+        <option value="대면 상담">대면 상담</option>
+        <option value="온라인 상담">온라인 상담</option>
+    </select>
+    <br>
+
+<!--    <label for="sReqStartTime">상담 가능 시간 (시작):</label>-->
+<!--    <input type="datetime-local" id="sReqStartTime" name="sReqStartTime" required>-->
+<!--    <br>-->
+
+<!--    <label for="sReqEndTime">상담 가능 시간 (끝):</label>-->
+<!--    <input type="datetime-local" id="sReqEndTime" name="sReqEndTime" required>-->
+<!--    <br>-->
+
+
+    <label for="sReqStartTime">상담 가능 시간 (시작):</label>
+    <input type="datetime-local" id="sReqStartTime" name="sReqStartTime" required>
+    <br>
+
+    <label for="sReqEndTime">상담 가능 시간 (끝):</label>
+    <input type="datetime-local" id="sReqEndTime" name="sReqEndTime" required>
+    <br>
+
+
+    <div>
+        <button type="submit">신청하기</button>
+    </div>
+</form>
+</body>
+</html>

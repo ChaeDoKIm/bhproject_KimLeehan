@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방.학</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+</head>
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="/parent/classRequest">학습신청</a></li>
+            <li><a href="/signup/form">상담신청</a></li>
+            <li><a href="/bWriteForm">문의</a></li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+
+    </div>
+
+    <div class="t-l-j">
+        <div class="teacher-page">
+            <a href="/teacher/Tmain">선생님 페이지 바로가기→</a>
+        </div>
+
+        <div class="auth-buttons" th:if="${session.parentLoginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+
+
+        <div th:if="${session.parentLoginId ne null}">
+            <!--            <input type="hidden" id="loginId" name="pId" th:value="${session.parentLoginId}"/>-->
+            <a th:href="@{/myChildP/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>
+            <a href="/pLogout" id="logout">로그아웃</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+
+        <div class="slider">
+            <div class="slides">
+                <div class="slide">
+                    <img src="/File/main_banner/메인배너1-1.png" alt="메인배너1-1">
+                </div>
+                <div class="slide">
+                    <img src="/File/main_banner/메인배너2-1.png" alt="메인배너2-1">
+                </div>
+            </div>
+
+            <a href="javascript:void(0)" id="prev" class="prev"></a>
+            <a href="javascript:void(0)" id="next" class="next"></a>
+        </div>
+
+        <!-- Scroll Down 표시 추가 -->
+        <div class="scroll-down-indicator">
+            <span class="scroll-text">Scroll Down</span>
+            <span class="scroll-arrow">▼</span>
+        </div>
+    </section>
+
+
+    <section class="about-company">
+        <div class="container">
+            <div class="about-header">
+                <h2>Company</h2>
+                <h3>자녀의 학습, "방.학"과 함께하세요</h3>
+            </div>
+
+            <div class="background-shape1">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400">
+                    <path d="M0,0 H680 Q850,180 650,400 H0 Z" fill="url(#gradient1)"/>
+                    <defs>
+                        <linearGradient id="gradient1" x1="0%" y1="50%" x2="100%" y2="50%">
+                            <stop offset="0%" style="stop-color: #FFE4E1; stop-opacity: 1"/>
+                            <stop offset="70%" style="stop-color: #F0F7FF; stop-opacity: 1"/>
+                            <stop offset="100%" style="stop-color: #A7D8FF; stop-opacity: 1"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="/File/맞춤학습.png" alt="회사 이미지">
+                </div>
+                <div class="about-text">
+                    <h3>Vision</h3>
+                    <p>
+                        기초부터 심화학습까지 방.학이 높은 퀄리티의 학습을 제공합니다!</br>
+                        믿을 수 있는 학습관리. 방.학으로 시작하세요!
+                    </p>
+
+                    <h3>Aim</h3>
+                    <ul>
+                        <li>기초부터 심화까지 탄탄한 수업</li>
+                        <li>높은 퀄리티를 보장하는 최고의 강사진 제공</li>
+                        <li>부모님의 편리한 학습 확인, 어려운 학습관리는 방.학에서 제공</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="teacher">
+            <div class="teacher-container">
+                <div class="about-teacher">
+                    <h2>Teachers</h2>
+                    <h3>"당신의 아이를 위한 최고의 맞춤형 교육, 지금 시작하세요!"</h3>
+                </div>
+
+                <div class="background-shape2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 130">
+                        <path d="M400,0 H80 Q0,130 170,250 H400 Z" fill="url(#gradient2)"/>
+                        <defs>
+                            <linearGradient id="gradient2" x1="0%" y1="50%" x2="100%" y2="50%">
+                                <stop offset="0%" style="stop-color: #D4F9D0; stop-opacity: 1"/>
+                                <stop offset="70%" style="stop-color: #F5F1D0; stop-opacity: 1"/>
+                                <stop offset="100%" style="stop-color: #FFE4E1; stop-opacity: 1"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="about-teacher-content">
+                    <div class="teacher-image">
+                        <img src="/File/전문강사.png" alt="강사 이미지">
+                    </div>
+                    <div class="teacher-text">
+                        <h3>Expert<p>경험 풍부한 전문가들</p></h3>
+                        <p>수년간의 교육 경험을 바탕으로, <br/>아이가 학습에서 겪는 어려움을 이해하고 해결해 줍니다.</p>
+                        <h3>Customizing<p>아이 맞춤형 학습</p></h3>
+                        <p>각 아이의 학습 속도와 스타일에 맞춰 수업을 진행하여, <br/>최적의 결과를 이끌어냅니다.</p>
+                        <h3>Result<p>결과 보장</p></h3>
+                        <p>체계적인 학습 계획과 지속적인 피드백을 통해, <br/>아이가 성과를 느낄 수 있도록 지원합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="main-button">
+        <a href="/parent/classRequest">
+            <button class="study-apply">학습 신청</button>
+        </a>
+        <a href="/signup/form">
+            <button class="consultation">상담 신청</button>
+        </a>
+    </div>
+
+</main>
+
+<div class="quick-menu" style="transform: matrix(1, 0, 0, 1, 0, -300);">
+    <!-- 상담신청 -->
+    <div class="quick-item">
+        <a href="/signup/form">
+            <img src="/File/상담.png" alt="상담신청">
+            <p>상담신청</p>
+        </a>
+    </div>
+
+
+    <!-- 채팅 -->
+    <div class="quick-item">
+        <a href="/chat">
+            <img src="/File/채팅.png" alt="채팅">
+            <p>채팅</p>
+        </a>
+    </div>
+
+    <!-- 상단 이동 -->
+    <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+
+
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+
+    </div>
+</footer>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    // 슬라이드 배너 기능
+    const slides = document.querySelector('.slides');
+    const slideItems = document.querySelectorAll('.slide');
+    const slideCount = slideItems.length;
+
+    let currentIndex = 0;
+    let autoSlideInterval;
+
+    // 슬라이드 클론 생성 (앞뒤에 추가)
+    const firstClone = slideItems[0].cloneNode(true);
+    const lastClone = slideItems[slideCount - 1].cloneNode(true);
+
+    slides.appendChild(firstClone);
+    slides.insertBefore(lastClone, slides.firstChild);
+
+    const updatedSlideCount = document.querySelectorAll('.slide').length;
+
+    // 슬라이드 컨테이너 너비 설정
+    slides.style.width = `${updatedSlideCount * 100}%`;
+    slides.style.transform = `translateX(-100%)`; // 클론 때문에 1번째 슬라이드로 위치 이동
+
+    // 슬라이드 이동 함수
+    function updateSlidePosition() {
+        slides.style.transition = 'transform 0.5s ease-in-out';
+        slides.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
+    }
+
+    // 슬라이드 재설정 함수 (클론에서 실제 슬라이드로 이동)
+    function resetSlidePosition() {
+        slides.style.transition = 'none';
+        if (currentIndex === -1) {
+            currentIndex = slideCount - 1; // 마지막 슬라이드로 이동
+            slides.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
+        } else if (currentIndex === slideCount) {
+            currentIndex = 0; // 첫 번째 슬라이드로 이동
+            slides.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
+        }
+    }
+
+    // 다음 슬라이드로 이동
+    function goToNextSlide() {
+        currentIndex++;
+        updateSlidePosition();
+        setTimeout(resetSlidePosition, 500); // 애니메이션이 끝난 후 재설정
+    }
+
+    // 이전 슬라이드로 이동
+    function goToPrevSlide() {
+        currentIndex--;
+        updateSlidePosition();
+        setTimeout(resetSlidePosition, 500); // 애니메이션이 끝난 후 재설정
+    }
+
+    // 버튼 클릭 이벤트
+    document.querySelector('.next').addEventListener('click', () => {
+        goToNextSlide();
+        resetAutoSlide();
+    });
+
+    document.querySelector('.prev').addEventListener('click', () => {
+        goToPrevSlide();
+        resetAutoSlide();
+    });
+
+    // 자동 슬라이드 시작
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(goToNextSlide, 4000); // 4초마다 이동
+    }
+
+    // 자동 슬라이드 재설정
+    function resetAutoSlide() {
+        clearInterval(autoSlideInterval);
+        startAutoSlide();
+    }
+
+    // 초기화
+    startAutoSlide();
+
+    // 스크롤 시 애니매이션 효과 추가
+    document.addEventListener("DOMContentLoaded", () => {
+        const header = document.querySelector(".about-header");
+        const aboutContents = document.querySelectorAll(".background-shape1,.about-content");
+        const teacherSection = document.querySelector(".teacher");  // teacher section 추가
+        const teacherContent = document.querySelectorAll(".background-shape2, .about-teacher, .about-teacher-content");  // 관련 요소들 추가
+
+        const handleScroll = () => {
+            // Header 애니메이션 처리
+            const headerRect = header.getBoundingClientRect();
+            if (headerRect.top < window.innerHeight - 100) {
+                header.classList.add("visible");
+            }
+
+            // About Content 애니메이션 처리
+            if (header.classList.contains("visible")) {
+                aboutContents.forEach((content) => {
+                    const rect = content.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 100) {
+                        content.classList.add("visible");
+                    }
+                });
+            }
+
+            // Teacher Section 애니메이션 처리
+            const teacherRect = teacherSection.getBoundingClientRect();
+            if (teacherRect.top < window.innerHeight - 100) {
+                teacherContent.forEach((content) => {
+                    content.classList.add("visible");
+                });
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        // 초기 상태 확인
+        handleScroll();
+    });
+
+    // 로그인, 회원가입 등 기본 기능
+    let loginId = $("#parentLoginId").val();
+
+
+    $('#logout').click(() => {
+        location.href = '/pLogout';
+    });
+
+    // $('#parent').click(() => {
+    //     location.href = '/pView/' + loginId;
+    // });
+
+    $('#join').click(() => {
+        location.href = '/pJoinForm';
+    });
+
+    $('#login').click(() => {
+        location.href = '/pLoginForm';
+    });
+
+
+    $('#write').click(() => {
+        location.href = "/bWriteForm";
+    });
+
+    $('#list').click(() => {
+        location.href = "/bList";
+    });
+
+    $('#resumeList').click(() => {
+        location.href = "/resume/list";
+    });
+
+</script>
+<script>
+    window.onpageshow = function (event) {
+        if (event.persisted) {
+            location.reload(); // 뒤로가기를 해도 페이지 새로고침하여 세션 유지
+        }
+    };
+</script>
+</html>

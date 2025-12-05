@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>문의 상세보기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 공통 헤더/푸터 스타일 -->
+    <link rel="stylesheet" href="/css/header-footer-parent.css">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+          rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #f5f6fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 메인 컨테이너 */
+        .detail-container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 30px 20px 80px;
+        }
+
+        .detail-title {
+            font-size: 22px;
+            color: #333;
+            border-bottom: 3px solid #76d7b2;
+            padding-bottom: 10px;
+            margin: 30px auto 20px auto;
+            text-align: center;
+            font-weight: bold;
+            width: 900px;
+        }
+
+        /* 문의 카드 */
+        .question-card {
+            width: 900px;
+            margin: 0 auto 20px auto;
+            background-color: #f9f9f9;
+            border-radius: 14px;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            padding: 20px 24px;
+        }
+
+        .q-header {
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .q-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .q-meta {
+            font-size: 0.9rem;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+        }
+
+        .q-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-category {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background-color: #e5f5ff;
+            color: #055160;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            background-color: #65a170; /* 완료 */
+        }
+
+        .badge-status.pending {
+            background-color: #f59e0b; /* 대기 */
+        }
+
+        .q-body-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 6px;
+        }
+
+        .q-body {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.6;
+            white-space: pre-line;
+            word-break: break-word;
+        }
+
+        /* 답변 영역 */
+        .answer-section {
+            width: 900px;
+            margin: 0 auto;
+            margin-top: 10px;
+        }
+
+        .answer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .answer-header h3 {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .answer-header span {
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        .answers-box {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 14px 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .answers-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .answer-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+            padding: 10px 12px;
+        }
+
+        .answer-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .answer-author {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .answer-date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .answer-content {
+            font-size: 0.9rem;
+            color: #444;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .answer-empty {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        /* 목록으로 버튼 */
+        .back-row {
+            width: 900px;
+            margin: 24px auto 0 auto;
+            text-align: right;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: white;
+            background-color: #0c92c7;
+            border-radius: 999px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: #006386;
+            transform: scale(1.03);
+        }
+
+        /* 퀵 메뉴 (myfaq와 동일) */
+        .quick-menu {
+            position: fixed;
+            bottom: -230px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 9999;
+            transform: matrix(1, 0, 0, 1, 0, -300);
+        }
+
+        .quick-item {
+            width: 90px;
+            background-color: #ff2630;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(255, 38, 48, 0.63);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .quick-item:hover {
+            transform: scale(1.05);
+        }
+
+        .quick-item img {
+            width: 50%;
+            height: 70%;
+            object-fit: cover;
+            padding-top: 10px;
+        }
+
+        .quick-item p {
+            margin: 0;
+            padding-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .quick-menu .top {
+            margin-top: 10px;
+            font-size: 14px;
+            color: slategrey;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .quick-menu .top:hover {
+            color: #e30613;
+        }
+
+        @media (max-width: 980px) {
+            .detail-title,
+            .question-card,
+            .answer-section,
+            .back-row {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- 헤더 (myfaq와 동일) -->
+<header>
+    <nav>
+        <ul>
+            <!-- 로그인된 경우 -->
+            <li th:if="${session.parentLoginId ne null}">
+                <a th:href="@{/parent/myInfoP/{pId}(pId=${session.parentLoginId})}">내 정보</a>
+            </li>
+            <li th:if="${session.parentLoginId ne null}">
+                <a th:href="@{/parent/myClassRequests/{pId}(pId=${session.parentLoginId})}">내 신청목록</a>
+            </li>
+            <li th:if="${session.parentLoginId ne null}">
+                <a href="/signup/form">상담신청</a>
+            </li>
+            <li th:if="${session.parentLoginId ne null}">
+                <a class="bWriteForm" href="/bWriteForm">문의</a>
+            </li>
+
+            <!-- 비로그인(게스트) 경우 -->
+            <li th:unless="${session.parentLoginId ne null}">
+                <a href="/parent/classRequest">학습신청</a>
+            </li>
+            <li th:unless="${session.parentLoginId ne null}">
+                <a href="/signup/form">상담신청</a>
+            </li>
+            <li th:unless="${session.parentLoginId ne null}">
+                <a class="bWriteForm" href="/bWriteForm">문의</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+
+    <div class="t-l-j">
+        <!-- 로그인되지 않은 경우 -->
+        <div class="auth-buttons" th:if="${session.parentLoginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+
+        <!-- 로그인된 경우 -->
+        <div th:if="${session.parentLoginId ne null}">
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.parentLoginId}"/>
+            <a th:href="@{/myChildP/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>
+            <a href="/pLogout" id="logout">로그아웃</a>
+        </div>
+    </div>
+</header>
+
+<!-- 메인 내용 -->
+<main class="detail-container">
+
+    <h3 class="detail-title">문의 상세보기</h3>
+
+    <!-- 문의 카드 -->
+    <section class="question-card">
+        <div class="q-header">
+            <div class="q-title" th:text="${board.qTitle}"></div>
+            <div class="q-meta">
+                <span>
+                    <i class="fa-regular fa-user"></i>
+                    <span th:text="${board.qWriter}"></span>
+                </span>
+                <span>
+                    <i class="fa-regular fa-calendar"></i>
+                    <span th:text="${#temporals.format(board.qDate, 'yyyy-MM-dd')}"></span>
+                </span>
+                <span>
+                    <span class="badge-category" th:text="${board.qCategory}"></span>
+                </span>
+                <span>
+                    <span class="badge-status"
+                          th:classappend="${board.qStatus} == '대기' ? ' pending' : ''"
+                          th:text="${board.qStatus}">
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <div>
+            <div class="q-body-label">문의 내용</div>
+            <div class="q-body" th:text="${board.qContents}"></div>
+        </div>
+    </section>
+
+    <!-- 답변 영역 -->
+    <section class="answer-section">
+        <div class="answer-header">
+            <h3>답변 내역</h3>
+            <span th:if="${answers.size() > 0}"
+                  th:text="'총 ' + ${answers.size()} + '개'"></span>
+            <span th:if="${answers.size() == 0}">등록된 답변이 없습니다.</span>
+        </div>
+
+        <div class="answers-box">
+            <ul th:if="${answers.size() > 0}" class="answers-list">
+                <li th:each="answer : ${answers}" class="answer-item">
+                    <div class="answer-meta">
+                        <span class="answer-author" th:text="${answer.aId}"></span>
+                        <span class="answer-date"
+                              th:text="${#temporals.format(answer.ansDate, 'yyyy-MM-dd')}"></span>
+                    </div>
+                    <div class="answer-content" th:text="${answer.ansContents}"></div>
+                </li>
+            </ul>
+            <p th:if="${answers.size() == 0}" class="answer-empty">현재 등록된 답변이 없습니다.</p>
+        </div>
+    </section>
+
+    <!-- 목록으로 돌아가기 -->
+    <div class="back-row">
+        <a th:href="@{/board/myfaq/{loginId}(loginId=${board.qWriter})}" class="back-btn">
+            목록으로 돌아가기
+        </a>
+    </div>
+
+</main>
+
+<!-- 퀵 메뉴 (myfaq와 동일) -->
+<div class="quick-menu">
+    <!-- 학습신청 -->
+    <div class="quick-item">
+        <a href="/parent/classRequest">
+            <img src="/File/학습신청.png" alt="학습신청">
+            <p>학습신청</p>
+        </a>
+    </div>
+
+    <!-- 채팅 -->
+    <div class="quick-item">
+        <a href="/chat">
+            <img src="/File/채팅.png" alt="채팅">
+            <p>채팅</p>
+        </a>
+    </div>
+
+    <!-- 상단 이동 -->
+    <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+
+<!-- 푸터 (myfaq와 동일) -->
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar">
+                        <i class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span>
+                    </a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar">
+                        <i class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span>
+                    </a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar">
+                        <i class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    $('#join').click(() => {
+        location.href = '/pJoinForm';
+    });
+
+    $('#login').click(() => {
+        location.href = '/pLoginForm';
+    });
+</script>
+
+</body>
+</html>

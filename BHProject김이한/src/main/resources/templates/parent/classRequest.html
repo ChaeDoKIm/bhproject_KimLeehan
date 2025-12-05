@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/header-footer-parent.css">
+    <link rel="stylesheet" href="/css/classRequest.css">
+    <link rel="stylesheet" href="/css/quickmenu.css">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <title>방학_Teacher & Application</title>
+</head>
+
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a class="classRequest" href="/parent/classRequest">학습신청</a></li>
+            <li><a href="/signup/form">상담신청</a></li>
+            <li><a href="/bWriteForm">문의</a></li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+    <div class="t-l-j">
+        <div class="auth-buttons" th:if="${session.parentLoginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+
+        <div th:if="${session.parentLoginId ne null}">
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.parentLoginId}"/>
+            <a th:href="@{/myChildP/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>
+            <a href="/pLogout" id="logout">로그아웃</a>
+        </div>
+    </div>
+</header>
+</header>
+
+<br><br><br>
+
+<div class="address-selector">
+    <div class="selector-header">
+        <div>시·도</div>
+        <div>시·군·구</div>
+        <div>동·읍·면</div>
+        <div>과목</div>
+        <div>학년</div>
+        <div>레벨</div>
+
+    </div>
+    <div class="selector-body">
+        <div class="selector-column" id="sidoColumn">
+            <ul id="sidoList"></ul>
+        </div>
+        <div class="selector-column" id="sigunguColumn">
+            <ul id="sigunguList"></ul>
+        </div>
+        <div class="selector-column" id="dongColumn">
+            <ul id="dongList"></ul>
+        </div>
+
+        <div class="selector-column" id="subColumn">
+            <ul id="subList">
+                <li value="국어">국어</li>
+                <li value="영어">영어</li>
+                <li value="수학">수학</li>
+            </ul>
+        </div>
+
+        <div class="selector-column" id="gradeColumn">
+            <ul id="gradeList">
+                <li value="초등학교">초등학교</li>
+                <li value="중학교">중학교</li>
+                <li value="고등학교">고등학교</li>
+            </ul>
+        </div>
+
+        <div class="selector-column" id="levelColumn">
+            <ul id="levelList">
+                <li value="초급">초급</li>
+                <li value="중급">중급</li>
+                <li value="심화">심화</li>
+            </ul>
+        </div>
+
+
+    </div>
+</div>
+
+<br><br><br>
+<div id="addressResult">
+    <p id="completeAddress"></p> <!-- 완성된 주소 출력 -->
+</div>
+
+<div id="teacherResult">
+    <br>
+    <h2> 우리 동네 선생님 </h2>
+    <br>
+    <ul id="teacherList">
+        <br>
+    </ul>
+</div>
+
+
+<div class="quick-menu" style="transform: matrix(1, 0, 0, 1, 0, -300);">
+
+    <!-- 학습신청 -->
+    <div class="quick-item">
+        <a href="/parent/classRequest">
+            <img src="/File/학습신청.png" alt="학습신청">
+            <p>학습신청</p>
+        </a>
+    </div>
+
+    <!-- 채팅 -->
+    <div class="quick-item">
+        <a href="/chat">
+            <!--        <a th:href="@{/chat/{pId}(pId=${session.parentLoginId})}">-->
+            <img src="/File/채팅.png" alt="채팅">
+            <p>채팅</p>
+        </a>
+    </div>
+
+    <!-- 상단 이동 -->
+    <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+
+    </div>
+</footer>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+
+
+<script>
+
+    // 로그인, 회원가입 등 기본 기능
+    let loginId = $("#loginId").val();
+
+    $('#parent').click(() => {
+        location.href = '/pView/' + loginId;
+    });
+
+    $('#logout').click(() => {
+        location.href = '/pLogout';
+    });
+
+    $('#join').click(() => {
+        location.href = '/pJoinForm';
+    });
+
+    $('#login').click(() => {
+        location.href = '/pLoginForm';
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const sidoList = document.getElementById("sidoList");
+        const sigunguList = document.getElementById("sigunguList");
+        const dongList = document.getElementById("dongList");
+        const subList = document.getElementById("subList");
+        const gradeList = document.getElementById("gradeList");
+        const levelList = document.getElementById("levelList");
+        const addressOutput = document.getElementById("completeAddress");
+        const teacherList = document.getElementById("teacherList");
+
+        let addressData = {}; // JSON 데이터를 저장할 변수
+        let selectedValues = {
+            sido: "",
+            sigungu: "",
+            dong: "",
+            subject: "",
+            grade: "",
+            level: ""
+        };
+
+        function updateSelected(list, selectedValue) {
+            Array.from(list.children).forEach(li => {
+                li.classList.remove("selected");
+                if (li.textContent === selectedValue) {
+                    li.classList.add("selected");
+                }
+            });
+        }
+
+        function fetchTeachers() {
+            const completeAddress = `${selectedValues.sido} ${selectedValues.sigungu} ${selectedValues.dong}`;
+            const params = new URLSearchParams({
+                address: completeAddress,
+                subject: selectedValues.subject,
+                grade: selectedValues.grade,
+                level: selectedValues.level
+            });
+
+            fetch(`/findTeachers?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    teacherList.innerHTML = "";
+
+                    if (data.length > 0) {
+                        data.forEach(teacher => {
+                            const card = document.createElement("div");
+                            card.className = "teacher-card";
+
+                            card.innerHTML = `
+                            <img src="/profile/${teacher.tprofileName || 'default.jpg'}" alt="${teacher.tname || '선생님'}의 프로필">
+                            <h3>${teacher.tname || '정보 없음'}_<span>${teacher.tsubject || '정보 없음'}</span></h3>
+                            <div class="teacher-info">
+                                <p><strong>휴무일:</strong> ${teacher.trestDay || '정보 없음'}</p>
+                                <p><strong>최종 학력:</strong> ${teacher.tedu || '정보 없음'}</p>
+                            </div>
+                        `;
+
+                            // 버튼을 카드 바깥에 생성
+                            const button = document.createElement("button");
+                            button.className = "details";
+                            button.dataset.tid = teacher.tid;
+                            button.textContent = "신청하기";
+
+                            // 카드와 버튼을 하나의 래퍼(div)로 감쌈
+                            const wrapper = document.createElement("div");
+                            wrapper.className = "teacher-wrapper";
+                            wrapper.appendChild(card);
+                            wrapper.appendChild(button);
+
+                            teacherList.appendChild(wrapper);
+                        });
+
+                    } else {
+                        teacherList.innerHTML = "<p>해당 조건에 맞는 선생님이 없습니다.</p>";
+                    }
+
+                })
+                .catch(error => {
+                    console.error("Error fetching teachers:", error.message);
+                    teacherList.innerHTML = `<p>오류: ${error.message}</p>`;
+                });
+        }
+
+        // 각 리스트에서 선택 이벤트 처리
+        subList.addEventListener("click", (event) => {
+            if (event.target.tagName === "LI") {
+                selectedValues.subject = event.target.textContent;
+                updateSelected(subList, event.target.textContent);
+                fetchTeachers();
+            }
+        });
+
+        gradeList.addEventListener("click", (event) => {
+            if (event.target.tagName === "LI") {
+                selectedValues.grade = event.target.textContent;
+                updateSelected(gradeList, event.target.textContent);
+                fetchTeachers();
+            }
+        });
+
+        levelList.addEventListener("click", (event) => {
+            if (event.target.tagName === "LI") {
+                selectedValues.level = event.target.textContent;
+                updateSelected(levelList, event.target.textContent);
+                fetchTeachers();
+            }
+        });
+
+        fetch('/json/address_step.json')
+            .then(response => response.json())
+            .then(data => {
+                addressData = data;
+                populateSido(); // 시·도 초기화
+            })
+            .catch(error => console.error('JSON 로드 오류:', error));
+
+        function populateSido() {
+            for (let sido in addressData) {
+                const li = document.createElement("li");
+                li.textContent = sido;
+                li.addEventListener("click", () => {
+                    selectSido(sido);
+                });
+                sidoList.appendChild(li);
+            }
+        }
+
+        function selectSido(sido) {
+            selectedValues.sido = sido;
+            updateSelected(sidoList, sido);
+            sigunguList.innerHTML = "";
+            dongList.innerHTML = "";
+            addressOutput.textContent = ""; // 주소 초기화
+
+            for (let sigungu in addressData[sido]) {
+                const li = document.createElement("li");
+                li.textContent = sigungu;
+                li.addEventListener("click", () => {
+                    selectSigungu(sido, sigungu);
+                });
+                sigunguList.appendChild(li);
+            }
+        }
+
+        function selectSigungu(sido, sigungu) {
+            selectedValues.sigungu = sigungu;
+            updateSelected(sigunguList, sigungu);
+            dongList.innerHTML = "";
+
+            addressData[sido][sigungu].forEach(dong => {
+                const li = document.createElement("li");
+                li.textContent = dong;
+                li.addEventListener("click", () => {
+                    selectDong(sido, sigungu, dong);
+                });
+                dongList.appendChild(li);
+            });
+        }
+
+        function selectDong(sido, sigungu, dong) {
+            selectedValues.dong = dong;
+            updateSelected(dongList, dong);
+            const completeAddress = `${sido} ${sigungu} ${dong}`;
+            addressOutput.textContent = `선택 주소: ${completeAddress}`;
+            fetchTeachers(); // 변경 즉시 반영
+        }
+    });
+
+    $(document).ready(() => {
+        $(document).on("click", ".details", function () {
+            const loginId = $("#loginId").val(); // 로그인 여부 확인
+
+            if (!loginId) {
+                // 로그인되지 않은 경우
+                alert("로그인 후 이용 가능합니다.");
+                location.href = "/pLoginForm";
+                return;
+            }
+
+            const tid = $(this).data("tid"); // 버튼의 데이터 속성에서 tId 가져오기
+            if (tid) {
+                // 로그인되어 있는 경우
+                location.href = `/parent/teacherInfo/${tid}`;
+            } else {
+                console.error("tId is undefined or null");
+            }
+        });
+    });
+</script>
+</body>
+</html>

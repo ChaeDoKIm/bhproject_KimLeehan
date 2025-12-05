@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+    <title>자격 인증 관리</title>
+
+    <style>
+        /* Reset & 기본 폰트 (관리자 메인과 통일) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f6fa;
+            --card: #ffffff;
+            --border: #e5e7eb;
+            --primary: #111827;
+            --muted: #9ca3af;
+            --accent: #34a853;
+            --danger: #e63946;
+            --warning: #f39c12;
+            --success: #10b981;
+            --rowAlt: #f9fafb;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+            color: #1f1f1f;
+        }
+
+        /* 관리자 카드 쉘 (admin-shell과 동일 컨셉) */
+        .admin-shell {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            padding: 24px 24px 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 헤더 */
+        .admin-header {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .console-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6b7280;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .page-subtext {
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        /* 섹션 헤더 */
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: -0.03em;
+        }
+        .section-header p {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* 테이블 래퍼 */
+        .table-wrap {
+            margin-top: 8px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            table-layout: fixed;
+        }
+
+        .styled-table thead th {
+            background: linear-gradient(90deg, #0f4c75, #3282b8);
+            color: #ffffff;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.8rem;
+        }
+
+        .styled-table tbody td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            color: #111827;
+            word-break: break-word;
+        }
+
+        .styled-table tbody tr:nth-child(even) {
+            background-color: var(--rowAlt);
+        }
+
+        .styled-table tbody tr:hover {
+            background-color: #e8f4ff;
+            transition: background-color 0.15s ease;
+        }
+
+        /* 링크 스타일 (교사/자격증 상세) */
+        .link {
+            color: #0f4c75;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        /* 상태 배지 */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .badge.success {
+            background-color: #ecfdf5;
+            color: #047857;
+            border-color: #bbf7d0;
+        }
+        .badge.warning {
+            background-color: #fffbeb;
+            color: #92400e;
+            border-color: #fed7aa;
+        }
+        .badge.danger {
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+        .badge.neutral {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border-color: #e5e7eb;
+        }
+
+        /* 삭제 버튼 */
+        .btn {
+            appearance: none;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #111827;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: #d62839;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            filter: brightness(0.97);
+        }
+
+        /* 모바일 반응형 (작은 화면에서 카드형) */
+        @media (max-width: 720px) {
+            .admin-shell {
+                border-radius: 0;
+                max-width: 100%;
+                min-height: 100vh;
+                box-shadow: none;
+            }
+
+            .styled-table thead {
+                display: none;
+            }
+            .styled-table, .styled-table tbody,
+            .styled-table tr, .styled-table td {
+                display: block;
+                width: 100%;
+            }
+            .styled-table tr {
+                border-bottom: 1px solid var(--border);
+                padding: 8px 12px;
+            }
+            .styled-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                border-bottom: none;
+            }
+            .styled-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--muted);
+                font-size: 0.75rem;
+            }
+        }
+
+        /* 관리자 메인이동  하단 버튼 영역 (필요하면 사용) */
+        .footer-row {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            appearance: none;
+            border-radius: 999px;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: #111827;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            border-color: #34a853;
+            color: #34a853;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+            transform: translateY(-1px);
+        }
+
+
+    </style>
+</head>
+
+<body>
+<div class="admin-shell">
+    <!-- 상단 헤더 (관리자 메인과 동일 스타일) -->
+    <header class="admin-header">
+        <div class="console-label">Admin Console · Teacher</div>
+        <div class="page-title">
+            <div>자격 인증 관리</div>
+        </div>
+        <div class="page-subtext">
+            선생님이 업로드한 자격증 및 증빙 서류 목록입니다. 상태를 확인하고 필요 시 삭제할 수 있습니다.
+        </div>
+    </header>
+
+    <!-- 섹션 헤더 -->
+    <div class="section-header">
+        <h2>자격증 목록</h2>
+        <p>선생님 ID를 통해 상세 프로필을 확인하고, 개별 자격증 내역을 검토할 수 있습니다.</p>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-wrap">
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th style="width: 18%">선생님 ID</th>
+                <th style="width: 26%">자격증 종류</th>
+                <th style="width: 26%">자격증 증명</th>
+                <th style="width: 14%">확인 상태</th>
+                <th style="width: 16%">관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="spec : ${specList}"
+                class="row-spec"
+                th:data-tsid="${spec.tSid}"
+                th:data-status="${spec.specStatus}">
+                <td data-label="선생님 ID">
+                    <a class="link"
+                       th:href="@{/tView/{tId}(tId=${spec.tId})}"
+                       th:text="${spec.tId}"></a>
+                </td>
+                <td data-label="자격증 종류">
+                    <a class="link"
+                       th:href="@{/tViewSpec/{tSid}(tSid=${spec.tSid})}"
+                       th:text="${spec.specName}"></a>
+                </td>
+                <!-- 자격증 증명 텍스트/파일명 컬럼 (필드명은 프로젝트에 맞게 수정 가능) -->
+                <td data-label="자격증 증명"
+                    th:text="${spec.specProof}">-</td>
+
+                <!-- 상태 배지 -->
+                <td data-label="확인 상태">
+          <span class="badge neutral js-badge"
+                th:text="${spec.specStatus}">대기</span>
+                </td>
+
+                <!-- 삭제 버튼 -->
+                <td data-label="관리">
+                    <button type="button"
+                            class="btn btn-danger btn-delete">
+                        삭제
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer-row">
+        <button type="button" class="btn" onclick="location.href='/admin/main'">
+            관리자 메인으로
+        </button>
+    </div>
+
+
+
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    // 상태 텍스트에 따라 배지 색상 적용
+    function applyStatusBadges() {
+        $('.row-spec').each(function () {
+            const status = (($(this).data('status') || '') + '').trim();
+            const $badge = $(this).find('.js-badge');
+            $badge.removeClass('success warning danger neutral');
+
+            if (/승인|완료|확인/i.test(status)) {
+                $badge.addClass('success');
+            } else if (/반려|거절|거부/i.test(status)) {
+                $badge.addClass('danger');
+            } else if (/대기|검토|보류/i.test(status)) {
+                $badge.addClass('warning');
+            } else {
+                $badge.addClass('neutral');
+            }
+        });
+    }
+
+    // 삭제 버튼 (이벤트 위임)
+    $(document).on('click', '.btn-delete', function () {
+        const $row = $(this).closest('.row-spec');
+        const tSid = $row.data('tsid');
+        const teacherId = $row.find('td:first .link').text();
+
+        if (!tSid) {
+            alert('대상 정보를 찾을 수 없습니다.');
+            return;
+        }
+
+        if (!confirm(`정말 삭제하시겠습니까?\n\n선생님 ID: ${teacherId}\n자격증 ID: ${tSid}`)) {
+            return;
+        }
+
+        $.ajax({
+            url: '/teacher/spec/delete',
+            type: 'POST',
+            data: { tSid: tSid },
+            success: function (data) {
+                if (data && data.result === 'success') {
+                    alert('삭제되었습니다.');
+                    location.reload();
+                } else {
+                    alert('삭제에 실패했습니다.');
+                }
+            },
+            error: function () {
+                alert('서버 통신 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 초기 적용
+    $(function () {
+        applyStatusBadges();
+    });
+</script>
+</body>
+</html>

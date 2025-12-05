@@ -1,0 +1,665 @@
+<link href="https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<link href="https://getbootstrap.com/docs/5.3/examples/sidebars/sidebars.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=40d5056e180df9ff3ab13dbcdc86d40f"></script>
+
+
+<!--<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>-->
+
+<main class="d-flex flex-nowrap">
+    <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary border border-r-1"
+         style="width: 380px;">
+        <div
+                class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="#4ae39c" viewBox="0 0 256 256"
+                 class="me-2">
+                <path d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"></path>
+            </svg>
+            <span class="fs-5 fw-semibold">경로 최적화 결과</span>
+        </div>
+
+        <div class="d-flex flex-column p-3">
+            <div class="mb-3">
+                <label for="teacherIdInput" class="form-label">선생님 ID</label>
+                <input type="text" id="teacherIdInput" class="form-control" placeholder="선생님 ID를 입력하세요">
+            </div>
+            <div class="mb-3">
+                <label for="daySelect" class="form-label">요일 선택</label>
+                <select id="daySelect" class="form-select">
+                    <option value="월요일">월요일</option>
+                    <option value="화요일">화요일</option>
+                    <option value="수요일">수요일</option>
+                    <option value="목요일">목요일</option>
+                    <option value="금요일">금요일</option>
+                    <option value="토요일">토요일</option>
+                    <option value="일요일">일요일</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="searchTeacherByDay()">검색</button>
+            <br>
+            <button type="button" class="btn btn-danger w-100" onclick="clearAllData()">초기화</button>
+        </div>
+
+        <div class="d-flex flex-wrap py-3 px-2 gap-3 align-items-center justify-content-center border-bottom">
+            <div class="d-flex flex-column align-items-center">
+                <div id="totalVisit">0곳</div>
+                <div class="fw-light" style="font-size:.75rem">경유지</div>
+            </div>
+            <div class="border-start border-2 h-50"></div>
+            <div class="d-flex flex-column align-items-center">
+                <div id="totalDistance">0km</div>
+                <div class="fw-light" style="font-size:.75rem">이동거리</div>
+            </div>
+            <div class="border-start border-2 h-50"></div>
+            <div class="d-flex flex-column align-items-center">
+                <div id="totalDuration">0분</div>
+                <div class="fw-light" style="font-size:.75rem">이동시간</div>
+            </div>
+        </div>
+        <div class="list-group scrollarea px-3 flex-grow-1" id="nodeList">
+            <!-- 경로 최적화 결과 표시 -->
+        </div>
+        <div class="d-flex align-items-center justify-content-center p-3">
+            <button type="button" class="btn btn-dark w-100" onclick="goVrp();">경로 최적화</button>
+            &nbsp;
+            <button type="button" class="btn btn-dark w-100" onclick="saveSchedule()">일정 저장</button>
+        </div>
+    </div>
+<!--    <div id="map" class="w-100"></div>-->
+
+<!--    <div id="map" style="width:100%;height:100px; "></div>-->
+
+    <!-- 지도 컨테이너 (항상 보이게) -->
+    <div id="map" class="position-fixed top-0 start-0 w-100" style="height:100vh; z-index:0;"></div>
+    <!--<div class="w-100 h-100 fixed-top justify-content-center align-items-center bg-opacity-10 bg-success" id="spin"-->
+    <!--     style="display:none;">-->
+
+</main>
+<!--<div class="w-100 h-100 fixed-top justify-content-center align-items-center bg-opacity-10 bg-success" id="spin"-->
+<!--     style="display:none;">-->
+
+    <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+
+</div>
+<script>
+    // var mapContainer = document.getElementById('map') // 지도를 표시할 div
+    // mapOption = {
+    //     center: new kakao.maps.LatLng(37.4388938204128, 126.675113024566), // 지도의 중심좌표(인천일보아카데미)
+    //     level: 3 // 지도의 확대 레벨
+    // };
+    //
+    // var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+    // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+
+
+    function spinOn() {
+        $("#spin").addClass("d-flex");
+    }
+
+    function spinOff() {
+        $("#spin").removeClass("d-flex");
+    }
+
+
+    // ajax 응답 받은 데이터-> 화면
+
+    // Node 데이터를 저장하는 전역 변수
+    const NODE_MAP = {};// 전역 객체로 node 데이터를 저장
+    const MARKER_MAP = {};
+    const INFO_MAP = {};
+
+    function displayData(data) {
+        clearNode();
+        const totalDistance = data.totalDistance;// 전체이동거리(미터)
+        const totalDuration = data.totalDuration;// 전체이동시간(초)
+        const totalPathPointList = data.totalPathPointList;// // 전체이동경로
+        const totalWaitTime = data.totalWaitTime; // 총 수업 시간 (초)
+        const nodeList = data.nodeList;// // 방문지목록
+
+        $("#totalVisit").text(nodeList.length + "곳");
+        $("#totalDistance").text((totalDistance / 1000).toFixed(2) + "km");
+        $("#totalDuration").text(secondsToHoursMinutes(totalDuration));
+        $("#totalWaitTime").text(secondsToHoursMinutes(totalWaitTime)); // 수업 시간 (3600초 = 1시간)
+
+        drawPath(totalPathPointList);
+
+        if (nodeList.length > 0) {
+            map.setBounds(bounds);
+        }
+        $("#nodeList").html(html);
+        spinOff();
+    }
+
+
+    function secondsToHoursMinutes(seconds) {
+        // 시간으로 변환
+        const hours = Math.floor(seconds / 3600);
+        // 남은 분 계산
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        // 시간과 분을 "00" 형식으로 변환. 시간이 0일 경우, 시간 표시 생략
+        const formattedHours = hours > 0 ? `${hours.toString().padStart(2, '0')}시간 ` : '';
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+
+        return `${formattedHours}${formattedMinutes}분`;
+    }
+
+
+    function drawMarker(node, bounds, labelText) {
+        if (!node || !node.x || !node.y) {
+            console.error("Node 데이터가 유효하지 않습니다:", node);
+            return; // 유효하지 않은 노드 데이터는 무시
+        }
+
+        if (!bounds || typeof bounds.extend !== "function") {
+            console.error("Bounds 객체가 유효하지 않습니다:", bounds);
+            return; // bounds가 유효하지 않을 경우 처리
+        }
+
+        const position = new kakao.maps.LatLng(node.y, node.x);
+        bounds.extend(position);
+
+        // 마커 생성
+        const marker = new kakao.maps.Marker({
+            position: position,
+            clickable: true,
+        });
+        marker.setMap(map);
+
+        // 순서 또는 출발 표시용 커스텀 오버레이 생성
+        const overlayContent = `
+        <div style="background-color: #ffffff; border: 1px solid #333; border-radius: 20px; padding: 2px 6px; font-size: 12px; font-weight: bold; text-align: center;">
+            ${labelText}
+        </div>
+    `;
+
+        // 순서 또는 출발 표시용 커스텀 오버레이 생성 (labelText가 있을 때만 생성)
+        if (labelText) {
+            const overlayContent = `
+        <div style="
+            background-color: #ffebcd;
+            color: #333;
+            border: 2px solid red;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transform: scale(1);
+            transition: transform 0.2s ease-in-out;
+            animation: bounce 1s infinite;
+        ">
+            ${labelText}
+        </div>
+        <style>
+            @keyframes bounce {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-5px);
+                }
+            }
+
+        </style>
+    `;
+            const customOverlay = new kakao.maps.CustomOverlay({
+                content: overlayContent,
+                position: position,
+                xAnchor: 0.5, // 가로 중앙에 배치
+                yAnchor: 2.7, // 마커 위에 배치
+            });
+            customOverlay.setMap(map);
+        }
+
+        // 기본값 설정
+        const name = node.name || "이름 없음";
+        const phone = node.phone || "전화번호 없음";
+        const address = node.address || "주소 없음";
+
+        // 인포윈도우 생성
+        const infowindow = new kakao.maps.InfoWindow({
+            content: `<div style="padding:5px;">${name}<br/>${phone}<br/>${address}<br/></div>`,
+            removable: true,
+        });
+
+        // 마커 및 오버레이 저장
+        MARKER_MAP[node.id] = marker;
+        INFO_MAP[node.id] = infowindow;
+
+        // 마커 클릭 이벤트
+        kakao.maps.event.addListener(marker, 'click', function () {
+            infowindow.open(map, marker);
+        });
+    }
+
+    var POLYLINE = null;
+
+    function drawPath(pathPointList) {
+        if (pathPointList.length > 0) {
+            // 선을 구성하는 좌표 배열. 이 좌표들을 이어서 선을 표시
+            var linePath = [];
+            for (var point of pathPointList) {
+                linePath.push(new kakao.maps.LatLng(point.y, point.x));
+            }
+
+            // 지도에 표시할 선을 생성합니다
+            POLYLINE = new kakao.maps.Polyline({
+                path: linePath, // 선을 구성하는 좌표배열
+                strokeWeight: 5, // 선의 두께
+                strokeColor: 'red', // 선의 색깔
+                strokeOpacity: 0.7, // 선의 불투명도 // 1에서 0 사이의 값이며 0에 가까울수록 투명
+                strokeStyle: 'solid' // 선의 스타일
+            });
+            // 지도에 선을 표시
+            POLYLINE.setMap(map);
+        }
+    }
+
+    function panTo(nodeId) {
+        clearInfoWindow();
+        const node = NODE_MAP[nodeId];
+        INFO_MAP[nodeId].open(map, MARKER_MAP[nodeId]);
+        // 이동할 위도 경도 위치를 생성
+        var moveLatLon = new kakao.maps.LatLng(node.y, node.x);
+
+        // 지도 중심을 부드럽게 이동
+        // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동
+        map.panTo(moveLatLon);
+    }
+
+    function clearInfoWindow() {
+        for (const nodeId in INFO_MAP) {
+            INFO_MAP[nodeId].close();
+        }
+    }
+
+    function clearNode() {
+        for (const nodeId in NODE_MAP) {
+            MARKER_MAP[nodeId].setMap(null);
+            MARKER_MAP[nodeId] = null;
+            INFO_MAP[nodeId].close();
+            INFO_MAP[nodeId] = null;
+            delete MARKER_MAP[nodeId];
+            delete INFO_MAP[nodeId];
+            delete NODE_MAP[nodeId];
+        }
+        if (POLYLINE) {
+            POLYLINE.setMap(null);
+            POLYLINE = null;
+        }
+    }
+
+    function searchTeacherByDay() {
+        const tId = $("#teacherIdInput").val(); // 선생님 ID 입력값
+        const day = $("#daySelect").val(); // 선택된 요일
+
+        if (!tId) {
+            alert("선생님 ID를 입력하세요.");
+            return;
+        }
+
+        if (!day) {
+            alert("요일을 선택하세요.");
+            return;
+        }
+
+        clearAllData();
+        spinOn();
+
+        $.ajax({
+            url: '/teacherTest', // 서버 API 호출
+            data: {tId: tId, day: day}, // 선생님 ID와 요일 전달
+            success: function (result) {
+                if (result.code !== 'SUCC') {
+                    alert("데이터 검색에 실패했습니다.");
+                    spinOff();
+                    return;
+                }
+
+                const data = result.data || {};
+                const nodeList = data.nodeList || []; // 방문지 목록
+                const totalVisit = nodeList.length || 0; // 총 경유지 수
+                const totalDistance = (data.totalDistance / 1000).toFixed(2); // km로 변환
+                const totalDuration = secondsToHoursMinutes(data.totalDuration || 0);
+
+
+
+                // 인천시청역을 수동으로 추가
+                const startNode = {
+                    id: 0, // ID
+                    name: "인천시청역",
+                    address: "인천 남동구 남동대로 709",
+                    x: 126.7052806, // 경도
+                    y: 37.4565549, // 위도
+                    phone: "032-123-4567"
+                };
+
+                nodeList.unshift(startNode); // 리스트의 맨 앞에 추가
+
+                // 경유지 개수 업데이트
+                $("#totalVisit").text(`${totalVisit}곳`);
+
+                // 거리와 시간 업데이트
+                $("#totalDistance").text(`${totalDistance} km`);
+                $("#totalDuration").text(`${totalDuration}`);
+
+                selectedStudentIds = nodeList.map(node => node.sId); // 학생 ID 저장
+                // NodeList 표시
+                displayNodeList(nodeList);
+                spinOff();
+
+                selectedTeacherId = tId; // 검색한 선생님 ID 저장
+                console.log("검색된 선생님 ID:", selectedTeacherId);
+                console.log("노드리스트 확인: ", nodeList);
+            },
+            error: function () {
+                alert("데이터 검색에 실패했습니다.");
+                spinOff();
+            }
+        });
+    }
+
+    function goVrp() {
+        spinOn(); // 로딩 표시 활성화
+
+        const nodes = Object.values(NODE_MAP);
+        console.log("NODE_MAP에서 nodes로 저장한 데이터 확인: ", nodes);
+
+        if (!nodes || nodes.length === 0) {
+            alert("경로 최적화에 필요한 데이터가 없습니다. 검색을 먼저 실행하세요.");
+            spinOff();
+            return;
+        }
+
+        $.ajax({
+            url: '/vrp', // 경로 최적화 API 호출
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(nodes), // NODE_MAP 데이터를 JSON으로 변환하여 전송
+            success: function (response) {
+                if (response.code !== 'SUCC') {
+                    alert("경로 최적화에 실패했습니다.");
+                    spinOff();
+                    return;
+                }
+                // 최적화 결과 저장
+                optimizedRouteData = response.data; // 최적화된 결과를 전역 변수에 저장
+                console.log("최적화된 경로 데이터:", optimizedRouteData);
+
+                displayOptimizedRoute(response.data); // 경로 데이터를 UI에 표시
+                spinOff();
+            },
+            error: function () {
+                alert("경로 최적화에 실패했습니다.");
+                spinOff();
+            }
+        });
+    }
+
+    function displayNodeList(nodeList) {
+        clearNode();
+
+        // NODE_MAP 초기화
+        Object.keys(NODE_MAP).forEach(key => delete NODE_MAP[key]);
+
+        if (!nodeList || nodeList.length === 0) {
+            console.warn("노드 데이터가 비어 있습니다.");
+            $("#nodeList").html("<div>데이터가 없습니다.</div>");
+            return;
+        }
+
+        let html = '';
+        const bounds = new kakao.maps.LatLngBounds(); // 지도 경계 초기화
+
+        // 출발지 표시
+        const startNode = nodeList[0]; // 첫 번째 노드를 출발지로 설정
+        if (startNode && startNode.x && startNode.y) {
+            NODE_MAP[startNode.id] = startNode; // NODE_MAP에 저장
+            html += `
+        <a class="list-group-item list-group-item-action py-3 lh-sm mt-3 border rounded-2 bg-secondary text-white">
+            <div class="d-flex w-100 align-items-center justify-content-start mb-1">
+                <strong class="ms-1">출발지: ${startNode.address || "주소 없음"}</strong>
+            </div>
+            <div class="mt-3 small">
+                <div class="d-flex align-items-center"><span class="badge bg-light text-dark border me-2">이름</span> ${startNode.name || "이름 없음"}</div>
+            </div>
+        </a>`;
+            drawMarker(startNode, bounds);
+        }
+
+        // 경유지 표시
+        nodeList.slice(1).forEach((node, index) => { // 출발지를 제외한 나머지 노드 처리
+            if (!node || !node.address || !node.x || !node.y) {
+                console.warn("유효하지 않은 노드 데이터:", node);
+                return;
+            }
+
+            NODE_MAP[node.id] = node; // NODE_MAP에 저장
+            html += `
+        <a href="javascript:panTo(${node.id});" class="list-group-item list-group-item-action py-3 lh-sm mt-3 border rounded-2">
+            <div class="d-flex w-100 align-items-center justify-content-start mb-1">
+                <span class="badge text-bg-secondary">${index + 1}</span>
+                <strong class="ms-1">${node.address}</strong>
+            </div>
+            <div class="mt-3 small">
+                <div class="d-flex align-items-center"><span class="badge text-bg-light border me-2">이름</span> ${node.name || "이름 없음"}</div>
+            </div>
+        </a>`;
+            drawMarker(node, bounds);
+        });
+
+        $("#nodeList").html(html);
+
+        if (nodeList.length > 0) {
+            map.setBounds(bounds); // 지도 경계 조정
+        }
+    }
+
+    // 경로 최적화
+    function displayOptimizedRoute(data) {
+        clearNode();
+        console.log("최적화된 결과:", data);
+
+        if (!data || !data.nodeList || data.nodeList.length === 0) {
+            alert("최적화 결과가 없습니다.");
+            spinOff();
+            return;
+        }
+
+        const totalDistance = data.totalDistance || 0;
+        const totalDuration = data.totalDuration || 0;
+        const nodeList = data.nodeList || [];
+        const totalPathPointList = data.totalPathPointList || [];
+
+        const startNode = nodeList[0]; // 출발지
+        const remainingNodes = nodeList.slice(1); // 경유지
+
+        // UI 업데이트
+        $("#totalVisit").text(`${remainingNodes.length} 곳`); // 경유지 개수만 표시
+        $("#totalDistance").text(`${(totalDistance / 1000).toFixed(2)} km`);
+        $("#totalDuration").text(secondsToHoursMinutes(totalDuration));
+
+        let html = '';
+        const bounds = new kakao.maps.LatLngBounds();
+
+        // 출발지 표시
+        if (startNode) {
+            html += `
+        <a class="list-group-item list-group-item-action py-3 lh-sm mt-3 border rounded-2 bg-secondary text-white">
+            <div class="d-flex w-100 align-items-center justify-content-start mb-1">
+                <strong class="ms-1">출발지: ${startNode.address || "주소 없음"}</strong>
+            </div>
+            <div class="mt-3 small">
+                <div class="d-flex align-items-center"><span class="badge bg-light text-dark border me-2">이름</span> ${startNode.name || "이름 없음"}</div>
+            </div>
+        </a>`;
+            drawMarker(startNode, bounds, "출발"); // 출발지에는 "출발" 표시
+        }
+
+        // 경유지 표시
+        remainingNodes.forEach((node, index) => {
+            const name = node.name || "이름 없음";
+            const address = node.address || "주소 없음";
+            const classReq = node.phone || "학습 신청 번호 불러오기 실패";
+
+            html += `
+        <a href="javascript:panTo(${node.id});" class="list-group-item list-group-item-action py-3 lh-sm mt-3 border rounded-2">
+            <div class="d-flex w-100 align-items-center justify-content-start mb-1">
+                <span class="badge text-bg-secondary">${index + 1}</span>
+                <strong class="ms-1">${address}</strong>
+            </div>
+            <div class="mt-3 small">
+                <div class="d-flex align-items-center"><span class="badge text-bg-light border me-2">이름</span> ${name}</div>
+                <div class="d-flex align-items-center"><span class="badge text-bg-light border me-2">학습신청 번호</span> ${classReq}</div>
+            </div>
+        </a>`;
+            drawMarker(node, bounds, index + 1); // 경유지는 1부터 순서 표시
+        });
+
+        $("#nodeList").html(html);
+
+        // 최적화된 경로 표시
+        if (totalPathPointList.length > 0) {
+            drawPath(totalPathPointList);
+        }
+
+        // 지도 범위 조정
+        if (nodeList.length > 0) {
+            map.setBounds(bounds);
+        }
+
+        spinOff();
+    }
+
+    // 일정 저장
+    async function saveSchedule() {
+        if (!selectedTeacherId) {
+            alert("선생님을 먼저 검색하세요.");
+            return;
+        }
+
+        if (!optimizedRouteData || !optimizedRouteData.nodeList) {
+            alert("최적화된 경로 데이터가 없습니다. 경로 최적화를 먼저 실행하세요.");
+            return;
+        }
+
+        const nodeList = optimizedRouteData.nodeList;
+
+        // 시작 시간 배열과 지속 시간(분)
+        const startTimes = ["13:00", "15:00", "17:00", "21:30"]; // 시작 시간 배열
+        const durations = [90, 90, 90, 90]; // 각 수업의 지속 시간(분)
+
+        // 상위 4개의 장소와 sId 매핑 (순서대로 추출)
+        const topPlaces = nodeList.slice(1, 5).map((node, index) => {
+            const [startHour, startMinute] = startTimes[index].split(":").map(Number); // 시작 시간 분리
+            const startDate = new Date(); // 오늘 날짜 기준
+            startDate.setHours(startHour, startMinute, 0, 0); // 시작 시간 설정
+
+            const endDate = new Date(startDate); // 시작 시간을 기반으로 종료 시간 계산
+            endDate.setMinutes(startDate.getMinutes() + durations[index]); // 종료 시간 설정
+
+            return {
+                address: node.address || "주소 없음", // 장소
+                sId: node.name || null, // 학생 ID
+                clReqId: node.phone || null,
+                planOrder: index + 1, // 순서 (1부터 시작)
+                startTime: `${startDate.getHours().toString().padStart(2, "0")}:${startDate.getMinutes().toString().padStart(2, "0")}`, // 시작 시간
+                endTime: `${endDate.getHours().toString().padStart(2, "0")}:${endDate.getMinutes().toString().padStart(2, "0")}`, // 종료 시간
+            };
+        });
+
+        // 각 장소를 순차적으로 저장
+        for (const place of topPlaces) {
+            const scheduleData = {
+                tId: $("#teacherIdInput").val(), // 선생님 ID
+                planDay: $("#daySelect").val(), // 요일
+                planPlace: place.address, // 장소
+                sId: parseInt(place.sId), // 학생 ID
+                clReqId: parseInt(place.clReqId), // 학습신청 ID
+                planStartTime: place.startTime, // 시작 시간
+                planEndTime: place.endTime, // 종료 시간
+                planOrder: place.planOrder, // 순서
+                planStatus: "검토중", // 상태
+            };
+
+            console.log("저장 데이터:", scheduleData);
+
+            try {
+                const response = await $.ajax({
+                    url: `/saveSchedule?tId=${encodeURIComponent(scheduleData.tId)}&sId=${encodeURIComponent(scheduleData.sId)}&clReqId=${encodeURIComponent(scheduleData.clReqId)}`,
+                    // url: `/saveSchedule`,
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(scheduleData),
+                });
+
+                if (response.code === "SUCC") {
+
+                    console.log(`일정 저장 성공 (순서 ${scheduleData.planOrder}):`, response.message);
+                } else {
+                    console.error(`일정 저장 실패 (순서 ${scheduleData.planOrder}):`, response.message);
+                }
+            } catch (error) {
+                console.error("AJAX 오류:", error);
+                alert(`서버와의 통신 중 오류가 발생했습니다. (순서 ${scheduleData.planOrder})`);
+            }
+        }
+        alert("모든 일정이 순서대로 저장되었습니다.");
+
+    }
+
+    // 지도 및 데이터 초기화 함수
+    function clearAllData() {
+        // 마커 초기화
+        Object.values(MARKER_MAP).forEach(marker => {
+            if (marker) {
+                marker.setMap(null); // 지도에서 마커 제거
+            }
+        });
+        // 지도 위 오버레이와 라인 초기화
+        if (POLYLINE) {
+            POLYLINE.setMap(null);
+            POLYLINE = null;
+        }
+        // 데이터 맵 초기화
+        Object.keys(NODE_MAP).forEach(key => delete NODE_MAP[key]);
+        Object.keys(MARKER_MAP).forEach(key => delete MARKER_MAP[key]);
+        Object.keys(INFO_MAP).forEach(key => delete INFO_MAP[key]);
+
+        // UI 데이터 초기화
+        $("#nodeList").html("<div>경로 데이터가 없습니다.</div>");
+        $("#totalVisit").text("0곳");
+        $("#totalDistance").text("0km");
+        $("#totalDuration").text("0분");
+        $("#totalWaitTime").text("0시간");
+
+        // 지도 중심 재설정
+        map.setCenter(new kakao.maps.LatLng(37.4388938204128, 126.675113024566));
+        map.setLevel(3);
+    }
+
+</script>
+
+

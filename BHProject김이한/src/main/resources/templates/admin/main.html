@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+
+
+    <title>관리자 페이지</title>
+
+    <style>
+        /* --------------------
+           Reset & Typography
+        -------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f5f6fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+            color: #1f1f1f;
+        }
+
+        /* --------------------
+           Layout Card
+        -------------------- */
+        .admin-shell {
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            padding: 24px 24px 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --------------------
+           Header / Title
+        -------------------- */
+        .admin-header {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .console-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6b7280;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .page-subtext {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        /* --------------------
+           Top Tabs (회원 관리 / 문의 관리 ...)
+        -------------------- */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .tab-button {
+            position: relative;
+            background: none;
+            border: 0;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            line-height: 1.2;
+            transition: color 0.15s ease;
+        }
+
+        .tab-button.active {
+            color: #111827;
+        }
+
+        .tab-button.active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -1px;
+            height: 3px;
+            border-radius: 2px;
+            background-color: #34a853; /* 초록 인디케이터 */
+        }
+
+        /* --------------------
+           Tab Content Wrapper
+        -------------------- */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --------------------
+           subsection header (ex. 회원 관리)
+        -------------------- */
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            line-height: 1.3;
+            letter-spacing: -0.03em;
+        }
+
+        .section-header p {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        /* --------------------
+           Sub Tabs (학부모 / 선생님)
+        -------------------- */
+        .sub-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .sub-tab-button {
+            appearance: none;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #4b5563;
+            line-height: 1.2;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .sub-tab-button.active {
+            background-color: #111827;
+            border-color: #111827;
+            color: #ffffff;
+            box-shadow: 0 8px 16px rgba(17,24,39,0.15);
+        }
+
+        .sub-tab-content {
+            display: none;
+        }
+        .sub-tab-content.active {
+            display: block;
+        }
+
+        /* --------------------
+           Card Grid for actions
+        -------------------- */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .action-card {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            transition: box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        .action-card h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .action-card p {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #6b7280;
+            flex-grow: 1;
+            margin-bottom: 12px;
+        }
+
+        .action-card button {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #111827;
+            line-height: 1.2;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .action-card button:hover {
+            border-color: #34a853;
+            color: #34a853;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+        }
+
+        .action-card:hover {
+            border-color: #d1d5db;
+            background-color: #ffffff;
+            box-shadow:
+                    0 16px 32px rgba(0,0,0,0.06),
+                    0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        /* --------------------
+           문의 관리 섹션 단독 카드
+        -------------------- */
+        .single-block {
+            max-width: 320px;
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="admin-shell">
+
+    <!-- 상단 헤더 -->
+    <header class="admin-header">
+        <div class="console-label">Admin Console</div>
+        <div class="page-title">
+            <div>
+                관리자 페이지
+            </div>
+        </div>
+        <div class="page-subtext">
+            운영자 전용 화면입니다.
+        </div>
+    </header>
+
+    <!-- 1차 탭 -->
+    <nav class="tabs">
+        <button class="tab-button active" data-tab="tab-1">회원 관리</button>
+        <!-- <button class="tab-button" data-tab="tab-2">결제 관리</button> -->
+        <button class="tab-button" data-tab="tab-3">문의 관리</button>
+    </nav>
+
+    <!-- ✅ 탭 1: 회원 관리 -->
+    <section id="tab-1" class="tab-content active">
+
+        <div class="section-header">
+            <h2>회원 관리</h2>
+            <p>학부모 및 강사 계정, 신청 현황, 일정 등의 운영 관리 기능입니다.</p>
+        </div>
+
+        <!-- 서브 탭 (학부모 / 선생님) -->
+        <div class="sub-tabs">
+            <button class="sub-tab-button active" data-sub-tab="parent-management">학부모</button>
+            <button class="sub-tab-button" data-sub-tab="teacher-management">선생님</button>
+        </div>
+
+        <!-- 학부모 관리 -->
+        <div id="parent-management" class="sub-tab-content active">
+            <div class="action-grid">
+
+                <div class="action-card">
+                    <h3>학습 신청서 확인</h3>
+                    <p>부모가 제출한 수업 신청 내용을 확인하고 배정 상태를 관리합니다.</p>
+                    <button id="applP">이동</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>상담 신청서 확인</h3>
+                    <p>상담 요청 내역을 조회하고 진행 여부를 업데이트합니다.</p>
+                    <button id="counselP">이동</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 선생님 관리 -->
+        <div id="teacher-management" class="sub-tab-content">
+            <div class="action-grid">
+
+                <div class="action-card">
+                    <h3>선생님 등록</h3>
+                    <p>신규 강사를 시스템에 등록합니다.</p>
+                    <button id="addT">등록하기</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>선생님 관리</h3>
+                    <p>기존 강사의 프로필, 수업 가능 지역, 상태 등을 관리합니다.</p>
+                    <button id="manageT">관리하기</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>입사지원 관리</h3>
+                    <p>지원서 목록을 검토하고 채용 프로세스를 진행합니다.</p>
+                    <button id="volunteerT">확인하기</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>자격인증 관리</h3>
+                    <p>교사 자격증 / 증빙 서류 업로드 내역을 검토 후 승인 또는 반려합니다.</p>
+                    <button id="certiT">확인하기</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>일정 저장</h3>
+                    <p>강사의 방문 가능 시간표를 신규로 입력합니다.</p>
+                    <button id="addScheduleT">일정 추가</button>
+                </div>
+
+                <div class="action-card">
+                    <h3>일정 관리</h3>
+                    <p>등록된 스케줄을 조회/수정하고 배정 현황을 확인합니다.</p>
+                    <button id="scheduleT">일정 보기</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ✅ (보류) 탭 2: 결제 관리
+    <section id="tab-2" class="tab-content">
+        <div class="section-header">
+            <h2>결제 관리</h2>
+            <p>결제 기록 및 정산 관련 내역을 확인합니다.</p>
+        </div>
+
+        <div class="action-grid single-block">
+            <div class="action-card">
+                <h3>결제 내역</h3>
+                <p>수업 결제 이력을 확인하고 상태를 점검합니다.</p>
+                <button id="classPayment">목록 보기</button>
+            </div>
+        </div>
+    </section>
+    -->
+
+
+    <!-- ✅ 탭 3: 문의 관리 -->
+    <section id="tab-3" class="tab-content">
+
+        <div class="section-header">
+            <h2>문의 관리</h2>
+            <p>보호자/교사 문의 접수 내역을 확인하고 답변 진행 상황을 관리합니다.</p>
+        </div>
+
+        <div class="action-grid single-block">
+            <div class="action-card">
+                <h3>문의 목록</h3>
+                <p>접수된 문의/요청 사항을 확인하고 후속 처리 상태를 업데이트합니다.</p>
+                <button id="pFaqBoard">바로가기</button>
+            </div>
+        </div>
+
+    </section>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    // 상위 탭 전환
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            tabContents.forEach(content => content.classList.remove('active'));
+            const tabId = button.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // 서브 탭 전환 (학부모 / 선생님)
+    const subTabButtons = document.querySelectorAll('.sub-tab-button');
+    const subTabContents = document.querySelectorAll('.sub-tab-content');
+
+    subTabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            subTabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            subTabContents.forEach(content => content.classList.remove('active'));
+            const subTabId = button.getAttribute('data-sub-tab');
+            document.getElementById(subTabId).classList.add('active');
+        });
+    });
+
+    // ========================
+    // Navigation actions
+    // ========================
+
+    // 입사 지원 목록
+    $('#volunteerT').click(()=> {
+        location.href = "/resume/list";
+    });
+
+    // 선생님 문의 목록
+    $('#tFaqBoard').click(()=>{
+        location.href = "/board/list";
+    });
+
+    // 선생님 등록
+    $('#addT').click(() => {
+        location.href = "/addTForm";
+    });
+
+    // 선생님 관리
+    $('#manageT').click(() => {
+        location.href = "/manageTList";
+    });
+
+    // 상담신청 목록
+    $('#counselP').click(()=> {
+        location.href = "/signup/list";
+    });
+
+    // 학부모 문의 목록
+    $('#pFaqBoard').click(()=>{
+        location.href = "/board/list";
+    });
+
+    // 학습신청 목록
+    $('#applP').click(()=>{
+        location.href = "/admin/clReqList";
+    });
+
+    // 결제 관리 (주석 처리된 카드와 매칭)
+    // $('#classPayment').click(()=>{
+    //     location.href = "/admin/clPayment";
+    // });
+
+    // 자격증 / 증빙 서류
+    $('#certiT').click(() => {
+        location.href = "/admin/specList";
+    });
+
+    // 일정 관리
+    $('#scheduleT').click(() => {
+        location.href = "/admin/scheduleList";
+    });
+
+    // 일정 추가
+    // $('#addScheduleT').click(() => {
+    //     location.href = "/maptest";
+    // });
+
+
+    $('#addScheduleT').click(() => {
+        location.href = "/maptest2";
+    });
+
+</script>
+</body>
+</html>

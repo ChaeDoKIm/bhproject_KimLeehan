@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <title>관리자 로그인</title>
+
+    <style>
+        /* --------------------
+           기본 리셋 & 타이포
+        -------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f6fa; /* 은은한 회색 배경 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+            color: #1f1f1f;
+        }
+
+        /* --------------------
+           컨테이너 카드
+        -------------------- */
+        .container {
+            width: 100%;
+            max-width: 380px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px 28px 28px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 타이틀 영역 */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .service-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280; /* 중간 회색 */
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.03em;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            line-height: 1.4;
+        }
+
+        /* --------------------
+           경고창 스타일
+        -------------------- */
+        .alert {
+            width: 100%;
+            background-color: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            color: #b91c1c;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .alert strong {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        /* 접근 거부 / 권한 문제 등 보안성 메시지 */
+        .alert.alert-danger {
+            background-color: #fff7ed;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --------------------
+           form group
+        -------------------- */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            color: #1f2937;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-control:focus {
+            border-color: #4ade80; /* 연한 그린 포커스 */
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3); /* 초록빛 포커스 링 */
+        }
+
+        /* --------------------
+           로그인 버튼
+        -------------------- */
+        .btn-submit {
+            width: 100%;
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.2;
+            cursor: pointer;
+            background-color: #34a853; /* 다운된 그린 */
+            color: #ffffff;
+            transition: all 0.18s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #2d8c47;
+            box-shadow: 0 8px 16px rgba(45,140,71,0.28);
+        }
+
+        /* --------------------
+           하단 기타 정보
+        -------------------- */
+        .meta {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            color: #9ca3af;
+        }
+
+        .meta a {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .meta a:hover {
+            color: #111827;
+        }
+
+        /* 반응형 - 모바일에서 여백 살짝 */
+        @media (max-width: 420px) {
+            .container {
+                margin: 16px;
+                padding: 28px 24px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<form action="aLogin" method="post" style="width:100%; display:flex; justify-content:center;">
+    <div class="container">
+
+        <!-- 상단 -->
+        <div class="header">
+            <div class="service-name">Admin Console</div>
+            <h2>관리자 로그인</h2>
+            <p>승인되지 않은 사용자는 접속이 제한됩니다.</p>
+        </div>
+
+        <!-- 로그인 실패 (비밀번호 틀림 등) -->
+        <div class="alert" th:if="${param.error}">
+            <strong>⚠ 로그인 실패</strong>
+            <span>아이디 또는 비밀번호가 올바르지 않습니다.</span>
+        </div>
+
+        <!-- 권한 없음 / 차단 계정 등 -->
+        <div class="alert alert-danger" th:if="${param.denied}">
+            <strong>⛔ 접근 거부</strong>
+            <span>해당 계정은 관리자 권한이 없습니다. 시스템 관리자에게 문의하세요.</span>
+        </div>
+
+        <!-- 비밀번호 만료 등 정책 위반 -->
+        <div class="alert alert-danger" th:if="${param.expired}">
+            <strong>🔒 비밀번호 만료</strong>
+            <span>보안을 위해 비밀번호를 변경해야 합니다.</span>
+        </div>
+
+        <!-- 아이디 -->
+        <div class="form-group">
+            <label for="aId">아이디</label>
+            <input id="aId"
+                   class="form-control"
+                   type="text"
+                   name="aId"
+                   placeholder="admin@example.com"
+                   autocomplete="username">
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+            <label for="aPass">비밀번호</label>
+            <input id="aPass"
+                   class="form-control"
+                   type="password"
+                   name="aPass"
+                   placeholder="••••••••"
+                   autocomplete="current-password">
+        </div>
+
+        <!-- 로그인 버튼 -->
+        <button class="btn-submit" type="submit">로그인</button>
+
+        <!-- 하단 안내 -->
+        <div class="meta">
+            <div>비밀번호를 잊으셨나요? <a href="#">관리자에게 문의</a></div>
+            <div>© 2025 Company. All rights reserved.</div>
+        </div>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    // 향후:
+    // - 로그인 중 로딩 상태 처리
+    // - 실패 시 input에 shake 애니메이션 추가
+    // - caps lock 경고 등도 여기서 가능
+</script>
+</body>
+</html>

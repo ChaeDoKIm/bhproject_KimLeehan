@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+    <title>방학_학습신청목록</title>
+
+    <style>
+        /* --------------------
+           Reset & Typography
+        -------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f5f6fa;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 16px 80px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+            color: #1f1f1f;
+        }
+
+        /* --------------------
+           Shell Card
+        -------------------- */
+        .table-shell {
+            width: 100%;
+            max-width: 1000px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            padding: 24px 24px 32px;
+        }
+
+        /* --------------------
+           Header / Title
+        -------------------- */
+        .header-block {
+            margin-bottom: 20px;
+        }
+
+        .console-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6b7280;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-title-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+        }
+
+        .page-hint {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        /* --------------------
+           Table Wrapper
+        -------------------- */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background-color: #ffffff;
+        }
+
+        table.data-table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #1f2937;
+        }
+
+        thead th {
+            background-color: #f9fafb;
+            color: #4b5563;
+            font-weight: 600;
+            text-align: left;
+            font-size: 0.8rem;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            font-size: 0.85rem;
+            color: #1f2937;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        /* 행 홀수/짝수 약간의 배경 차이 */
+        tbody tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        /* hover 시 하이라이트 */
+        tbody tr:hover {
+            background-color: #f0fff4; /* 아주 옅은 그린 */
+        }
+
+        /* 숫자 / ID 스타일 */
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace;
+            font-size: 0.8rem;
+            color: #111827;
+            font-weight: 500;
+        }
+
+        /* 링크 스타일 (번호) */
+        .row-link {
+            text-decoration: none;
+            color: #34a853;
+            font-weight: 600;
+            transition: color 0.15s ease;
+        }
+
+        .row-link:hover {
+            color: #2d8c47;
+            text-decoration: underline;
+        }
+
+        /* 안내 문구 */
+        .note-line {
+            font-size: 0.7rem;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1rem;
+            }
+        }
+
+
+        /* 관리자 메인이동  하단 버튼 영역 (필요하면 사용) */
+        .footer-row {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            appearance: none;
+            border-radius: 999px;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: #111827;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            border-color: #34a853;
+            color: #34a853;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+            transform: translateY(-1px);
+        }
+
+
+
+
+    </style>
+
+
+
+
+
+</head>
+
+<body>
+<div class="table-shell">
+
+    <!-- 상단 헤더 영역 -->
+    <div class="header-block">
+        <div class="console-label">Admin Console</div>
+
+        <div class="page-title-row">
+            <div class="page-title">학습 신청 목록</div>
+        </div>
+
+        <div class="page-hint">
+            학생(학부모) → 강사 매칭을 위한 신청 내역입니다. 각 행의 번호(ID)를 클릭하면 상세 정보를 볼 수 있습니다.
+        </div>
+
+        <div class="note-line" style="color: red"> ※ 상세 보기: 번호(ID) 클릭</div>
+    </div>
+
+    <!-- 테이블 영역 -->
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th style="width:80px;">번호</th>
+                <th>학부모</th>
+                <th>선생님</th>
+                <th>학생</th>
+                <th>신청일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="clReq : ${clReqList}">
+                <td class="mono">
+                    <a class="row-link"
+                       th:href="@{/admin/clReqView/{clReqId}(clReqId=${clReq.clReqId})}"
+                       th:text="${clReq.clReqId}"></a>
+                </td>
+                <td class="mono" th:text="${clReq.pId}"></td>
+                <td class="mono" th:text="${clReq.tId}"></td>
+                <td class="mono" th:text="${clReq.sId}"></td>
+                <td class="mono" th:text="${#temporals.format(clReq.clReqDate, 'yyyy-MM-dd')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="footer-row">
+        <button type="button" class="btn" onclick="location.href='/admin/main'">
+            관리자 메인으로
+        </button>
+    </div>
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    // 여기에 필터/검색/정렬 기능도 나중에 쉽게 붙일 수 있는데.. 시간이 될까??
+    // 예: '학부모 ID로 검색', '신청일 역순 정렬' 등
+</script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상담 신청 목록 | 관리자</title>
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nanum Gothic', 'Noto Sans KR', sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        /* 상단 관리자 헤더 */
+        .admin-header {
+            width: 100%;
+            background: linear-gradient(135deg, #2c5039, #4c8f5d);
+            color: #f9fafb;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-logo i {
+            font-size: 1.1rem;
+        }
+
+        .admin-title-text {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .admin-header-right {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* 메인 컨테이너 */
+        .page-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 16px 40px;
+        }
+
+        .page-title-wrap {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c5039;
+        }
+
+        .page-subtitle {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        /* 카드 */
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow:
+                    0 18px 40px rgba(15, 23, 42, 0.12),
+                    0 1px 4px rgba(15, 23, 42, 0.08);
+            padding: 20px 22px 24px;
+        }
+
+        /* 테이블 */
+        .table-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .table-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-header-left span:first-child {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .table-header-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        .table-header-right {
+            font-size: 0.78rem;
+            color: #6b7280;
+        }
+
+        table.styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+            font-size: 0.9rem;
+            background: #f9fafb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .styled-table thead {
+            background: #73ad81;
+            color: #ffffff;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .styled-table tbody tr:nth-child(even) {
+            background: #edf7f1;
+        }
+
+        .styled-table tbody tr:hover {
+            background: #e0f2fe;
+            transition: background 0.15s ease;
+        }
+
+        .styled-table a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .styled-table a:hover {
+            text-decoration: underline;
+        }
+
+        /* 상태 뱃지 */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-wait {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-done {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* 하단 푸터 */
+        .admin-footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+
+
+        /* 관리자 메인이동  하단 버튼 영역 (필요하면 사용) */
+        .footer-row {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            appearance: none;
+            border-radius: 999px;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: #111827;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            border-color: #34a853;
+            color: #34a853;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+            transform: translateY(-1px);
+        }
+
+
+    </style>
+</head>
+<body>
+
+<!-- 상단 헤더 -->
+<header class="admin-header">
+    <div class="admin-header-left">
+        <div class="admin-logo">
+            <i class="fas fa-user-tie"></i>
+        </div>
+        <div class="admin-title-text">방.학 관리자 · 상담 신청 관리</div>
+    </div>
+    <div class="admin-header-right">
+        상담 신청 내역을 확인하고 처리 상태를 관리할 수 있습니다.
+    </div>
+</header>
+
+<!-- 메인 컨텐츠 -->
+<main class="page-container">
+    <div class="page-title-wrap">
+        <div>
+            <h1 class="page-title">상담 신청 목록</h1>
+            <p class="page-subtitle">최근 접수된 상담 신청 기록을 확인하세요.</p>
+        </div>
+    </div>
+
+    <section class="card">
+        <div class="table-header-row">
+            <div class="table-header-left">
+                <span>전체 목록</span>
+                <span class="table-header-badge">
+                    <i class="fas fa-list-ul" style="margin-right:4px;"></i> 상담 신청
+                </span>
+            </div>
+        </div>
+
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>이름</th>
+                <th>연락처</th>
+                <th>이메일</th>
+                <th>상담 유형</th>
+                <th>상태</th>
+                <th>제출일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="signup : ${signupList}">
+                <td>
+                    <a th:href="@{/signup/view/{sReqId}(sReqId=${signup.sReqId})}"
+                       th:text="${signup.sReqId}"></a>
+                </td>
+                <td th:text="${signup.sReqName}"></td>
+                <td th:text="${signup.sReqPhone}"></td>
+                <td th:text="${signup.sReqEmail}"></td>
+                <td th:text="${signup.sReqType}"></td>
+                <td>
+                    <!-- 상태에 따라 다른 색상 적용하고 싶으면 th:classappend로 변경 가능 -->
+                    <span class="status-pill"
+                          th:classappend="${signup.sReqStatus} == '대기' ? ' status-wait' :
+                                          (${signup.sReqStatus} == '완료' ? ' status-done' :
+                                           ' status-cancelled')"
+                          th:text="${signup.sReqStatus}"></span>
+                </td>
+                <td th:text="${signup.sReqDate}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <div class="footer-row">
+        <button type="button" class="btn" onclick="location.href='/admin/main'">
+            관리자 메인으로
+        </button>
+    </div>
+
+    <div class="admin-footer">
+        © Bang.Hak Admin · 상담 관리 페이지
+    </div>
+</main>
+
+
+</body>
+</html>

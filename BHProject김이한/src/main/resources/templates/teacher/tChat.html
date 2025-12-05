@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방.학_선생님채팅</title>
+
+    <!-- WS & 기본 CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Nanum Gothic', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #eef4ff 0, #f6f8ff 35%, #f9fafb 100%);
+            color: #111827;
+        }
+
+        /* ---------- 공통 레이아웃 ---------- */
+
+        main.chat-page {
+            min-height: calc(100vh - 180px);  /* 헤더/푸터 제외한 영역 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 16px 40px;
+        }
+
+        .chat-shell {
+            width: 100%;
+            max-width: 1180px;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow:
+                    0 24px 60px rgba(15, 23, 42, 0.13),
+                    0 0 0 1px rgba(148, 163, 184, 0.18);
+            padding: 24px 28px 28px;
+        }
+
+        .chat-shell-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .chat-shell-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chat-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .chat-badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1d4ed8;
+            background: linear-gradient(135deg, #e0f2ff, #e0f2fe);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .chat-description {
+            font-size: 0.86rem;
+            line-height: 1.5;
+            color: #6b7280;
+        }
+
+        /* ---------- 상·하단 2컬럼 레이아웃 ---------- */
+
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 320px minmax(0, 1fr);
+            gap: 20px;
+        }
+
+        /* ---------- 왼쪽 : 학생 리스트 카드 ---------- */
+
+        .chat-sidebar-card {
+            background: #f9fafb;
+            border-radius: 24px;
+            padding: 18px 18px 20px;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+            display: flex;
+            flex-direction: column;
+            height: 520px;
+        }
+
+        .sidebar-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .student-list-wrapper {
+            margin-top: 6px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .member-list {
+            /* 기존 JS에서 member-list 클래스를 쓰므로 그대로 사용 */
+        }
+
+        #studentList {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #studentList li {
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: #ffffff;
+            font-size: 0.86rem;
+            font-weight: 500;
+            color: #111827;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+
+        #studentList li span {
+            pointer-events: none;
+        }
+
+        #studentList li:hover {
+            border-color: #2563eb;
+            background: #eff4ff;
+        }
+
+        #studentList li.active {
+            border-color: #2563eb;
+            background: #e0ebff;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+        }
+
+        #studentList li .student-id {
+            font-size: 0.72rem;
+            color: #9ca3af;
+        }
+
+        /* ---------- 오른쪽 : 채팅 영역 ---------- */
+
+        .chat-main {
+            background: #f9fafb;
+            border-radius: 24px;
+            padding: 16px 18px 18px;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+            display: flex;
+            flex-direction: column;
+            height: 520px;
+        }
+
+        .chat-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 4px 10px;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+            margin-bottom: 10px;
+        }
+
+        .chat-main-header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .chat-main-header-label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .chat-main-header-name {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #15803d;
+            background: rgba(22, 163, 74, 0.09);
+        }
+
+        .chat-window {
+            flex: 1;
+            margin-top: 6px;
+            background: #f3f4f6;
+            border-radius: 18px;
+            padding: 14px 14px 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #chatMessages {
+            list-style: none;
+            margin: 0;
+            padding: 0 4px 4px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chat-empty {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.86rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        /* 메시지가 하나라도 있으면 안내문 숨기기 */
+        #chatMessages:not(:empty) + .chat-empty {
+            display: none;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 8px 11px;
+            border-radius: 18px;
+            font-size: 0.84rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+        }
+
+        .message.self {
+            align-self: flex-end;
+            background: #1d4ed8;
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.other {
+            align-self: flex-start;
+            background: #e5e7eb;
+            color: #111827;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            background: #ffffff;
+            border-radius: 999px;
+            padding: 8px 10px 8px 16px;
+            box-shadow:
+                    0 12px 25px rgba(15, 23, 42, 0.12),
+                    0 0 0 1px rgba(148, 163, 184, 0.4);
+        }
+
+        #messageInput {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 0.9rem;
+            background: transparent;
+        }
+
+        #messageInput::placeholder {
+            color: #cbd5f5;
+        }
+
+        .send-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 12px 25px rgba(37, 99, 235, 0.45);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+        }
+
+        .send-btn:hover {
+            filter: brightness(1.03);
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(37, 99, 235, 0.55);
+        }
+
+        .send-btn i {
+            font-size: 16px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 960px) {
+            .chat-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .chat-sidebar-card,
+            .chat-main {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .chat-shell {
+                padding: 20px 16px 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div th:if="${session.teacherLoginId eq null}">
+            <ul>
+                <li><a href="/resume/rwrite">입사지원</a></li>
+                <li><a href="/bWriteFormT">문의</a></li>
+            </ul>
+        </div>
+        <div th:if="${session.teacherLoginId ne null}">
+            <ul>
+                <li><a th:href="@{/tMySchedule/{tId}(tId=${session.teacherLoginId})}">스케줄</a></li>
+                <li><a th:href="@{/tStudents/{tId}(tId=${session.teacherLoginId})}">학생관리</a></li>
+                <li><a th:href="@{/tMyInfo/{tId}(tId=${session.teacherLoginId})}">마이 페이지</a></li>
+                <li><a href="/bWriteFormT">문의</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="logo">
+        <a href="/teacher/Tmain"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+
+    <div th:if="${session.teacherLoginId eq null}">
+        <a id="login">로그인</a>
+    </div>
+
+    <div th:if="${session.teacherLoginId ne null}">
+        <input type="hidden" id="loginId" name="loginId" th:value="${session.teacherLoginId}"/>
+        <a href="/tLogout" id="logout">로그아웃</a>
+    </div>
+</header>
+
+<main class="chat-page">
+    <div class="chat-shell">
+        <!-- 상단 타이틀 -->
+        <div class="chat-shell-header">
+            <div class="chat-shell-title-row">
+                <span class="chat-title">학생 · 선생님 1:1 채팅</span>
+                <span class="chat-badge">실시간 상담</span>
+            </div>
+            <div class="chat-description">
+                담당하고 있는 학생과 수업 중 궁금한 점을 바로 공유해 보세요.<br>
+                왼쪽에서 학생을 선택하면 해당 학생과의 대화 내역이 오른쪽에 표시됩니다.
+            </div>
+        </div>
+
+        <!-- 본문 레이아웃 -->
+        <div class="chat-layout">
+
+            <!-- 왼쪽 : 학생 목록 -->
+            <aside class="chat-sidebar-card member-list">
+                <div class="sidebar-title">담당 학생 선택</div>
+                <div class="sidebar-subtitle">목록에서 학생을 선택하면 채팅이 시작됩니다.</div>
+
+                <div class="student-list-wrapper">
+                    <ul id="studentList">
+                        <li th:each="student : ${studentList}"
+                            th:id="${student.sId}"
+                            th:data-name="${student.sName}"
+                            onclick="openChatRoom(this)">
+                            <span th:text="${student.sName}">학생 이름</span>
+                            <span class="student-id" th:text="'ID: ' + ${student.sId}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- 오른쪽 : 채팅 영역 -->
+            <section class="chat-main">
+                <div class="chat-main-header">
+                    <div class="chat-main-header-text">
+                        <span class="chat-main-header-label">채팅 상대</span>
+                        <span class="chat-main-header-name" id="chatWith">없음</span>
+                    </div>
+                    <span class="status-pill">대기 중</span>
+                </div>
+
+                <div class="chat-window">
+                    <ul id="chatMessages"></ul>
+                    <div class="chat-empty">
+                        학생을 선택하면 이곳에서 채팅이 시작됩니다.
+                    </div>
+                </div>
+
+                <div class="chat-input-bar">
+                    <input type="text" id="messageInput"
+                           placeholder="메시지를 입력하세요..."
+                           onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendPrivateMessage()">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</main>
+
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar">
+                        <i class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar">
+                        <i class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar">
+                        <i class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+
+<!-- 기존 네비 / 로그인 관련 스크립트 (필요시 수정) -->
+<script>
+    let loginId = $("#loginId").val();
+
+    $('#logout').click(() => {
+        location.href = '/tLogout';
+    });
+
+    $('#login').click(() => {
+        location.href = '/loginFormT';
+    });
+</script>
+
+<!-- WebSocket / 채팅 로직 (기존 코드 그대로) -->
+<script>
+    let stompClient = null;
+    let userData = {
+        username: document.getElementById('loginId').value,
+        connected: false
+    };
+    let currentPrivateChat = '';
+
+    window.onload = function () {
+        if (userData.username) {
+            connect();
+        } else {
+            alert("로그인이 필요합니다.");
+            location.href = '/tLoginForm';
+        }
+    };
+
+    function connect() {
+        if (stompClient !== null && stompClient.connected) {
+            console.log("[WebSocket] 이미 연결되어 있음.");
+            return;
+        }
+
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function () {
+            console.log("[WebSocket] 연결 성공");
+
+            if (!stompClient.alreadySubscribed && userData.username) {
+                // 🔹 실시간 채팅 메시지 구독
+                stompClient.subscribe(
+                    `/user/${userData.username}/private-message`,
+                    onPrivateMessage
+                );
+
+                // 🔹 타이핑 상태 구독
+                stompClient.subscribe(
+                    `/user/${userData.username}/typing`,
+                    onTypingEvent
+                );
+
+                stompClient.alreadySubscribed = true;
+                console.log("[WebSocket] 구독 완료");
+            }
+        }, function (error) {
+            console.error("[WebSocket 오류] 연결 실패:", error);
+            setTimeout(connect, 3000);
+        });
+    }
+
+
+    function showMessage(message, containerId, messageClass) {
+        const chatMessages = document.getElementById(containerId);
+        const lastMessage = chatMessages.lastChild;
+        if (lastMessage && lastMessage.textContent.includes(message.message)) {
+            console.warn("[경고] 동일한 메시지 감지, 추가 안함:", message);
+            return;
+        }
+
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${messageClass}`;
+        messageElement.textContent = `[${message.senderName}] ${message.message}`;
+
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function onPrivateMessage(payload) {
+        const message = JSON.parse(payload.body);
+        const tId = document.getElementById('loginId').value;
+
+        console.log("[WebSocket] 수신된 메시지:", message);
+
+        if (message.senderName === currentPrivateChat || message.receiverName === currentPrivateChat) {
+            const chatMessages = document.getElementById('chatMessages');
+            const lastMessage = chatMessages.lastChild;
+
+            if (lastMessage && lastMessage.textContent.includes(message.message)) {
+                console.warn("[경고] 중복 메시지 감지, 표시 안함:", message);
+                return;
+            }
+
+            const messageClass = message.senderName === tId ? 'self' : 'other';
+            showMessage(message, 'chatMessages', messageClass);
+        }
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendPrivateMessage();
+            event.preventDefault();
+        }
+    }
+
+    function sendPrivateMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const messageContent = messageInput.value.trim();
+        const tId = document.getElementById('loginId').value;
+        const sId = currentPrivateChat;
+
+        if (messageContent && sId) {
+            const chatMessage = {
+                senderName: tId,
+                receiverName: sId,
+                message: messageContent,
+                date: new Date().toISOString(),
+                status: "MESSAGE"
+            };
+            console.log("[디버깅] 보내는 메시지:", chatMessage);
+
+            stompClient.send('/app/private-message', {}, JSON.stringify(chatMessage));
+            showMessage(chatMessage, 'chatMessages', 'self');
+            messageInput.value = '';
+        } else {
+            alert("학생을 선택하고 메시지를 입력해주세요.");
+        }
+    }
+
+    function openChatRoom(element) {
+        const sId = element.id;
+        const sName = element.getAttribute("data-name") || element.textContent;
+        const tId = document.getElementById('loginId').value;
+
+        document.getElementById('chatWith').textContent = sName;
+        currentPrivateChat = sId;
+
+        document.querySelectorAll(".member-list li").forEach(li => li.classList.remove("active"));
+        element.classList.add("active");
+
+        fetch(`/chat/api/history?sId=${sId}&tId=${tId}`)
+            .then(response => response.json())
+            .then(messages => {
+                console.log("[디버깅] 서버 응답 데이터:", messages);
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+
+                if (Array.isArray(messages)) {
+                    messages.forEach(message => {
+                        let messageClass;
+                        if (String(message.senderName).trim() === String(tId).trim()) {
+                            messageClass = 'self';
+                        } else if (String(message.receiverName).trim() === String(tId).trim()) {
+                            messageClass = 'other';
+                        } else {
+                            console.warn("[경고] 필터링되지 않은 메시지:", message);
+                            return;
+                        }
+
+                        showMessage(message, 'chatMessages', messageClass);
+                    });
+                }
+            })
+            .catch(error => console.error("메시지 로드 오류:", error));
+    }
+
+
+    // 타이핑 시도중
+    let typingTimeout;
+
+    document.getElementById("messageInput").addEventListener("input", () => {
+        sendTypingSignal();
+
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            sendStopTyping();
+        }, 2500); // 2.5초 동안 추가 입력 없으면 STOP
+    });
+
+    function sendTypingSignal() {
+        if (!currentPrivateChat) return;
+
+        const typingMsg = {
+            senderName: userData.username,
+            receiverName: currentPrivateChat,
+            status: "TYPING"
+        };
+        stompClient.send("/app/typing", {}, JSON.stringify(typingMsg));
+    }
+
+    function sendStopTyping() {
+        if (!currentPrivateChat) return;
+
+        const typingMsg = {
+            senderName: userData.username,
+            receiverName: currentPrivateChat,
+            status: "STOP_TYPING"
+        };
+        stompClient.send("/app/typing", {}, JSON.stringify(typingMsg));
+    }
+
+    let typingTimer;
+
+    function onTypingEvent(payload) {
+        const msg = JSON.parse(payload.body);
+        const statusLabel = document.querySelector(".status-pill");
+        if (!statusLabel) return;
+
+        if (msg.status === "TYPING") {
+            statusLabel.textContent = "입력 중...";
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                statusLabel.textContent = "대기 중";
+            }, 2000);
+        } else if (msg.status === "STOP_TYPING") {
+            statusLabel.textContent = "대기 중";
+        }
+    }
+
+
+
+
+</script>
+</body>
+</html>

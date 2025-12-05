@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type=hidden] {
+            display: none;
+        }
+    </style>
+    <title>추가 자격증 인증 상세보기</title>
+</head>
+
+<body>
+<div class="wrap">
+    <table>
+        <tr>
+            <th>ID</th>
+            <td id="tSid" th:value="${spec.tSid}">[[${spec.tSid}]]</td>
+        </tr>
+        <tr>
+            <th>선생님 ID</th>
+            <td>[[${spec.tId}]]</td>
+        </tr>
+        <tr>
+            <th>종류</th>
+            <td>[[${spec.specName}]]</td>
+        </tr>
+        <tr>
+            <th>파일</th>
+            <td id="testClick">[[${spec.specFileName}]]</td>
+        </tr>
+        <tr>
+            <th colspan="2">
+                <input type="hidden" id="specStatus" th:value="${spec.specStatus}"/>
+                <button id="updateStatus" disabled>확인 완료</button>
+            </th>
+        </tr>
+    </table>
+</div>
+
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+
+    let specStatus = $('#specStatus').val();
+
+    let tSid = $('#tSid').val();
+
+    if (specStatus === "검토중"){
+        $('#updateStatus').prop('disabled', false);
+    }
+
+    // $('#testClick').click(() => {
+    //     console.log(specStatus)
+    // });
+
+    $('#testClick').click(() => {
+
+    });
+
+</script>
+
+</html>

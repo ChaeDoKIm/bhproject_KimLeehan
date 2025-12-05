@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/header-footer-parent.css">
+    <!--    <link rel="stylesheet" href="css/style.css">-->
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <style>
+        .classList {
+            border-bottom: 3px solid #228b22;
+            color: #228b22;
+            padding-bottom: 3px;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #333;
+            border-bottom: 3px solid #76d7b2;
+            padding-bottom: 10px;
+            margin: 30px auto 20px auto;
+            text-align: center;
+            font-weight: bold;
+            width: 900px;
+        }
+
+        .container ul {
+            list-style-type: none;
+            padding: 20px; /* 내부 여백 */
+            margin: 0 auto;
+            width: 820px;
+            text-align: left;
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container ul li {
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .container ul li span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .container ul li.button-container {
+            text-align: center; /* 버튼을 중앙에 배치 */
+            margin-top: 20px; /* 버튼 위에 공간 추가 */
+        }
+
+        button, input[type="button"], #btn {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 1rem;
+            color: black;
+            background-color: #ffcd4a; /* Soft green */
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover, input[type="button"]:hover, #btn:hover {
+            background-color: #f6c700; /*Light blue hover*/
+            transform: scale(1.05);
+        }
+
+
+        .class_info h4 {
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #add_child_form table {
+            width: 100%; /* Full width */
+            border-collapse: collapse; /* Clean table borders */
+        }
+
+        #add_child_form th, #add_child_form td {
+            padding: 10px;
+            text-align: left;
+            font-size: 1rem;
+            border-bottom: 1px solid #ddd; /* Faint horizontal lines */
+            vertical-align: middle;
+        }
+
+        #add_child_form th {
+            /*background-color: #a3d9b1;*/ /* Soft green for header rows */
+            color: black;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 4px; /* Rounded corners for better aesthetics */
+        }
+
+        .first-list {
+            background-color: #d8fce3;
+        }
+
+        #add_child_form td input[type="text"],
+        #add_child_form td select,
+        #add_child_form td input[type="radio"] {
+            width: calc(100% - 20px); /* Adjusted for padding */
+            padding: 8px;
+            margin: 5px 0;
+            font-size: 1rem;
+            border: 1px solid #ddd; /* Light border */
+            border-radius: 5px;
+            background-color: #ffffff; /* White background */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+        }
+
+        #add_child_form td input[type="radio"] {
+            width: auto; /* Keep default size for radio buttons */
+            margin-right: 5px; /* Spacing between radio buttons */
+        }
+
+        #add_child_form th[colspan="2"] {
+            text-align: center;
+            /*background-color: #87ceeb;*/
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .basic_student_info ul {
+                flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+                gap: 10px; /* Reduce spacing */
+            }
+
+            .study_info .row {
+                flex-wrap: nowrap; /* Prevent wrapping on small screens */
+                gap: 10px; /* Adjust gap for smaller screens */
+            }
+
+            .study_info dt {
+                flex-basis: 100px; /* Adjust label width */
+            }
+
+            button, input[type="button"] {
+                width: 100%;
+                padding: 10px 15px;
+            }
+        }
+
+        /* 추가 된 테이블 스타일, 삭제 가능*/
+        table {
+            border-collapse: collapse; /* Ensure table borders collapse for a clean look */
+            margin-top: 20px;
+            margin-bottom: 40px;
+            background-color: #f9f9f9; /* Light gray background for the table */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        th, td {
+            padding: 12px 15px; /* Adequate padding for readability */
+            text-align: left; /* Align text to the left */
+            font-size: 1rem;
+            border-bottom: 1px solid #ddd; /* Light gray border for rows */
+        }
+
+        th {
+            font-weight: bold;
+            color: #333;
+            background-color: #cef5d9; /* Soft green background for headers */
+            text-align: center; /* Center-align the headers */
+        }
+
+        td {
+            color: #333;
+            background-color: #ffffff; /* White background for table cells */
+        }
+
+        /* Styling for rows with alternating colors (optional) */
+        tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Light gray background for odd rows */
+        }
+
+        tr:nth-child(even) {
+            background-color: #ffffff; /* White background for even rows */
+        }
+
+        /* General Container Styling */
+        .container {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            /*background-color: var(--color-black);*/
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Styling for H3 headers */
+        h3 {
+            font-size: 20px;
+            color: #333;
+            border-bottom: 3px solid #76d7b2;
+            padding-bottom: 10px;
+            margin: 30px auto 20px auto;
+            text-align: center;
+            font-weight: bold;
+            width: 900px;
+        }
+
+        /* 퀵 메뉴 전체 스타일 */
+        .quick-menu {
+            position: fixed; /* 화면 고정 */
+            bottom: -230px; /* 화면 하단에서 20px */
+            /*transform: translateY(-250px);*/
+            right: 20px; /* 화면 오른쪽에서 20px */
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            align-items: center;
+            z-index: 9999; /* 최상위 레이어 */
+        }
+
+        /* 개별 아이템 스타일 */
+        .quick-item {
+            width: 90px; /* 버튼 너비 */
+            background-color: #ff2630; /* 빨간색 배경 */
+            border-radius: 10px; /* 테두리 둥글게 */
+            margin-bottom: 10px; /* 아이템 간격 */
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(255, 38, 48, 0.63); /* 그림자 효과 */
+            overflow: hidden; /* 테두리를 넘는 내용 숨기기 */
+            transition: transform 0.3s ease; /* 호버 애니메이션 */
+        }
+
+        .quick-item:hover {
+            transform: scale(1.05); /* 호버 시 크기 확대 */
+        }
+
+        .quick-item img {
+            width: 50%;
+            height: 70%; /* 이미지 높이 고정 */
+            object-fit: cover; /* 이미지 비율 유지 */
+            padding-top: 10px;
+            justify-content: center;
+
+        }
+
+        .quick-item p {
+            margin: 0;
+            padding-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 상단 이동 버튼 스타일 */
+        .quick-menu .top {
+            margin-top: 10px;
+            font-size: 14px;
+            color: slategrey;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .quick-menu .top:hover {
+            color: #e30613; /* 빨간색으로 변경 */
+        }
+
+
+    </style>
+    <title></title>
+</head>
+<header>
+    <nav>
+        <ul>
+            <li><a th:href="@{/parent/myInfoP/{pId}(pId=${session.parentLoginId})}">내 정보</a></li>
+            <li><a class="classList" th:href="@{/parent/myClassRequests/{pId}(pId=${session.parentLoginId})}">내 신청목록</a></li>
+            <!--<li><a href="/parent/classRequest">학습신청</a></li>-->
+            <li><a href="/signup/form">상담신청</a></li>
+            <li><a href="/bWriteForm">문의</a></li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+
+    <div class="t-l-j">
+        <div class="auth-buttons" th:if="${session.parentLoginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+
+        <div th:if="${session.parentLoginId ne null}">
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.parentLoginId}"/>
+            <a th:href="@{/myChildP/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>
+            <a href="/pLogout" id="logout">로그아웃</a>
+        </div>
+    </div>
+</header>
+<body>
+<div class="container">
+    <table>
+        <tr>
+            <th>학습 신청 결제 번호:</th>
+            <td>[[${paymentInfo.clPayId}]]</td>
+        </tr>
+        <tr>
+            <th>가격:</th>
+            <td>[[${paymentInfo.clPayPrice}]]원</td>
+        </tr>
+        <tr>
+            <th>결제 상태:</th>
+            <td>[[${paymentInfo.clStatus}]]</td>
+        </tr>
+        <tr>
+            <th>수업 시간대:</th>
+            <td>[[${paymentInfo.planStartTime}]] ~ [[${paymentInfo.planEndTime}]]</td>
+        </tr>
+        <tr>
+            <th>요일:</th>
+            <td>[[${paymentInfo.planDay}]]</td>
+        </tr>
+        <tr>
+            <th>학생:</th>
+            <td>[[${paymentInfo.sName}]]</td>
+        </tr>
+        <tr>
+            <th>선생님:</th>
+            <td>[[${paymentInfo.tName}]]</td>
+        </tr>
+        <!-- 결제 버튼 추가 -->
+        <tr th:if="${#strings.trim(paymentInfo.clStatus) eq '결제 진행 중'}">
+            <th>결제</th>
+            <td>
+                <button class="pay-button"
+                        th:data-clPayId="${paymentInfo.clPayId}"
+                        th:data-sName="${paymentInfo.sName}">
+                    결제하기
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="quick-menu" style="transform: matrix(1, 0, 0, 1, 0, -300);">
+
+    <!-- 학습신청 -->
+    <div class="quick-item">
+        <a href="/parent/classRequest">
+            <img src="/File/학습신청.png" alt="학습신청">
+            <p>학습신청</p>
+        </a>
+    </div>
+
+    <!-- 채팅 -->
+    <div class="quick-item">
+        <a href="/chat">
+            <!--        <a th:href="@{/chat/{pId}(pId=${session.parentLoginId})}">-->
+            <img src="/File/채팅.png" alt="채팅">
+            <p>채팅</p>
+        </a>
+    </div>
+
+    <!-- 상단 이동 -->
+    <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+
+    </div>
+</footer>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+
+<!-- Importing necessary scripts -->
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+
+
+
+<!--<script>-->
+<!--    if (typeof IMP !== "undefined") {-->
+<!--        IMP.init('imp27151828'); // PortOne 가맹점 식별 코드-->
+<!--    } else {-->
+<!--        console.error("IMP is undefined. Check the script import.");-->
+<!--    }-->
+
+<!--    $(document).ready(function () {-->
+<!--        $(".pay-button").on("click", function () {-->
+<!--            const clPayId = $(this).attr("data-clPayId");-->
+<!--            const sName = $(this).attr("data-sName");-->
+
+<!--            console.log("✅ 결제 버튼 클릭됨. 결제 요청 ID:", clPayId, "학생:", sName);-->
+
+<!--            if (!clPayId || clPayId === "null" || clPayId === "undefined") {-->
+<!--                alert("🚨 결제 ID가 없습니다. 다시 시도해주세요.");-->
+<!--                return;-->
+<!--            }-->
+
+<!--            IMP.request_pay({-->
+<!--                pg: "kakaopay",-->
+<!--                pay_method: "card",-->
+<!--                amount: "99000",-->
+<!--                name: "방.학 - 3개월 특강 수강료",-->
+<!--                merchant_uid: `ORD${Date.now()}_${clPayId}`,-->
+<!--                buyer_email: "test@inout.com",-->
+<!--                buyer_name: sName,-->
+<!--                buyer_tel: "010-1234-5678",-->
+<!--                buyer_addr: "서울특별시 강남구 삼성동",-->
+<!--                buyer_postcode: "123-456"-->
+<!--            }, function (response) {-->
+<!--                if (!response.success) {-->
+<!--                    alert(`🚨 결제 실패: ${response.error_msg}`);-->
+<!--                } else {-->
+<!--                    console.log("✅ 결제 성공! 서버 검증 요청 시작...");-->
+
+<!--                    // ✅ 서버에 결제 검증 요청-->
+<!--                    $.ajax({-->
+<!--                        url: "/verify-payment",-->
+<!--                        type: "POST",-->
+<!--                        contentType: "application/json",-->
+<!--                        data: JSON.stringify({ imp_uid: response.imp_uid, clPayId: clPayId }),-->
+<!--                        success: function (res) {-->
+<!--                            console.log("✅ [서버 응답] 결제 검증 응답:", res);-->
+
+<!--                            if (res.success) {-->
+<!--                                alert("✅ 결제가 성공적으로 완료되었습니다.");-->
+
+<!--                                // ✅ 결제 상태 업데이트 요청-->
+<!--                                $.ajax({-->
+<!--                                    url: "/parent/myclreqView/update-payment-status",-->
+<!--                                    type: "POST",-->
+<!--                                    contentType: "application/json",-->
+<!--                                    data: JSON.stringify({ clPayId: clPayId, clStatus: "결제 완료" }),-->
+<!--                                    success: function (updateRes) {-->
+<!--                                        console.log("✅ [서버 응답] 상태 업데이트 응답:", updateRes);-->
+
+<!--                                        if (updateRes.success) {-->
+<!--                                            alert("✅ 결제 상태가 '결제 완료'로 변경되었습니다.");-->
+<!--                                            location.reload();-->
+<!--                                        } else {-->
+<!--                                            alert("🚨 결제 상태 업데이트 실패: " + updateRes.message);-->
+<!--                                        }-->
+<!--                                    },-->
+<!--                                    error: function (xhr, status, error) {-->
+<!--                                        console.error("🚨 [서버 응답] 상태 업데이트 중 오류 발생:", xhr.responseText);-->
+<!--                                        alert("🚨 결제 상태 업데이트 중 오류가 발생했습니다.");-->
+<!--                                    }-->
+<!--                                });-->
+
+<!--                            } else {-->
+<!--                                alert("🚨 결제 검증 실패: " + res.message);-->
+<!--                            }-->
+<!--                        },-->
+<!--                        error: function (xhr, status, error) {-->
+<!--                            console.error("🚨 [서버 응답] 검증 요청 오류 발생:", xhr.responseText);-->
+<!--                            alert("🚨 서버 요청 중 오류가 발생했습니다.");-->
+<!--                        }-->
+<!--                    });-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+<!--    });-->
+
+<!--</script>-->
+
+<script>
+    if (typeof IMP !== "undefined") {
+        IMP.init('imp27151828'); // PortOne 가맹점 식별 코드
+    } else {
+        console.error("IMP is undefined. Check the script import.");
+    }
+
+    $(document).ready(function () {
+        $(".pay-button").on("click", function () {
+            const clPayId = $(this).attr("data-clPayId");
+            const sName = $(this).attr("data-sName");
+
+            console.log("✅ 결제 버튼 클릭됨. 결제 요청 ID:", clPayId, "학생:", sName);
+
+            if (!clPayId || clPayId === "null" || clPayId === "undefined") {
+                alert("🚨 결제 ID가 없습니다. 다시 시도해주세요.");
+                return;
+            }
+
+            IMP.request_pay({
+                pg: "kakaopay",
+                // pg: "html5_inicis",
+                pay_method: "card",
+                amount: "99000",
+                name: "방.학 - 3개월 특강 수강료",
+                merchant_uid: `ORD${Date.now()}_${clPayId}`,
+                buyer_email: "test@inout.com",
+                buyer_name: sName,
+                buyer_tel: "010-1234-5678",
+                buyer_addr: "서울특별시 강남구 삼성동",
+                buyer_postcode: "123-456"
+            }, function (response) {
+                if (!response.success) {
+                    alert(`🚨 결제 실패: ${response.error_msg}`);
+                } else {
+                    console.log("✅ 결제 성공! 상태 업데이트 요청 시작...");
+
+                    // ✅ 결제 상태 업데이트 요청
+                    $.ajax({
+                        url: "/parent/myclreqView/update-payment-status",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ clPayId: clPayId, clStatus: "결제 완료" }),
+                        success: function (updateRes) {
+                            console.log("✅ [서버 응답] 상태 업데이트 응답:", updateRes);
+
+                            if (updateRes.success) {
+                                alert("✅ 결제가 완료되었습니다. 감사합니다.");
+                                location.reload();
+                            } else {
+                                alert("🚨 결제 상태 업데이트 실패: " + updateRes.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("🚨 [서버 응답] 상태 업데이트 중 오류 발생:", xhr.responseText);
+                            alert("🚨 결제 상태 업데이트 중 오류가 발생했습니다.");
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+
+</html>

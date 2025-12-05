@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/header-footer-parent.css">
+    <!--    <link rel="stylesheet" href="css/style.css">-->
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <style>
+
+        body {
+            /*background-color: var(--color-black);*/
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+
+        .classList {
+            border-bottom: 3px solid #228b22;
+            color: #228b22;
+            padding-bottom: 3px;
+        }
+
+        .container {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #333;
+            border-bottom: 3px solid #76d7b2;
+            padding-bottom: 10px;
+            margin: 30px auto 20px auto;
+            text-align: center;
+            font-weight: bold;
+            width: 900px;
+        }
+
+        .container ul {
+            list-style-type: none;
+            padding: 20px; /* 내부 여백 */
+            margin: 0 auto;
+            width: 820px;
+            text-align: left;
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container ul li {
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .container ul li span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .container ul li.button-container {
+            text-align: center; /* 버튼을 중앙에 배치 */
+            margin-top: 20px; /* 버튼 위에 공간 추가 */
+        }
+
+        button, input[type="button"], #btn {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #a3d9b1; /* Soft green */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover, input[type="button"]:hover, #btn:hover {
+            background-color: #87ceeb; /*Light blue hover*/
+            transform: scale(1.05);
+        }
+
+        /* Class Info Section */
+        .class_info {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background-color: #f7fafe; /* Light blue-gray */
+            width: 820px;
+            margin: 0 auto;
+        }
+
+        .class_info h4 {
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Progress Bar */
+        #progress_bar {
+            width: 100%;
+            height: 12px;
+            background-color: #ddd;
+            border-radius: 6px;
+        }
+
+        #progress_bar::-webkit-progress-value {
+            background-color: #a3d9b1; /* Soft green progress bar */
+        }
+
+        /* Comments Section */
+        #comment_contents {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6f7ff; /* Light cyan */
+            border: 1px solid #b3e5fc; /* Light blue border */
+            border-radius: 8px;
+        }
+
+        #comment {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        /* General Styles for Add Child Form */
+        #add_child_form {
+            padding: 20px;
+            background-color: #f6fbfd; /* Light blue-gray for form background */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none; /* Initially hidden */
+            width: 820px;
+            margin: 10px auto 70px auto;
+        }
+
+        #add_child_form table {
+            width: 100%; /* Full width */
+            border-collapse: collapse; /* Clean table borders */
+        }
+
+        #add_child_form th, #add_child_form td {
+            padding: 10px;
+            text-align: left;
+            font-size: 1rem;
+            border-bottom: 1px solid #ddd; /* Faint horizontal lines */
+            vertical-align: middle;
+        }
+
+        #add_child_form th {
+            /*background-color: #a3d9b1;*/ /* Soft green for header rows */
+            color: black;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 4px; /* Rounded corners for better aesthetics */
+        }
+
+        .first-list {
+            background-color: #d8fce3;
+        }
+
+        #add_child_form td input[type="text"],
+        #add_child_form td select,
+        #add_child_form td input[type="radio"] {
+            width: calc(100% - 20px); /* Adjusted for padding */
+            padding: 8px;
+            margin: 5px 0;
+            font-size: 1rem;
+            border: 1px solid #ddd; /* Light border */
+            border-radius: 5px;
+            background-color: #ffffff; /* White background */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+        }
+
+        #add_child_form td input[type="radio"] {
+            width: auto; /* Keep default size for radio buttons */
+            margin-right: 5px; /* Spacing between radio buttons */
+        }
+
+        #add_child_form th[colspan="2"] {
+            text-align: center;
+            /*background-color: #87ceeb;*/
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        #submitButton, #resetButton {
+            width: 100px;
+            padding: 10px 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #a3d9b1;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            margin: 0 10px;
+        }
+
+        #submitButton:hover, #resetButton:hover {
+            background-color: #65a170; /* Light blue on hover */
+            transform: scale(1.05); /* Subtle zoom effect */
+        }
+
+        #addChild, #backButton {
+            width: 120px;
+            padding: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #0c92c7;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            margin: 0 25px;
+        }
+
+        #addChild:hover, #backButton:hover {
+            background-color: #006386; /* Light blue on hover */
+            transform: scale(1.05); /* Subtle zoom effect */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .basic_student_info ul {
+                flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+                gap: 10px; /* Reduce spacing */
+            }
+
+            .study_info .row {
+                flex-wrap: nowrap; /* Prevent wrapping on small screens */
+                gap: 10px; /* Adjust gap for smaller screens */
+            }
+
+            .study_info dt {
+                flex-basis: 100px; /* Adjust label width */
+            }
+
+            button, input[type="button"] {
+                width: 100%;
+                padding: 10px 15px;
+            }
+        }
+
+        /* 추가 된 테이블 스타일, 삭제 가능*/
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            /*border-collapse: collapse;*/ /* Ensure table borders collapse for a clean look */
+            margin-top: 20px;
+            margin-bottom: 40px;
+            background-color: #f9f9f9; /* Light gray background for the table */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            overflow: hidden;
+        }
+
+        /* 테이블 헤더 상단 모서리 둥글게 */
+        th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 10px;
+        }
+
+        /* 테이블 마지막 행 모서리 둥글게 */
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+
+        th, td {
+            padding: 12px 15px; /* Adequate padding for readability */
+            text-align: left; /* Align text to the left */
+            font-size: 1rem;
+            border-bottom: 1px solid #ddd; /* Light gray border for rows */
+        }
+
+        th {
+            font-weight: bold;
+            color: #333;
+            background-color: #cef5d9; /* Soft green background for headers */
+            text-align: center; /* Center-align the headers */
+        }
+
+        td {
+            color: #333;
+            background-color: #ffffff; /* White background for table cells */
+        }
+
+        /* Styling for rows with alternating colors (optional) */
+        tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Light gray background for odd rows */
+        }
+
+        tr:nth-child(even) {
+            background-color: #ffffff; /* White background for even rows */
+        }
+
+        /* General Container Styling */
+        .container {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Styling for H3 headers */
+        h3 {
+            font-size: 20px;
+            color: #333;
+            border-bottom: 3px solid #76d7b2;
+            padding-bottom: 10px;
+            margin: 30px auto 20px auto;
+            text-align: center;
+            font-weight: bold;
+            width: 900px;
+        }
+
+        .possible {
+            display: inline-block;
+            padding: 3px 10px; /* 크기 축소 */
+            background-color: #ffcd4a; /* 밝은 노란색 */
+            color: white;
+            font-size: 12px; /* 더 작은 글씨 */
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            margin-top: 5px;
+            text-align: left; /* 왼쪽 정렬 */
+        }
+
+        .possible:hover {
+            background-color: #f6c700;
+            color: #000;
+        }
+
+        /* 퀵 메뉴 전체 스타일 */
+        .quick-menu {
+            position: fixed; /* 화면 고정 */
+            bottom: -230px; /* 화면 하단에서 20px */
+            /*transform: translateY(-250px);*/
+            right: 20px; /* 화면 오른쪽에서 20px */
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            align-items: center;
+            z-index: 9999; /* 최상위 레이어 */
+        }
+
+        /* 개별 아이템 스타일 */
+        .quick-item {
+            width: 90px; /* 버튼 너비 */
+            background-color: #ff2630; /* 빨간색 배경 */
+            border-radius: 10px; /* 테두리 둥글게 */
+            margin-bottom: 10px; /* 아이템 간격 */
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(255, 38, 48, 0.63); /* 그림자 효과 */
+            overflow: hidden; /* 테두리를 넘는 내용 숨기기 */
+            transition: transform 0.3s ease; /* 호버 애니메이션 */
+        }
+
+        .quick-item:hover {
+            transform: scale(1.05); /* 호버 시 크기 확대 */
+        }
+
+        .quick-item img {
+            width: 50%;
+            height: 70%; /* 이미지 높이 고정 */
+            object-fit: cover; /* 이미지 비율 유지 */
+            padding-top: 10px;
+            justify-content: center;
+
+        }
+
+        .quick-item p {
+            margin: 0;
+            padding-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 상단 이동 버튼 스타일 */
+        .quick-menu .top {
+            margin-top: 10px;
+            font-size: 14px;
+            color: slategrey;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .quick-menu .top:hover {
+            color: #e30613; /* 빨간색으로 변경 */
+        }
+
+
+    </style>
+    <title>신청 학습 보기</title>
+</head>
+
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a th:href="@{/parent/myInfoP/{pId}(pId=${session.parentLoginId})}">내 정보</a></li>
+            <li><a class="classList" th:href="@{/parent/myClassRequests/{pId}(pId=${session.parentLoginId})}">내 신청목록</a>
+            </li>
+            <!--<li><a href="/parent/classRequest">학습신청</a></li>-->
+            <li><a href="/signup/form">상담신청</a></li>
+            <li><a href="/bWriteForm">문의</a></li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+
+    </div>
+    <div class="t-l-j">
+        <div class="auth-buttons" th:if="${session.parentLoginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+
+        <div th:if="${session.parentLoginId ne null}">
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.parentLoginId}"/>
+            <a th:href="@{/myChildP/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>
+            <a href="/pLogout" id="logout">로그아웃</a>
+        </div>
+    </div>
+</header>
+
+
+<div th:if="${#lists.isEmpty(classRequests)}" id="noRequestsMessage" style="text-align: center; padding: 20px;">
+    <h3>신청 목록이 없습니다.</h3>
+    <p>학습 신청을 진행하려면 아래 버튼을 클릭하세요.</p>
+    <br>
+    <a href="/parent/classRequest">
+        <button style="padding: 12px 20px; font-size: 16px; background-color: #0c92c7; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            학습 신청하러 가기
+        </button>
+    </a>
+</div>
+
+
+<table>
+    <tr>
+        <th>학습신청일</th>
+        <th>학습받을 학생</th>
+        <th>선생님</th>
+        <th>신청한 장소</th>
+        <th>요일</th>
+        <th>레벨</th>
+        <th>과목</th>
+        <th>상태</th>
+    </tr>
+    <tr th:each="classReq : ${classRequests}">
+        <td th:text="${#temporals.format(classReq.clReqDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${classReq.sName}"></td>
+        <td th:text="${classReq.tName}"></td>
+        <td th:text="${classReq.clReqPlace}"></td>
+        <td th:text="${classReq.clReqDay}"></td>
+        <td th:text="${classReq.clReqLevel}"></td>
+        <td th:text="${classReq.clReqSubject}"></td>
+
+
+        <td>
+            <div th:if="${classReq.clReqStatus == '미확인' or classReq.clReqStatus == '결제 완료'}">
+                <span th:value="${classReq.clReqStatus}" th:text="${classReq.clReqStatus}">
+                </span>
+            </div>
+
+            <div th:if="${#strings.toString(classReq.clReqStatus)} eq '결제 가능'">
+        <span id="status" th:value="${classReq.clReqStatus}">
+            <!-- 버튼 클릭 시 해당 링크로 이동 -->
+            <a th:href="@{/viewClassRequest/{clReqId}(clReqId=${classReq.clReqId})}">
+                <button class="possible" th:text="${classReq.clReqStatus}">결제 가능</button>
+            </a>
+        </span>
+            </div>
+        </td>
+
+
+    </tr>
+</table>
+
+<div class="quick-menu" style="transform: matrix(1, 0, 0, 1, 0, -300);">
+
+    <!-- 학습신청 -->
+    <div class="quick-item">
+        <a href="/parent/classRequest">
+            <img src="/File/학습신청.png" alt="학습신청">
+            <p>학습신청</p>
+        </a>
+    </div>
+
+    <!-- 채팅 -->
+    <div class="quick-item">
+        <a href="/chat">
+            <!--        <a th:href="@{/chat/{pId}(pId=${session.parentLoginId})}">-->
+            <img src="/File/채팅.png" alt="채팅">
+            <p>채팅</p>
+        </a>
+    </div>
+
+    <!-- 상단 이동 -->
+    <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+
+    </div>
+</footer>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+
+</script>
+
+
+</html>

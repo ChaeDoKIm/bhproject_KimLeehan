@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/header-footer-teacher.css"/>
+    <link rel="stylesheet" href="/css/tinfo.css"/>
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <title>선생님 정보</title>
+</head>
+
+<body>
+<header>
+    <nav>
+        <div th:if="${session.teacherLoginId eq null}">
+            <ul>
+                <li><a href="/resume/rwrite">입사지원</a></li>
+                <li><a href="/bWriteForm">문의</a></li>
+            </ul>
+        </div>
+        <!--    <a th:href="@{/pView/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>-->
+        <div th:if="${session.teacherLoginId ne null}">
+            <ul>
+                <li><a th:href="@{/tMySchedule/{tId}(tId=${session.teacherLoginId})}">스케줄</a></li>
+                <li><a th:href="@{/tStudents/{tId}(tId=${session.teacherLoginId})}">학생관리</a></li>
+                <li><a class="myPageT" th:href="@{/tMyInfo/{tId}(tId=${session.teacherLoginId})}">마이 페이지</a></li>
+                <li><a href="/bWriteForm">문의</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="logo">
+        <a href="/teacher/Tmain"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+
+    <div th:if="${session.teacherLoginId eq null}">
+        <a id="login">로그인</a>
+    </div>
+
+    <div th:if="${session.teacherLoginId ne null}">
+        <input type="hidden" id="loginId" name="loginId" th:value="${session.teacherLoginId}"/>
+        <!--    <button id="teacher">마이 페이지</button>-->
+        <a href="/tLogout" id="logout">로그아웃</a>
+    </div>
+</header>
+<div id="alertMessage"
+     style="display: none; padding: 10px; margin: 10px auto; width: 80%; text-align: center; font-weight: bold; border-radius: 5px;"></div>
+
+<div class="wrap" id="myInfo">
+    <div class="container myInfoDetails">
+        <div class="section infoDetails">
+            <h4>기본 정보</h4>
+            <p>이름: [[${view.tName}]]</p>
+            <p>아이디: [[${view.tId}]]</p>
+            <p>이메일: [[${view.tEmail}]]</p>
+            <p>활동지역: [[${view.tArea}]]</p>
+            <div class="section profile">
+                <div id="imageBox">
+                    <img th:src="@{|/profile/${view.tProfileName}|}" alt="프로필 사진" width="200px"/>
+                </div>
+            </div>
+        </div>
+        <div class="section eduSpec">
+            <h4>최종 학력</h4>
+            <p th:text="${view.tEdu}"></p>
+        </div>
+        <div class="section classDetails">
+            <h4>활동 정보</h4>
+            <p>활동 지역: [[${view.tArea}]]</p>
+            <p>맡은 학년과 레벨: [[${view.tGrade}]] , [[${view.tLevel}]] </p>
+            <p>맡은 과목: [[${view.tSubject}]]</p>
+            <p>휴무일: [[${view.tRestDay}]]</p>
+        </div>
+    </div>
+
+    <div class="container" id="addSpecForm">
+        <form action="/addSpec" id="addSpec" name="addSpec" method="post" enctype="multipart/form-data">
+            <input type="file" id="tSpec" name="specFile"/>
+            <input type="text" id="tSpecName" name="specName" placeholder="자격증 종류"/>
+            <input type="hidden" name="tId" th:value="${view.tId}"/>
+            <input type="submit"/>
+        </form>
+    </div>
+
+    <div class="container" id="modiForm" enctype="multipart/form-data">
+        <h3>정보 수정</h3>
+        <form action="/modMyInfoP" name="modMyInfoP" method="POST">
+            <table>
+                <tr>
+                    <th>아이디</th>
+                    <td>
+                        <input type="text" name="tId" th:value="${view.tId}" readonly/></br>
+                        <a th:href="@{/tChangePass/{tId}(tId = ${view.tId})}">비밀번호 변경</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>이메일</th>
+                    <td>
+                        <input type="email" id="tEmail" name="tEmail" th:value="${view.tEmail}" readonly/>
+                        <span id="check">
+                            <input type="button" value="인증번호 발송" id="checkEmail"/>
+                         </span>
+                        <p class="changeInfo" id="changeEmail">변경</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>연락처</th>
+                    <td>
+                        <input type="text" name="tPhone" th:value="${view.tPhone}" readonly/>
+                        <p class="changeInfo" id="changePhone">변경</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>활동지역</th>
+                    <td>
+                        <input type="text" name="tArea" th:value="${view.tArea}" readonly/>
+                        <p class="changeInfo" id="changeArea">변경</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>휴무일</th>
+                    <td>
+                        <input type="text" name="tRestDay" th:value="${view.tRestDay}" readonly/>
+                        <p class="changeInfo" id="changeRestDay">변경</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>맡을 학년</th>
+                    <td>
+                        <input type="text" name="tGrade" th:value="${view.tGrade}" readonly/>
+                        <p class="changeInfo" id="changeGrade">변경</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>과목</th>
+                    <td>
+                        <input type="text" name="tSubject" th:value="${view.tSubject}" readonly/>
+                        <p class="changeInfo" id="changeSubject">변경</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>레벨</th>
+                    <td>
+                        <input type="text" name="tLevel" th:value="${view.tLevel}" readonly/>
+                        <p class="changeInfo" id="changeLevel">변경</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th colspan="2"><input type="submit" value="수정된 정보 저장"/></th>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+<!--    TODO: 이메일 변경 할 때 인증번호 확인 안 하면 수정 불가-->
+<!--    TODO: 요일, 레벨, 학년, 과목 변경을 checkbox/select로 바꾸기-->
+<!--    TODO: 활동 지역을 선택할 때 학습신청 기능을 모달창으로 띄울 수 있느지 확인하기-->
+<!--    TODO: 교재등록/변경 만들기-->
+
+    <div class="end-btn">
+        <button id="showSpecForm">추가 자격증 인증</button>
+        <button id="showModForm">정보 수정하기</button>
+    </div>
+</div>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+
+    $('#logout').click(() => {
+        location.href = '/tLogout';
+    });
+
+    let addSpecForm = $('#addSpecForm');
+    let modiForm = $('#modiForm');
+    let myInfoDetails = $('.myInfoDetails');
+    let showSpecForm = $('#showSpecForm');
+    let showModForm = $('#showModForm');
+
+    // Initial button texts
+    const initialShowSpecText = "추가 자격증 인증";
+    const initialShowModText = "정보 수정하기";
+
+    addSpecForm.hide();
+    modiForm.hide();
+
+    function toggleForms(trigger, formToShow, initialText, otherTrigger, otherForm, otherTriggerInitialText) {
+        trigger.click(() => {
+
+            if (formToShow.is(":visible") && !myInfoDetails.is(":visible")) {
+                myInfoDetails.show(); // 내정보 보기
+                formToShow.hide();   // 현재 폼 숨기기
+                trigger.text(initialText); // 버튼 문구 초기화
+            } else {
+                // 다른 폼 다 숨기고 버튼 문구 초기화
+                myInfoDetails.hide();
+                otherForm.hide();
+                otherTrigger.text(otherTriggerInitialText); // 다른 버튼 초기화
+
+                // 선택된 폼 보여주고 버튼 문구 바꾸기
+                formToShow.show();
+                trigger.text("취소");
+
+                // ✅ 폼이 보일 때 버튼 순서 변경: "정보 수정하기" → "취소" (순서 변경)
+                $(".end-btn").prepend(otherTrigger);  // "정보 수정하기" 버튼을 앞으로 이동
+                $(".end-btn").append(trigger);  // "취소" 버튼을 뒤로 이동
+            }
+        });
+    }
+    // 각 버튼에 기능 적용
+    toggleForms(showSpecForm, addSpecForm, initialShowSpecText, showModForm, modiForm, initialShowModText);
+    toggleForms(showModForm, modiForm, initialShowModText, showSpecForm, addSpecForm, initialShowSpecText);
+
+    $(document).ready(function () {
+        let submitButton = $("input[type='submit']"); // Select the submit button
+        let checkEmail = $("#checkEmail"); // Select the check email button
+
+        // Initially hide the check email button
+        checkEmail.hide();
+
+        $(".changeInfo").click(function () {
+            let inputField = $(this).closest("td").find("input");
+
+            if (inputField.prop("readonly")) {
+                // Enable editing
+                inputField.removeAttr("readonly").css("background-color", "#ffffff");
+                $(this).text("취소");
+
+                // If it's the email change button, show the check email button
+                if ($(this).attr("id") === "changeEmail") {
+                    checkEmail.css("background-color", "#ffcd4a");
+                    checkEmail.css("border-color", "transparent");
+                    checkEmail.show();
+                }
+
+            } else {
+                // Revert changes
+                inputField.attr("readonly", true).css("background-color", "#f9f9f9");
+                $(this).text("변경");
+
+                // If it's the email change button, hide the check email button
+                if ($(this).attr("id") === "changeEmail") {
+                    checkEmail.hide();
+                }
+            }
+
+            // Check if any input is editable and enable/disable the submit button accordingly
+            toggleSubmitButton();
+        });
+
+        function toggleSubmitButton() {
+            let anyEditable = $("td input:not([readonly])").length > 0; // Check if any input is editable
+            submitButton.prop("disabled", !anyEditable); // Enable if editable, disable otherwise
+        }
+    });
+
+
+    $(document).ready(function () {
+        let message = `[[${message}]]`; // Thymeleaf retrieves the message
+        let alertType = `[[${alertType}]]`; // "success" or "error"
+
+        if (message && message !== "null") {
+            let alertBox = $("#alertMessage");
+            alertBox.text(message).css({
+                "display": "block",
+                "background-color": alertType === "success" ? "#d4edda" : "#f8d7da",
+                "color": alertType === "success" ? "#155724" : "#721c24",
+                "border": alertType === "success" ? "1px solid #c3e6cb" : "1px solid #f5c6cb"
+            });
+
+            // Auto-hide the alert after 3 seconds
+            setTimeout(function () {
+                alertBox.fadeOut();
+            }, 3000);
+        }
+    });
+
+    let tEmail = $('#tEmail');
+    let checkEmail = $('#checkEmail');
+    let check = $('#check');
+    let check_email = false;
+
+    checkEmail.click(() => {
+        $.ajax({
+            type: "POST",
+            url: "/tEmailCheck",
+            data: {"tEmail": tEmail.val()},
+            dataType: "text",
+            success: (uuid) => {
+                console.log(uuid);
+                check.empty();
+                check.append(`<input type="text" id="uuid1" size="25" style="width: 50%"/>`);
+                check.append(`<input type="button" value="인증" class="changeInfo" id="btnUUID" data-value="${uuid}" /><br/>`);
+            },
+            error: () => {
+                alert('emailCheck 통신 실패');
+            }
+        });
+    });
+
+    // 인증번호 확인하기
+    $(document).on('click', '#btnUUID', function () {
+        // <input type="button" value="인증" id="btnUUID" data-value="${uuid}"/>
+        // 인증 버튼 클릭했을 때 해당하는 요소에 데이터로 지정한 값을 가져온다
+        let uuid = $(this).data("value");
+
+        // <input type="text" id="uuid1" />
+        // 입력한 인증번호
+        let uuid1 = $('#uuid1').val();
+
+        if (uuid == uuid1) {
+            alert('이메일이 인증되었습니다');
+            check.hide();
+            check_email = true;
+        } else {
+            alert('이메일 인증 실패했습니다. 인증번호를 확인해주세요.');
+            $('#uuid').val("");
+        }
+    });
+
+</script>
+
+</html>

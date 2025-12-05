@@ -1,0 +1,180 @@
+.studentHead {
+    border-bottom: 3px solid #228b22;
+    color: #228b22;
+    padding-bottom: 3px;
+}
+
+.wrap {
+    margin-left: 1.2%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    /*border: 3px solid;*/
+    /*border-image: linear-gradient(90deg, #a3d9b1, #87ceeb) 1; !* 그라데이션 색상 설정 *!*/
+    background-image: url('/images/학생목록.png'); /* 배경 이미지 경로 */
+    background-size: cover; /* 이미지가 잘리지 않도록 크기 조정 */
+    background-position: center; /* 이미지가 중앙에 위치하도록 */
+    background-repeat: no-repeat; /* 이미지 반복하지 않기 */
+    position: relative; /* 내용이 배경 위에 올 수 있도록 */
+    z-index: 0; /* 배경 이미지가 맨 아래에 위치하도록 */
+    /*min-height: 100vh; !* 화면 전체 높이만큼 최소 높이 설정 *!*/
+    /*overflow: hidden; !* 내용이 영역을 벗어나지 않도록 *!*/
+}
+
+h2 {
+    font-size: 20px;
+    color: #003869;
+    margin-bottom: 15px;
+}
+
+.studentList {
+    gap: 15px;
+    margin-left: 30px;
+    border-radius: 8px;
+    z-index: 1; /* 배경 위에 표시되도록 */
+
+    /* 스크롤바 추가 관련 속성 */
+    max-height: 500px; /* 최대 높이 설정 */
+    /*overflow-y: auto; !* 내용이 많으면 세로 스크롤 생성 *!*/
+    /*padding: 10px; !* 내부 여백 추가 *!*/
+}
+
+/* 스크롤바 디자인 */
+.studentList .myStudentInfo::-webkit-scrollbar {
+    width: 10px; /* 스크롤바 너비 */
+}
+
+.studentList .myStudentInfo::-webkit-scrollbar-thumb {
+    background-color: #87ceeb; /* 스크롤바 색상 */
+    border-radius: 8px; /* 둥근 모서리 */
+}
+
+.studentList .myStudentInfo::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* 스크롤바 배경 */
+    border-radius: 8px;
+}
+
+.student {
+    display: flex; /* 가로 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    gap: 10px; /* 두 요소 사이 간격 */
+    min-height: 50px; /* 고정된 높이 */
+    /*position: relative;*/
+    margin-bottom: 5px; /* 학생 간 하단 여백 줄이기 */
+}
+
+/* 마지막 학생 아래 불필요한 여백 제거 */
+.student:last-child {
+    margin-bottom: 0;
+}
+
+h2.studentTitle {
+    /*position: relative; !* 밑줄 위치 조정을 위해 설정 *!*/
+    margin-top: 41px;
+    margin-left: 20px;
+    padding-bottom: 10px; /* 텍스트와 밑줄 간격 */
+    border-bottom: 2px solid #87ceeb; /* 기존 밑줄 */
+    width: 230px;
+}
+
+.studentInfoCheck {
+    flex: 1; /* 왼쪽 영역 차지 */
+    margin: 0;
+    width: 200px;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #a3d9b1;
+    background-color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0; /* 크기 변동 방지 */
+    transition: border 0.1ms ease-in-out;
+}
+
+.studentInfoCheck li {
+    margin: 0;
+    padding: 5px 0; /* 위아래 패딩 조정 */
+}
+
+.myStudentInfo {
+    position: absolute; /* 화면 고정 */
+    /*flex: 2; !* 오른쪽 영역 차지 *!*/
+    top: 5%; /* 화면 세로 */
+    left: 460px; /* 우측 고정 위치 */
+    width: 700px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: white;
+
+    /* 기본적으로 숨겨진 상태 (공간 유지) */
+    display: none;
+    /*height: 620px; !* 고정 높이로 설정 *!*/
+    max-height: 0; /* 최대 높이 설정 */
+    overflow-x: hidden;
+    overflow-y: auto; /* 세로 스크롤 활성화 */
+    transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
+}
+
+.myStudentInfo h2 {
+    /*position: sticky; !* 고정 *!*/
+    top: 0; /* 최상단 유지 */
+    padding: 10px 0;
+    z-index: 10; /* 다른 요소보다 위에 표시 */
+    font-weight: bold;
+    border-bottom: 2px solid #87ceeb;
+}
+
+.info p {
+    margin: 10px 0;
+    padding: 8px;
+    border: 1px dotted #87ceeb;
+    width: 170px;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+
+form {
+    margin-top: 15px;
+}
+
+form input, form textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ff8c00;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+form input[type="submit"] {
+    width: auto;
+    background-color: #ff7f50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+form input[type="submit"]:hover {
+    background-color: #ff6347;
+}
+
+form input[type="button"] {
+    background-color: #87cefa;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form input[type="button"]:hover {
+    background-color: #4682b4;
+}

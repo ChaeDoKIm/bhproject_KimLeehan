@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/header-footer-parent.css">
+    <link rel="stylesheet" href="/css/parentchild.css">
+    <link rel="stylesheet" href="/css/quickmenu.css">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+    <style>
+
+
+        .modal {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        textarea {
+            width: 90%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+
+
+        /* ✅ 기존 스타일 변경 - 다른 버튼과 겹치지 않도록 */
+        .review-btn {
+            width: auto; /* 기본 크기 */
+            padding: 8px 16px; /* 내부 여백 */
+            background-color: #ff9800; /* 주황색 배경 */
+            color: white; /* 글자색 */
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px; /* 모서리 둥글게 */
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+
+        /* ✅ 마우스 호버 효과 */
+        .review-btn:hover {
+            background-color: #e68900; /* 조금 더 진한 주황색 */
+        }
+
+        /* ✅ 버튼이 비활성화(disabled)일 때 */
+        .review-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+    <title>학부모 정보</title>
+
+</head>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<body>
+<input type="hidden" id="parentLoginId" th:value="${session.parentLoginId}">
+
+<header>
+    <nav>
+        <ul>
+            <li><a th:href="@{/parent/myInfoP/{pId}(pId=${session.parentLoginId})}">내 정보</a></li>
+            <li><a th:href="@{/parent/myClassRequests/{pId}(pId=${session.parentLoginId})}">내 신청목록</a></li>
+            <!--<li><a href="/parent/classRequest">학습신청</a></li>-->
+            <li><a href="/signup/form">상담신청</a></li>
+            <li><a href="/bWriteForm">문의</a></li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+
+    </div>
+    <div class="t-l-j">
+        <div class="auth-buttons" th:if="${session.parentLoginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+
+        <div th:if="${session.parentLoginId ne null}">
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.parentLoginId}"/>
+            <a th:href="@{/myChildP/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>
+            <a href="/pLogout" id="logout">로그아웃</a>
+        </div>
+    </div>
+</header>
+
+<div class="header"></div>
+<!--전체 wrap-->
+<div class="wrap">
+    <!--학생목록-->
+    <div class="container student_info">
+        <h3>학생 정보</h3>
+        <!--학생 기본정보-->
+        <div class="container student_list" th:each="student : ${studentList}">
+            <div class="container basic_student_info">
+                <input type="hidden" th:value="${student.sId}"/>
+                <input type="hidden" class="tId" th:value="${student.tId}">
+                <input type="hidden" class="tName" th:value="${student.tName}">
+                <ul>
+                    <li>학생이름: <span id="student_name">[[${student.sName}]]</span></li>
+                    <li>학년: <span id="student_grade">[[${student.sGrade}]]</span></li>
+                    <li>수강상태: <span id="class_status"
+                                    th:value="${student.clProgStatus}">[[${student.clProgStatus}]]</span></li>
+                    <!--                     진행 중인 학생만 리뷰 작성 버튼 표시 -->
+                    <div th:if="${student.clProgStatus eq '진행 중'}">
+                        <!--                        <button class="writeReviewButton"-->
+                        <button class="writeReviewButton review-btn"
+                                th:data-tid="${student.tId}"
+                                th:data-sid="${student.sId}"
+                                onclick="openReviewModal(this)">
+                            리뷰 작성
+                        </button>
+                    </div>
+
+                </ul>
+                <!--학습 관련 정보 (진행도, 선생님 코멘트)-->
+                <div class="container class_info" th:if="${student.clProgPercent ne null}">
+                    <!-- 선생님 코멘트-->
+                    <div id="teacher_comments">
+                        <h4>수업 정보</h4>
+                        <!--수업내용/정보-->
+                        <div class="study_info">
+                            <dl class="row">
+                                <div class="pair">
+                                    <dt id="teacher_name"><strong> 강사님:</strong></dt>
+                                    <dd>&nbsp;[[${student.tName}]]&nbsp;&nbsp;||</dd>
+                                </div>
+                                <div class="pair">
+                                    <dt id="class_week"><strong>회차:</strong></dt>
+                                    <dd>&nbsp;[[${student.cProgress}]]&nbsp;&nbsp;||</dd>
+                                </div>
+                                <div class="pair">
+                                    <dt id="class_subject"><strong>과목:</strong></dt>
+                                    <dd>&nbsp;[[${student.clProgSubject}]]</dd>
+                                </div>
+                            </dl>
+                            <dl class="row">
+                                <div class="pair">
+                                    <dt id="class_book"><strong>교재:</strong></dt>
+                                    <dd>&nbsp;[[${student.clProgBook}]]</dd>
+                                </div>
+                            </dl>
+                            <dl class="row">
+                                <div class="pair">
+                                    <dt id="class_pages"><strong>진도:</strong></dt>
+                                    <dd>&nbsp;[[${student.cPage}]]&nbsp;&nbsp;||</dd>
+                                </div>
+                                <div class="pair">
+                                    <dt id="class_contents"><strong>학습 내용:</strong></dt>
+                                    <dd>&nbsp;[[${student.cClassContents}]]</dd>
+                                </div>
+                            </dl>
+                            <dl class="row">
+                                <div class="pair">
+                                    <dt id="class_date"><strong>종료일:</strong></dt>
+                                    <dd>&nbsp;[[${student.clProgEndDate}]]</dd>
+                                </div>
+                            </dl>
+                        </div>
+                        <!--진행도-->
+                        <div id="class_progress">
+                            <h5>진행도</h5>
+                            <progress id="progress_bar" th:value="${student.clProgPercent}" max="100">
+                                [[${student.clProgPercent}]]%
+                            </progress>
+                        </div>
+                        <!--코멘트 내용-->
+                        <div id="comment_contents">
+                            <h6>강사 코멘트</h6>
+                            <p id="comment">[[${student.cContents}]]</p>
+                            <input type="hidden" id="clProgId" th:value="${student.clProgId}"/>
+                            <p id="showComments">이전 코멘트 보기</p>
+                            <div id="commentList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="addChild" class="button addButton">학생등록</button>
+        <a href="/"><input type="button" id="backButton" value="돌아가기"/></a>
+
+        <!--학생 등록 하기-->
+        <div id="add_child_form">
+            <form action="/sAddChild" method="POST" enctype="multipart/form-data" name="sAddChild">
+                <input type="hidden" id="pId" name="pId" th:value="${session.parentLoginId}">
+                <table>
+                    <tr class="first-list">
+                        <th>항목</th>
+                        <th>내용</th>
+                    </tr>
+                    <tr>
+                        <th>이름</th>
+                        <td><input type="text" id="sName" name="sName"/></td>
+                    </tr>
+                    <tr>
+                        <th>학년</th>
+                        <td><select id="sGrade" name="sGrade">
+                            <option>선택</option>
+                            <option value="초등학교">초등학교</option>
+                            <option value="중학교">중학교</option>
+                            <option value="고등학교">고등학교</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <th>성별</th>
+                        <td>
+                            <input type="radio" name="sGender" value="여"/>여
+                            <input type="radio" name="sGender" value="남"/>남
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            <input type="button" id="submitButton" value="등록"/>
+                            <input type="reset" id="resetButton" value="초기화"/>
+                        </th>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--  리뷰 작성 모달 -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>리뷰 작성</h2>
+
+        <!-- 안내 메시지 추가 -->
+        <p id="reviewWarning" style="color: red; font-weight: bold; text-align: center;">
+            ※ 리뷰 등록은 <strong>한 번만 가능</strong>하며, <strong>수정 및 삭제가 불가능</strong>하니 신중하게 작성해주세요!
+        </p>
+
+        <input type="hidden" id="modalTId"/>
+        <input type="hidden" id="modalSId"/>
+        <label for="reviewRate">별점:</label>
+        <select id="reviewRate">
+            <option value="1">⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="5">⭐⭐⭐⭐⭐</option>
+        </select>
+        <!--        <button id="submitReview">리뷰 등록</button>-->
+        <!-- 리뷰 등록 버튼 -->
+        <button id="saveReviewButton">리뷰 등록</button>
+    </div>
+</div>
+
+
+<div class="quick-menu" style="transform: matrix(1, 0, 0, 1, 0, -300);">
+
+    <!-- 학습신청 -->
+    <div class="quick-item">
+        <a href="/parent/classRequest">
+            <img src="/File/학습신청.png" alt="학습신청">
+            <p>학습신청</p>
+        </a>
+    </div>
+
+    <!-- 채팅 -->
+    <div class="quick-item">
+        <a href="/chat">
+            <!--        <a th:href="@{/chat/{pId}(pId=${session.parentLoginId})}">-->
+            <img src="/File/채팅.png" alt="채팅">
+            <p>채팅</p>
+        </a>
+    </div>
+
+    <!-- 상단 이동 -->
+    <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+
+    </div>
+</footer>
+</body>
+<script src="/js/childInfo.js"></script>
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const reviewModal = document.getElementById("reviewModal");
+        const closeModal = document.querySelector(".close");
+
+        //  모든 리뷰 버튼의 상태를 서버에서 확인 후 업데이트
+        document.querySelectorAll(".writeReviewButton").forEach(button => {
+            let sId = button.getAttribute("data-sid");
+            let tId = button.getAttribute("data-tid");
+
+            if (!sId || !tId) {
+                console.error(" data-sid 또는 data-tid 값이 없는 버튼 발견!~><");
+                return;
+            }
+
+            fetch(`/parent/myChild/review/check/${sId}/${tId}`)
+                .then(response => response.json())
+                .then(reviewCount => {
+                    console.log(` 서버 응답 (sId: ${sId}, tId: ${tId}, 리뷰 개수: ${reviewCount})`);
+
+                    if (reviewCount > 0) {
+                        //  이미 해당 학생이 해당 선생님한테 리뷰 등록한 경우
+                        button.disabled = true;
+                        button.innerText = "리뷰 등록 완료";
+                        button.style.backgroundColor = "#ccc";
+                        button.style.cursor = "not-allowed";
+                    } else {
+                        //  리뷰가 없으면 버튼 활성화
+                        button.disabled = false;
+                        button.innerText = "리뷰 작성하기";
+                        button.style.backgroundColor = "#007bff";
+                        button.style.cursor = "pointer";
+                    }
+                })
+                .catch(error => console.error(` 리뷰 상태 확인 실패 (sId: ${sId}, tId: ${tId}):`, error));
+        });
+
+        // 모달 열기 함수 (버튼 클릭 시 실행)
+        window.openReviewModal = function (button) {
+            let tId = button.getAttribute("data-tid") || "";
+            let sId = button.getAttribute("data-sid") || "";
+
+            console.log(" 리뷰 작성 버튼 클릭 -> tId:", tId, ", sId:", sId);
+
+            if (!sId || sId.trim() === "" || sId === "null") {
+                alert("리뷰 작성에 필요한 학생 ID가 없습니다!");
+                return;
+            }
+
+            document.getElementById("modalTId").value = tId;
+            document.getElementById("modalSId").value = sId;
+            reviewModal.style.display = "block";
+        };
+
+        // 모달 닫기 기능
+        if (closeModal) {
+            closeModal.addEventListener("click", function () {
+                reviewModal.style.display = "none";
+            });
+        }
+
+        // 리뷰 저장 요청
+        document.getElementById("saveReviewButton").addEventListener("click", function () {
+            let sId = document.getElementById("modalSId").value.trim();
+            let tId = document.getElementById("modalTId").value.trim();
+            let reviewRate = document.getElementById("reviewRate").value;
+
+            console.log(" AJAX 요청 - sId:", sId, ", tId:", tId, ", reviewRate:", reviewRate);
+
+            if (!sId || !tId || !reviewRate) {
+                alert("모든 항목을 입력해주세요!");
+                return;
+            }
+
+            fetch("/parent/myChild/review/save", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({sId, tId, revRate: reviewRate})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(" 서버 응답:", data);
+                    alert("리뷰가 저장되었습니다.");
+                    reviewModal.style.display = "none";
+
+
+                    document.querySelectorAll(".writeReviewButton").forEach(button => {
+                        let buttonSId = button.getAttribute("data-sid");
+                        let buttonTId = button.getAttribute("data-tid");
+
+                        if (buttonSId === sId && buttonTId === tId) {
+                            button.disabled = true;
+                            button.innerText = "리뷰 등록 완료";
+                            button.style.backgroundColor = "#ccc";
+                            button.style.cursor = "not-allowed";
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("오류 발생:", error);
+                    alert("리뷰 저장 중 오류가 발생했습니다.");
+                });
+        });
+    });
+</script>

@@ -1,0 +1,86 @@
+@keyframes walk {
+    0% { opacity: 0; transform: translateY(20px); }
+    50% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
+
+@keyframes scatter {
+    0% { opacity: 0; transform: translate(0, 20px) scale(1); }
+    50% { opacity: 1; transform: translate(calc(var(--x-offset, 0) * 0.5), -10px) scale(1.2); }
+    100% { opacity: 0; transform: translate(var(--x-offset, 0), -60px) scale(1); }
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #f0f4f8, #ffffff);
+    font-family: Arial, sans-serif;
+    position: relative; /* 고정 위치를 위해 추가 */
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    height: 240px;
+    /*transform: translateX(-30px);*/
+}
+
+.logo-image {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+}
+
+/* 고정된 로고 스타일 */
+.logo1, .logo2 {
+    width: 200px;
+    height: 200px;
+    position: fixed; /* 화면에 고정 */
+    bottom: 40%; /* 화면 아래에서 10% 위 */
+    left: 50%; /* 화면의 가운데 */
+    transform: translateX(-50%); /* 가로 축 가운데 정렬 */
+    animation: none; /* 애니메이션 제거 */
+    z-index: 2; /* 다른 요소 위에 배치 */
+}
+
+.logo2 {
+    bottom: 10%; /* 로고1과 동일한 위치 */
+    left: 50%;
+    opacity: 0; /* 처음에는 투명 상태 */
+    transition: opacity 0.5s ease-in-out; /* 부드러운 전환 효과 */
+}
+
+/* 로딩음표들 애니메이션 적용 */
+.logo3, .logo4, .logo5, .logo6 {
+    width: 50px;
+    height: 50px;
+    animation: scatter 2.5s linear infinite;
+    --x-offset: 50px; /* 음표의 좌우 흩어지는 방향 및 거리 */
+    z-index: 1; /* 로고 뒤에 배치 */
+}
+
+/*.logo1 { animation-delay: 0s; bottom: 0; left: 20px; }*/
+/*.logo2 { animation-delay: 0.5s; bottom: 60px; left: -20px; }*/
+.logo3 { animation-delay: 0s; bottom: 190px; --x-offset: -90px; }
+.logo4 { animation-delay: 0.5s; bottom: 190px; --x-offset: 90px; }
+.logo5 { animation-delay: 1s; bottom: 190px; --x-offset: -60px; }
+.logo6 { animation-delay: 1.5s; bottom: 190px; --x-offset: 60px; }
+
+.loading-text {
+    margin-top: 20px;
+    color: #888;
+    font-size: 14px;
+}
+
+.loading-percentage {
+    margin-top: 10px;
+    color: #888;
+    font-size: 16px;
+}

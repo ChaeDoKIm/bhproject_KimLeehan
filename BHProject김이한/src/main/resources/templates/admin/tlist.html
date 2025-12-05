@@ -1,0 +1,285 @@
+<!--변경후-->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+  <title>선생님 관리</title>
+
+  <style>
+    /* Reset & 기본 폰트 (관리자 페이지와 통일) */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --primary: #111827;
+      --muted: #9ca3af;
+      --rowAlt: #f9fafb;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      color: #1f1f1f;
+    }
+
+    /* admin-shell 카드 레이아웃 */
+    .admin-shell {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow:
+              0 20px 40px rgba(0,0,0,0.08),
+              0 2px 4px rgba(0,0,0,0.04);
+      padding: 24px 24px 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 헤더 */
+    .admin-header {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .console-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #6b7280;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .page-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: -0.03em;
+      line-height: 1.3;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .page-subtext {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    /* 섹션 설명 */
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 12px;
+    }
+    .section-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: -0.03em;
+    }
+    .section-header p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* 테이블 래퍼 */
+    .table-wrap {
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      table-layout: fixed;
+    }
+
+    .styled-table thead th {
+      background: #2c3e50;
+      color: #ffffff;
+      padding: 12px 10px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      font-size: 0.8rem;
+    }
+
+    .styled-table tbody td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .styled-table tbody tr:nth-child(even) {
+      background-color: var(--rowAlt);
+    }
+
+    .styled-table tbody tr:hover {
+      background-color: #e8f4ff;
+      transition: background-color 0.15s ease;
+    }
+
+    /* 링크 스타일 (선생님 상세 수정 페이지 링크) */
+    .link {
+      color: #0f4c75;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    /* 모바일에서 카드형으로 전환 */
+    @media (max-width: 720px) {
+      .admin-shell {
+        border-radius: 0;
+        max-width: 100%;
+        min-height: 100vh;
+        box-shadow: none;
+      }
+
+      .styled-table thead {
+        display: none;
+      }
+      .styled-table,
+      .styled-table tbody,
+      .styled-table tr,
+      .styled-table td {
+        display: block;
+        width: 100%;
+      }
+      .styled-table tr {
+        border-bottom: 1px solid var(--border);
+        padding: 8px 12px;
+      }
+      .styled-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: none;
+      }
+      .styled-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+    }
+
+
+    /* 관리자 메인이동  하단 버튼 영역 (필요하면 사용) */
+    .footer-row {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      appearance: none;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background-color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      cursor: pointer;
+      color: #111827;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      border-color: #34a853;
+      color: #34a853;
+      box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+
+<body>
+<div class="admin-shell">
+
+  <!-- 상단 헤더 -->
+  <header class="admin-header">
+    <div class="console-label">Admin Console · Teacher</div>
+    <div class="page-title">
+      <div>선생님 관리</div>
+    </div>
+    <div class="page-subtext">
+      등록된 강사 목록입니다. 선생님 ID를 선택하면 상세 정보/수정 페이지로 이동합니다.
+    </div>
+  </header>
+
+  <!-- 섹션 설명 -->
+  <div class="section-header">
+    <h2>강사 목록</h2>
+    <p>이름, 담당 과목, 학년 및 레벨 정보를 한 눈에 확인할 수 있습니다.</p>
+  </div>
+
+  <!-- 테이블 -->
+  <div class="table-wrap">
+    <table class="styled-table">
+      <thead>
+      <tr>
+        <th style="width: 20%">선생님 ID</th>
+        <th style="width: 25%">이름</th>
+        <th style="width: 25%">과목</th>
+        <th style="width: 30%">학년 / 레벨</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="teacher : ${teacherList}">
+        <td data-label="선생님 ID">
+          <a class="link"
+             th:href="@{/modTForm/{tId}(tId=${teacher.tId})}"
+             th:text="${teacher.tId}"></a>
+        </td>
+        <td data-label="이름"
+            th:text="${teacher.tName}">이름</td>
+        <td data-label="과목"
+            th:text="${teacher.tSubject}">과목</td>
+        <td data-label="학년 / 레벨">
+          <span th:text="${teacher.tGrade}">학년</span>
+          &nbsp;/&nbsp;
+          <span th:text="${teacher.tLevel}">레벨</span>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="footer-row">
+    <button type="button" class="btn" onclick="location.href='/admin/main'">
+      관리자 메인으로
+    </button>
+  </div>
+
+</div>
+
+</body>
+</html>

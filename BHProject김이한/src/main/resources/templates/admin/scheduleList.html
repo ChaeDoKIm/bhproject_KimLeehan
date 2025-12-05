@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>선생님 일정 관리</title>
+
+    <!-- 공통 관리자 스타일 사용 시 -->
+<!--    <link rel="stylesheet" href="/css/admin.css">-->
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #f4f7fb;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+            color: #111827;
+            display: flex;
+            justify-content: center;
+            padding: 40px 12px;
+        }
+
+        .admin-shell {
+            width: 100%;
+            max-width: 1200px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            padding: 24px 24px 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-header {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+
+        .console-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6b7280;
+            letter-spacing: -0.02em;
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.02em;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .page-subtext {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .back-link {
+            font-size: 0.8rem;
+            color: #0f4c75;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .section-header {
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
+        .section-header h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0;
+            color: #111827;
+        }
+
+        .section-header p {
+            margin: 3px 0 0;
+            font-size: 0.78rem;
+            color: #6b7280;
+        }
+
+        .table-wrap {
+            margin-top: 8px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            table-layout: fixed;
+        }
+
+        .styled-table thead th {
+            background: linear-gradient(90deg, #0f4c75, #3282b8);
+            color: #ffffff;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        .styled-table tbody td {
+            padding: 9px 8px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #111827;
+            word-break: break-word;
+        }
+
+        .styled-table tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .styled-table tbody tr:hover {
+            background-color: #e8f4ff;
+            transition: background-color 0.15s ease;
+        }
+
+        /* 상태 배지 */
+        .badge {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .badge.wait {
+            background-color: #fffbeb;
+            color: #92400e;
+            border-color: #fed7aa;
+        }
+
+        .badge.pending {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+        }
+
+        .badge.done {
+            background-color: #ecfdf5;
+            color: #047857;
+            border-color: #bbf7d0;
+        }
+
+        .badge.default {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border-color: #e5e7eb;
+        }
+
+        /* 버튼들 */
+        .btn {
+            appearance: none;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            cursor: pointer;
+            color: #111827;
+            transition: all 0.15s ease;
+            margin: 2px 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn:hover:not(:disabled) {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background-color: #0f4c75;
+            border-color: #0f4c75;
+            color: #ffffff;
+        }
+
+        .btn-danger {
+            background-color: #e63946;
+            border-color: #d62839;
+            color: #ffffff;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 900px) {
+            body {
+                padding: 16px 8px;
+            }
+
+            .admin-shell {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .styled-table {
+                font-size: 0.78rem;
+            }
+
+            .styled-table thead {
+                display: none;
+            }
+
+            .styled-table,
+            .styled-table tbody,
+            .styled-table tr,
+            .styled-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .styled-table tr {
+                border-bottom: 1px solid #e5e7eb;
+                padding: 8px 10px;
+            }
+
+            .styled-table tbody td {
+                border-bottom: none;
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+                padding: 6px 0;
+            }
+
+            .styled-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #6b7280;
+                font-size: 0.75rem;
+            }
+
+            .actions-cell {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="admin-shell">
+    <!-- 상단 헤더 -->
+    <header class="admin-header">
+        <div class="console-label">Admin Console · Schedule</div>
+        <div class="page-title">
+            <div>선생님 일정 관리</div>
+            <a href="/admin/main" class="back-link">← 관리자 메인으로</a>
+        </div>
+        <div class="page-subtext">
+            생성된 수업 일정과 결제 상태를 확인하고, 결제 완료된 일정은 삭제할 수 있습니다.
+        </div>
+    </header>
+
+    <!-- 섹션 설명 -->
+    <div class="section-header">
+        <h2>수업 일정 목록</h2>
+        <p>결제 정보 저장은 “확인” 버튼으로, 일정 삭제는 “일정 삭제” 버튼으로 처리합니다.</p>
+    </div>
+
+    <!-- 일정 테이블 -->
+    <div class="table-wrap">
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th style="width: 7%">ID</th>
+                <th style="width: 8%">시작</th>
+                <th style="width: 8%">종료</th>
+                <th style="width: 7%">요일</th>
+                <th style="width: 12%">장소</th>
+                <th style="width: 9%">선생님</th>
+                <th style="width: 8%">학생번호</th>
+                <th style="width: 10%">학생이름</th>
+                <th style="width: 9%">상태</th>
+                <th style="width: 8%">신청번호</th>
+                <th style="width: 14%">관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="schedule : ${scheduleList}" class="row-schedule"
+                th:data-plan-status="${schedule.planStatus}">
+                <td data-label="일정 ID" th:text="${schedule.planId}"></td>
+                <td data-label="시작 시간" th:text="${schedule.planStartTime}"></td>
+                <td data-label="끝나는 시간" th:text="${schedule.planEndTime}"></td>
+                <td data-label="요일" th:text="${schedule.planDay}"></td>
+                <td data-label="장소" th:text="${schedule.planPlace}"></td>
+                <td data-label="선생님" th:text="${schedule.tId}"></td>
+                <td data-label="학생번호" th:text="${schedule.sId}"></td>
+                <td data-label="학생이름" th:text="${schedule.sName}"></td>
+
+                <!-- 상태 배지 -->
+                <td data-label="상태">
+                    <span class="badge default js-status"
+                          th:text="${schedule.planStatus}">상태</span>
+                </td>
+
+                <td data-label="학습신청 번호" th:text="${schedule.clReqId}"></td>
+
+                <!-- 관리 버튼 -->
+                <td class="actions-cell" data-label="관리">
+                    <input type="hidden" class="planId" th:value="${schedule.planId}"/>
+                    <input type="hidden" class="clReqId" th:value="${schedule.clReqId}"/>
+
+
+
+                    <button type="button"
+                            class="btn btn-primary checkPayment"
+                            th:disabled="${schedule.planStatus == '결제 대기' || schedule.planStatus == '결제 완료'}">
+                        확인
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger deleteSchedule"
+                            th:disabled="${schedule.planStatus != '결제 완료'}">
+                        일정 삭제
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+    // 상태 텍스트에 따라 배지 색상 적용
+    function applyStatusBadges() {
+        $('.row-schedule').each(function () {
+            const status = (($(this).data('plan-status') || '') + '').trim();
+            const $badge = $(this).find('.js-status');
+
+            $badge.removeClass('wait pending done default');
+
+            if (status === '결제 전') {
+                $badge.addClass('wait');
+            } else if (status === '결제 대기') {
+                $badge.addClass('pending');
+            } else if (status === '결제 완료') {
+                $badge.addClass('done');
+            } else {
+                $badge.addClass('default');
+            }
+        });
+    }
+
+    // 결제 정보 확인 (결제 정보 저장)
+    $(document).on('click', '.checkPayment', function (e) {
+        e.preventDefault();
+
+        const $btn = $(this);
+        const planId = $btn.closest('tr').find('.planId').val();
+
+        if (!planId) {
+            alert('일정 정보를 찾을 수 없습니다.');
+            return;
+        }
+
+        $.ajax({
+            url: `/sendPaymentInfo/${planId}`,
+            type: 'GET',
+            dataType: "text",
+            success: function (result) {
+                if (result === "OK") {
+                    alert("결제 정보 저장 완료");
+                    $btn.prop("disabled", true);
+                    window.location.href = `/admin/scheduleList`;
+                } else {
+                    alert("결제 정보 저장에 실패했습니다.");
+                }
+            },
+            error: function (error) {
+                console.error(error);
+                alert("결제 정보 처리 중 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    // 일정 삭제
+    $(document).on('click', '.deleteSchedule', function (e) {
+        e.preventDefault();
+
+        const $btn = $(this);
+        const classReqId = $btn.closest('tr').find('.clReqId').val();
+
+        if (!classReqId) {
+            alert('학습신청 번호를 찾을 수 없습니다.');
+            return;
+        }
+
+        if (!confirm('해당 일정을 삭제하시겠습니까?\n관련 결제 정보도 함께 삭제될 수 있습니다.')) {
+            return;
+        }
+
+        $.ajax({
+            url: `/deleteClassReqAndPaymentInfo/${classReqId}`,
+            type: 'GET',
+            dataType: "text",
+            success: function (result) {
+                if (result === "OK") {
+                    alert("일정 삭제 완료");
+                    $btn.prop("disabled", true);
+                    window.location.href = `/admin/scheduleList`;
+                } else if (result === "NO") {
+                    alert("일정 삭제에 실패했습니다.");
+                } else {
+                    alert("삭제 처리 결과가 올바르지 않습니다.");
+                }
+            },
+            error: function (error) {
+                console.error(error);
+                alert("일정 삭제 중 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    $(function () {
+        applyStatusBadges();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/header-footer-parent.css">
+    <!--    <link rel="stylesheet" href="css/style.css">-->
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <title>내 정보</title>
+
+    <style>
+        .myInfo {
+            border-bottom: 3px solid #228b22;
+            color: #228b22;
+            padding-bottom: 3px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .first-table {
+            background: #f0fff4; /* 연한 초록 배경 */
+            border-radius: 10px; /* 둥근 모서리 */
+            border: 2px solid #a3d9a5; /* 테두리 강조 */
+            overflow: hidden; /* 둥근 모서리가 제대로 적용되도록 */
+        }
+
+        .table-border {
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .first-table th {
+            background: #a3d9a5; /* 짙은 초록 배경 */
+            color: #fff; /* 흰색 글씨 */
+            overflow: hidden;
+        }
+        .first-table td p {
+            font-weight: bold; /* 글자 강조 */
+            color: black;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #cef5d9;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+
+        td p {
+            margin: 0;
+            font-size: 16px;
+            color: #444;
+        }
+
+
+        /* 모바일 화면에서의 스타일 */
+        @media (max-width: 600px) {
+            th, td {
+                display: block;
+                width: 100%;
+                text-align: left;
+            }
+
+            th {
+                background: none;
+                border-bottom: none;
+                font-size: 14px;
+                color: #777;
+                padding-top: 10px;
+            }
+
+            td p {
+                font-size: 14px;
+                color: #222;
+            }
+        }
+
+        /* 퀵 메뉴 전체 스타일 */
+        .quick-menu {
+            position: fixed; /* 화면 고정 */
+            bottom: -230px; /* 화면 하단에서 20px */
+            /*transform: translateY(-250px);*/
+            right: 20px; /* 화면 오른쪽에서 20px */
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            align-items: center;
+            z-index: 9999; /* 최상위 레이어 */
+        }
+
+        /* 개별 아이템 스타일 */
+        .quick-item {
+            width: 90px; /* 버튼 너비 */
+            background-color: #ff2630; /* 빨간색 배경 */
+            border-radius: 10px; /* 테두리 둥글게 */
+            margin-bottom: 10px; /* 아이템 간격 */
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(255, 38, 48, 0.63); /* 그림자 효과 */
+            overflow: hidden; /* 테두리를 넘는 내용 숨기기 */
+            transition: transform 0.3s ease; /* 호버 애니메이션 */
+        }
+
+        .quick-item:hover {
+            transform: scale(1.05); /* 호버 시 크기 확대 */
+        }
+
+        .quick-item img {
+            width: 50%;
+            height: 70%; /* 이미지 높이 고정 */
+            object-fit: cover; /* 이미지 비율 유지 */
+            padding-top: 10px;
+            justify-content: center;
+
+        }
+
+        .quick-item p {
+            margin: 0;
+            padding-bottom: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 상단 이동 버튼 스타일 */
+        .quick-menu .top {
+            margin-top: 10px;
+            font-size: 14px;
+            color: slategrey;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .quick-menu .top:hover {
+            color: #e30613; /* 빨간색으로 변경 */
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <ul>
+            <li><a class="myInfo" th:href="@{/parent/myInfoP/{pId}(pId=${session.parentLoginId})}">내 정보</a></li>
+            <li><a th:href="@{/parent/myClassRequests/{pId}(pId=${session.parentLoginId})}">내 신청목록</a></li>
+            <!--<li><a href="/parent/classRequest">학습신청</a></li>-->
+            <li><a href="/signup/form">상담신청</a></li>
+            <li><a href="/bWriteForm">문의</a></li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+
+    </div>
+    <div class="t-l-j">
+        <div class="auth-buttons" th:if="${session.parentLoginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+
+        <div th:if="${session.parentLoginId ne null}">
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.parentLoginId}"/>
+            <a th:href="@{/myChildP/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>
+            <a href="/pLogout" id="logout">로그아웃</a>
+        </div>
+    </div>
+</header>
+<form action="/requestModInfo" method="POST">
+    <table class="first-table">
+        <tr class="table-border" th:each="student : ${studentList}">
+            <th>자녀 이름</th>
+            <td>
+                <p>[[${student.sName}]]</p>
+            </td>
+            <th>자녀 학년</th>
+            <td>
+                <p>[[${student.sGrade}]]</p>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <th>아이디</th>
+            <td>
+                <p>[[${parent.pId}]]</p>
+            </td>
+        </tr>
+
+        <tr>
+            <th>성함</th>
+            <td>
+                <p>[[${parent.pName}]]</p>
+            </td>
+        </tr>
+
+        <tr>
+            <th>연락처</th>
+            <td>
+                <p>[[${parent.pPhone}]]</p>
+            </td>
+        </tr>
+
+        <tr>
+            <th>이메일</th>
+            <td>
+                <p>[[${parent.pEmail}]]</p>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<div class="quick-menu" style="transform: matrix(1, 0, 0, 1, 0, -300);">
+
+    <!-- 학습신청 -->
+    <div class="quick-item">
+        <a href="/parent/classRequest">
+            <img src="/File/학습신청.png" alt="학습신청">
+            <p>학습신청</p>
+        </a>
+    </div>
+
+    <!-- 채팅 -->
+    <div class="quick-item">
+        <a href="/chat">
+            <!--        <a th:href="@{/chat/{pId}(pId=${session.parentLoginId})}">-->
+            <img src="/File/채팅.png" alt="채팅">
+            <p>채팅</p>
+        </a>
+    </div>
+
+    <!-- 상단 이동 -->
+    <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+
+<footer class="common-footer">
+    <div class="inner-footer">
+        <div class="footer-wrap">
+            <div class="info-cont">
+                <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+                <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+                <ul class="footer-menu">
+                    <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+                    <li><a href="/Etc/Clause">서비스약관</a></li>
+                    <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+                    <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+                    <li><a href="/Etc/SiteMap">사이트맵</a></li>
+                </ul>
+                <address class="address">
+                    인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+                    <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+                </address>
+            </div>
+            <div class="etc-cont">
+                <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+                <div class="btn-group sns">
+                    <p class="sns-title">SNS</p>
+                    <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+                    <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+                    <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                            class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+                </div>
+            </div>
+        </div>
+        <div class="copy-cont">
+            Copyright © Bang.Hak All Right Reserved
+        </div>
+
+    </div>
+</footer>
+
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+
+</script>
+
+</html>

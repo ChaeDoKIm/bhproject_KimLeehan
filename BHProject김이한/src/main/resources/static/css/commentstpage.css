@@ -1,0 +1,39 @@
+
+.commentList, .comments div {
+    display: block;
+
+}
+
+.commentList {
+    justify-content: stretch;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f0f8ff;
+    border-radius: 8px;
+    border: 1px solid #b0e0e6
+}
+
+.comments div {
+    justify-items: center;
+    margin: 10px 0;
+    padding: 8px;
+    border: 1px dotted #87ceeb;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+#displayChange {
+    display: block; !important;
+}
+
+.commentsContent {
+    text-wrap: auto;
+    height: fit-content;
+    line-height: 25px;
+}
+
+.written {
+    white-space: pre-line;
+    padding-top: 10px;
+}

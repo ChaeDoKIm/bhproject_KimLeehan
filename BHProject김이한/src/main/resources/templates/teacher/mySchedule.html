@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--    <link href="https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css" rel="stylesheet"-->
+    <!--          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">-->
+    <!--    <script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js"-->
+    <!--            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"-->
+    <!--            crossorigin="anonymous"></script>-->
+    <link rel="stylesheet" href="/css/header-footer-teacher.css"/>
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a362f915bbe83c35236f452e3e41cb11"></script>
+
+    <title>선생님 스케줄</title>
+</head>
+
+<style>
+    body {
+        font-family: 'Nanum Gothic', sans-serif;
+    }
+
+    .schedule {
+        border-bottom: 3px solid #228b22;
+        color: #228b22;
+        padding-bottom: 3px;
+    }
+
+    /* 일정 컨테이너 */
+    #mySchedule {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px; /* 간격 */
+        margin-top: 20px;
+    }
+
+    /* 일정표 스타일 */
+    #schedule {
+        margin-left: 1%;
+        flex: 1; /* 테이블이 더 넓게 보이도록 설정 */
+        position: relative;
+        width: 70%; /* 부모의 너비에 맞춤 */
+        height: 400px; /* 고정 높이 */
+        border: 3px solid #39a8d3;
+        border-radius: 8px;
+        padding: 15px;
+        background: none; /* 배경색 제거 */
+        min-width: 63.5%;
+        overflow: hidden; /* 이미지가 영역 밖으로 나가지 않도록 설정 */
+    }
+
+    .schedule-background {
+        text-align: center; /* 텍스트를 중앙 정렬 */
+        /*padding: 10px 0; !* 위 아래 여백 추가 *!*/
+        /*position: absolute;*/
+        /*top: 0;*/
+        /*left: 0;*/
+        /*width: 100%;*/
+        /*height: 100%;*/
+        /*!*background-image: url('/images/스케줄표.png'); !* 스케줄표 이미지 *!*!*/
+        /*background-size: contain;*/
+        /*background-position: center;*/
+        /*background-repeat: no-repeat;*/
+        /*z-index: -1; !* 테이블이 이미지 위에 올 수 있도록 *!*/
+    }
+
+    /* 지도 스타일 */
+    #map {
+        /*border-radius: 8px;*/
+        width: 100%;
+        max-width: 448px; /* 최대 너비 설정 */
+        height: 400px; /* 고정 높이 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        float: right; /* 오른쪽 정렬 */
+        margin-right: 1%; /* 왼쪽 여백 추가 */
+        border: 3px solid #39a8d3;
+    }
+
+    #schedule table {
+        width: 100%;
+        height: 100%;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    #schedule table th,
+    #schedule table td {
+        padding: 12px 15px;
+        border: 1px solid #d0e8dc;
+        text-align: center;
+    }
+
+    .table-header {
+        background-color: #ffffff;
+    }
+
+    /*!* 테이블 본문 줄무늬 효과 *!*/
+    /*#schedule table td:nth-of-type(odd) {*/
+    /*    background-color: #f6fded;*/
+    /*}*/
+
+    /*#schedule table td:nth-of-type(even) {*/
+    /*    background-color: #e7fbff;*/
+    /*}*/
+
+    /* 첫 번째 세로줄의 색상을 없애기 */
+    #schedule table td:nth-of-type(1) {
+        background-color: transparent;
+    }
+
+    /* 다른 세로줄에 색상 적용 */
+    #schedule table td:nth-of-type(odd):not(:nth-of-type(1)) {
+        background-color: #f6fded;
+    }
+
+    #schedule table td:nth-of-type(even):not(:nth-of-type(1)) {
+        background-color: #e7fbff;
+    }
+
+
+    #schedule table td {
+        font-size: 14px;
+        color: #455a64;
+    }
+
+    /* To-Do 리스트 영역!!!!!!! */
+    #todo-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 20px 0;
+        width: 30%;
+    }
+
+    #todo-list li {
+        width: 400px;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #87ceeb; /* 각 항목 하단 분리선 */
+        font-weight: bold;
+    }
+
+    #todo-list li:last-child {
+        border-bottom: none; /* 마지막 하단 분리선 제거 */
+    }
+
+    .todo-item {
+        color: #4a4a4a;
+        font-size: 16px;
+    }
+
+    .delete-button {
+        background-color: #ffcd4a;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .delete-button:hover {
+        background-color: #ff9f1c;
+    }
+
+    /* 입력 필드와 버튼 */
+    .input-container {
+        display: flex;
+        margin-left: 45px;
+        margin-top: 10px;
+    }
+
+    .input-container input {
+        margin-right: 17px; /* 입력 필드와 버튼 사이에 간격을 추가 */
+    }
+
+    #todo-input {
+        width: 280px;
+        padding: 10px;
+        border: 2px solid #ffd700;
+        border-radius: 10px;
+        outline: none;
+        font-size: 14px;
+        box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    #add-button {
+        background-color: #ff9f1c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    #add-button:hover {
+        background-color: #e08917;
+    }
+
+    /* 완료된 항목에 취소선 추가 */
+    .completed {
+        text-decoration: line-through;
+        color: #a1a0a0;
+    }
+
+    /* todo list */
+    .background-image {
+        flex: 1; /* flex를 1로 설정해 화면 크기에 맞게 비율 조정 */
+        position: relative; /* 자식 요소를 배치하기 위한 기준 */
+        width: 70%; /* 부모의 너비에 맞춤 */
+        height: 450px; /* 고정 높이 */
+        background-size: cover; /* 배경 이미지를 요소 크기에 맞춤 */
+        background-position: center; /* 배경 이미지를 중앙에 배치 */
+        background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+        margin-top: -13.5px;
+    }
+
+    .overlay-content {
+        position: absolute; /* 배경 위에 겹치게 설정 */
+        top: 46%; /* 부모 요소의 세로 중앙 */
+        left: 48.5%; /* 부모 요소의 가로 중앙 */
+        transform: translate(-50%, -50%); /* 중앙 정렬 */
+        text-align: center; /* 가운데 정렬 */
+        padding: 10px;
+        width: 90%; /* 내용 크기 조정 */
+    }
+
+    .overlay-content .input-container {
+        margin-top: 15px;
+    }
+
+    /* Pagination Style */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    /* 페이지네이션 링크 스타일 */
+    #pagination .page-link {
+        display: inline-block;
+        padding: 10px 15px;
+        margin: 0 5px;
+        text-decoration: none;
+        border-radius: 5px;
+        background-color: #87ceeb;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #pagination .page-link:hover {
+        background-color: #5fa6b9;
+        transform: translateY(-2px);
+    }
+
+    #pagination .page-link.disabled {
+        background-color: #ccc;
+        color: #666;
+        pointer-events: none; /* 비활성화된 페이지는 클릭 불가 */
+    }
+
+    .h3 {
+        align-items: center;
+    }
+
+</style>
+
+<body>
+
+<header>
+    <nav>
+        <div>
+            <ul>
+                <li><a class="schedule" th:href="@{/tMySchedule/{tId}(tId=${session.teacherLoginId})}">스케줄</a></li>
+                <li><a th:href="@{/tStudents/{tId}(tId=${session.teacherLoginId})}">학생관리</a></li>
+                <li><a th:href="@{/tMyInfo/{tId}(tId=${session.teacherLoginId})}">마이 페이지</a></li>
+                <li><a href="/bWriteForm">문의</a></li>
+            </ul>
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.teacherLoginId}"/>
+            <a href="/tLogout" id="logout">로그아웃</a>
+        </div>
+    </nav>
+
+    <div class="logo">
+        <a href="/teacher/Tmain"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+
+    <!--    <div th:if="${session.teacherLoginId eq null}">-->
+    <!--        <a id="login">로그인</a>-->
+    <!--    </div>-->
+
+    <!--    <div th:if="${session.teacherLoginId ne null}">-->
+    <!--        <input type="hidden" id="loginId" name="loginId" th:value="${session.teacherLoginId}"/>-->
+    <!--        <button id="logout">로그아웃</button>-->
+    <!--    </div>-->
+</header>
+
+<div class="wrap body">
+
+    <!-- 버튼 그룹 -->
+    <!--    <div class="button-group">-->
+    <!--        <button id="viewMySchedule">내 일정 보기</button>-->
+    <!--        <button id="viewMyStudentsAndClasses">내 학생 관리</button>-->
+    <!--        <button id="viewMyInfo">내 정보 보기</button>-->
+    <!--    </div>-->
+
+    <div class="container section" id="mySchedule">
+        <div id="schedule" style="width:1000px;height:600px; ">
+            <div class="schedule-background">
+                <!--                <img src="/images/스케줄표.png" alt="스케줄표" class="schedule-image">-->
+                <div class="schedule-content">
+                    <h3>< <span id="tId" th:value="${tId}" th:text="${tName}" style="color: #39a8d3; background-color: rgba(255,231,110,0.93)"></span> 선생님 스케줄 ></h3>
+                    <br/>
+                </div>
+            </div>
+            <!--스케줄 test중-->
+            <table border="1" style="text-align: center; width: 100%; height: 94%; border-collapse: collapse;">
+                <thead>
+                <tr>
+                    <th class="table-header"></th>
+                    <th class="table-header">월요일</th>
+                    <th class="table-header">화요일</th>
+                    <th class="table-header">수요일</th>
+                    <th class="table-header">목요일</th>
+                    <th class="table-header">금요일</th>
+                    <th class="table-header">토요일</th>
+                    <th class="table-header">일요일</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="entry : ${view}">
+                    <td th:text="${entry.key}"></td>
+                    <td>
+                        <span th:each="schedule : ${entry.value}" th:if="${schedule.planDay} == '월요일'" th:text="'< ' + ${schedule.sName} +' 학생 > ' + ${schedule.planPlace}"></span>
+                    </td>
+                    <td>
+                        <span th:each="schedule : ${entry.value}" th:if="${schedule.planDay} == '화요일'" th:text="'< ' + ${schedule.sName} +' 학생 > ' + ${schedule.planPlace}"></span>
+                    </td>
+                    <td>
+                        <span th:each="schedule : ${entry.value}" th:if="${schedule.planDay} == '수요일'" th:text="'< ' + ${schedule.sName} +' 학생 > ' + ${schedule.planPlace}"></span>
+                    </td>
+                    <td>
+                        <span th:each="schedule : ${entry.value}" th:if="${schedule.planDay} == '목요일'" th:text="'< ' + ${schedule.sName} +' 학생 > ' + ${schedule.planPlace}"></span>
+                    </td>
+                    <td>
+                        <span th:each="schedule : ${entry.value}" th:if="${schedule.planDay} == '금요일'" th:text="'< ' + ${schedule.sName} +' 학생 > ' + ${schedule.planPlace}"></span>
+                    </td>
+                    <td>
+                        <span th:each="schedule : ${entry.value}" th:if="${schedule.planDay} == '토요일'" th:text="'< ' + ${schedule.sName} +' 학생 > ' + ${schedule.planPlace}"></span>
+                    </td>
+                    <td>
+                        <span th:each="schedule : ${entry.value}" th:if="${schedule.planDay} == '일요일'" th:text="'< ' + ${schedule.sName} +' 학생 > ' + ${schedule.planPlace}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="background-image">
+            <img src="/images/노라인투두.png" alt="배경" width="450px;">
+            <!-- 새로운 To-Do 추가 -->
+            <div class="input-container">
+                <input type="text" id="todo-input" placeholder="새로운 메모 작성">
+                <button id="add-button">추가</button>
+            </div>
+            <div class="overlay-content">
+                <br/>
+                <!-- To-Do 리스트 출력 -->
+                <ul id="todo-list"></ul>
+                <!-- 페이징 버튼 -->
+                <a id="pagination"></a>
+            </div>
+        </div>
+    </div>
+
+    <br/><br/>
+    <!--    <div id="map" style="width:800px;height:350px;"></div>-->
+    <!--    <br/><br/>-->
+
+</div>
+</body>
+
+<script>
+    let tId = ""; // 사용자 ID를 저장할 변수
+
+    // 페이지 로드 시 tId 설정 및 To-Do 리스트 렌더링
+    document.addEventListener("DOMContentLoaded", () => {
+        tId = document.getElementById("tId").textContent.trim(); // 뷰에서 tId 가져오기
+        renderToDoList();
+
+        // 이벤트 리스너 추가
+        document.getElementById("add-button").onclick = addToDo;
+    });
+
+    // 로컬 스토리지에서 To-Do 리스트 가져오기
+    function getToDoList() {
+        return JSON.parse(localStorage.getItem(`todoList_${tId}`)) || [];
+    }
+
+    // 로컬 스토리지에 To-Do 리스트 저장하기
+    function saveToDoList(todoList) {
+        localStorage.setItem(`todoList_${tId}`, JSON.stringify(todoList));
+    }
+
+    // 한 페이지에 표시할 항목 수
+    const ITEMS_PER_PAGE = 5;
+    let currentPage = 1; // 현재 페이지
+
+    // To-Do 리스트 렌더링
+    function renderToDoList() {
+        const todoList = getToDoList();
+        const todoListElement = document.getElementById("todo-list");
+        const paginationElement = document.getElementById("pagination");
+
+        todoListElement.innerHTML = ""; // 기존 항목 제거
+        paginationElement.innerHTML = ""; // 기존 페이지 버튼 제거
+
+        // 현재 페이지의 시작과 끝 인덱스 계산
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, todoList.length);
+
+        // 현재 페이지의 항목만 렌더링
+        for (let i = startIndex; i < endIndex; i++) {
+            const todo = todoList[i];
+            const listItem = document.createElement("li");
+
+            // 체크박스 생성
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = todo.completed || false;
+            checkbox.onchange = () => toggleCompletion(i);
+
+            // 텍스트 항목
+            const itemText = document.createElement("span");
+            itemText.textContent = todo.text;
+            itemText.classList.add("todo-item");
+            if (todo.completed) {
+                itemText.classList.add("completed");
+            }
+
+            // 삭제 버튼
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "삭제";
+            deleteButton.classList.add("delete-button");
+            deleteButton.onclick = () => deleteToDo(i);
+
+            listItem.appendChild(checkbox);
+            listItem.appendChild(itemText);
+            listItem.appendChild(deleteButton);
+            todoListElement.appendChild(listItem);
+        }
+
+        // 페이징 버튼 생성
+        const totalPages = Math.ceil(todoList.length / ITEMS_PER_PAGE);
+        for (let i = 1; i <= totalPages; i++) {
+            const pageLink = document.createElement("a");
+            pageLink.textContent = i;
+            pageLink.href = "#"; // 기본 링크
+            pageLink.classList.add("page-link");
+
+            if (i === currentPage) {
+                pageLink.classList.add("disabled"); // 현재 페이지는 비활성화
+            }
+
+            pageLink.onclick = (e) => {
+                e.preventDefault(); // 기본 링크 동작 방지
+                if (i !== currentPage) {
+                    currentPage = i;
+                    renderToDoList();
+                }
+            };
+            paginationElement.appendChild(pageLink);
+        }
+    }
+
+    // To-Do 항목 추가
+    function addToDo() {
+        const todoInput = document.getElementById("todo-input");
+        const todoList = getToDoList();
+
+        // 최대 10개 제한 체크
+        if (todoList.length >= 10) {
+            alert("To-Do List는 최대 10개까지 추가할 수 있습니다!");
+            return;
+        }
+
+        if (todoInput.value.trim() !== "") {
+            todoList.push({ text: todoInput.value.trim(), completed: false });
+            saveToDoList(todoList);
+            renderToDoList();
+            todoInput.value = ""; // 입력 필드 초기화
+        }
+    }
+
+    // To-Do 항목 삭제
+    function deleteToDo(index) {
+        const todoList = getToDoList();
+        todoList.splice(index, 1); // 해당 인덱스 항목 삭제
+        saveToDoList(todoList);
+
+        // 현재 페이지가 빈 경우 이전 페이지로 이동
+        const totalPages = Math.ceil(todoList.length / ITEMS_PER_PAGE);
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
+
+        renderToDoList();
+    }
+
+    // To-Do 완료 상태
+    function toggleCompletion(index) {
+        const todoList = getToDoList();
+        todoList[index].completed = !todoList[index].completed; // 완료 상태 변경
+        saveToDoList(todoList);
+
+
+        // 텍스트에 취소선 추가 또는 제거
+        const todoItemText = document.querySelectorAll('.todo-item')[index];
+        if (todoList[index].completed) {
+            todoItemText.classList.add("completed"); // 완료되었을 때 취소선 추가
+        } else {
+            todoItemText.classList.remove("completed"); // 미완료되었을 때 취소선 제거
+        }
+        renderToDoList();
+    }
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+
+    let loginId = $('#loginId').val();
+
+    // 버튼 스크립트
+    $('#logout').click(() => {
+        location.href = '/tLogout';
+    });
+
+</script>
+
+</html>

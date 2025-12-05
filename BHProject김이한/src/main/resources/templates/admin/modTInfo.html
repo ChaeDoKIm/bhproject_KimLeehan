@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+  <title>선생님 정보 관리</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --primary: #111827;
+      --muted: #6b7280;
+      --accent: #22c55e;
+      --rowAlt: #f9fafb;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+      font-family: 'Nanum Gothic', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #1f2933;
+    }
+
+    /* 관리자 카드 박스 */
+    .admin-shell {
+      width: 100%;
+      max-width: 880px;
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow:
+              0 20px 40px rgba(15, 23, 42, 0.12),
+              0 2px 6px rgba(15, 23, 42, 0.06);
+      padding: 20px 24px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* 상단 헤더 */
+    .admin-header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+    }
+
+    .console-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .page-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+    }
+
+    /* 관리자 홈 버튼 */
+    .admin-home-btn {
+      display: inline-flex;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #e5f4ff;
+      border: 1px solid #bae6fd;
+      color: #0369a1;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.15s ease;
+    }
+
+    .admin-home-btn:hover {
+      background: #bae6fd;
+      color: #0c4a6e;
+      transform: translateY(-1px);
+    }
+
+    .page-subtext {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .section-header h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 3px;
+    }
+
+    .section-header p {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* 테이블 래퍼 */
+    .table-wrap {
+      margin-top: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    th {
+      width: 18%;
+      background-color: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+      text-align: left;
+    }
+
+    td {
+      background-color: #ffffff;  /* 모든 행 동일한 색 */
+      color: #111827;
+    }
+
+    /* 입력창 */
+    td input[type="text"],
+    td input[type="email"] {
+      width: 100%;
+      max-width: 260px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background-color: #f9fafb;
+      font-size: 0.84rem;
+      color: #111827;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    td input[readonly] {
+      background-color: #e0f2fe;
+      color: #4b5563;
+    }
+
+    td input:not([readonly]):focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.45);
+      background-color: #ffffff;
+    }
+
+    /* 변경 버튼 */
+    .chip-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border: 1px solid #e5e7eb;
+      background-color: #f9fafb;
+      color: #374151;
+      cursor: pointer;
+      transition: 0.12s ease;
+    }
+
+    .chip-btn:hover {
+      background-color: #e5f4ff;
+      border-color: #38bdf8;
+      transform: translateY(-1px);
+    }
+
+    /* 비밀번호 변경 링크 */
+    .link-inline {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.78rem;
+      color: #0ea5e9;
+      text-decoration: none;
+    }
+
+    /* 저장 버튼 영역 — 중앙 정렬 */
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    /* 저장 버튼 */
+    .btn-primary {
+      appearance: none;
+      border-radius: 999px;
+      border: none;
+      padding: 10px 26px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow:
+              0 10px 18px rgba(34, 197, 94, 0.35),
+              0 2px 4px rgba(15, 23, 42, 0.12);
+      transition: 0.12s ease;
+    }
+
+    .btn-primary:disabled {
+      background: #9ca3af;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+<div class="admin-shell" id="modiForm">
+
+  <!-- 상단 헤더 -->
+  <header class="admin-header">
+    <div class="console-label">Admin Console · Teacher</div>
+
+    <div class="page-title-row">
+      <div class="page-title">선생님 정보 관리</div>
+
+      <!-- 🔹 관리자 메인으로 이동 -->
+      <a href="/admin/main" class="admin-home-btn">관리자 메인</a>
+    </div>
+
+    <div class="page-subtext">
+      선생님 계정 정보를 확인하고 수정할 수 있습니다.
+    </div>
+  </header>
+
+  <!-- 정보 수정 섹션 -->
+  <section class="section-header">
+    <h3>기본 정보</h3>
+    <p>변경 버튼을 눌러 편집 모드로 전환할 수 있습니다.</p>
+  </section>
+
+  <!-- 정보 수정 테이블 -->
+  <div class="table-wrap">
+    <form action="/modTInfo" name="modTInfo" method="POST">
+      <table>
+        <tr>
+          <th>아이디</th>
+          <td>
+            <input type="text" name="tId" th:value="${view.tId}" readonly />
+            <br />
+            <a class="link-inline" th:href="@{/tChangePass/{tId}(tId=${view.tId})}">
+              비밀번호 변경
+            </a>
+          </td>
+        </tr>
+
+        <tr>
+          <th>이메일</th>
+          <td>
+            <input type="email" id="tEmail" name="tEmail" th:value="${view.tEmail}" readonly />
+            <button type="button" class="chip-btn" id="changeEmail">변경</button>
+          </td>
+        </tr>
+
+        <tr>
+          <th>연락처</th>
+          <td>
+            <input type="text" name="tPhone" th:value="${view.tPhone}" readonly />
+            <button type="button" class="chip-btn" id="changePhone">변경</button>
+          </td>
+        </tr>
+
+        <tr>
+          <th>활동지역</th>
+          <td>
+            <input type="text" name="tArea" th:value="${view.tArea}" readonly />
+            <button type="button" class="chip-btn" id="changeArea">변경</button>
+          </td>
+        </tr>
+
+        <tr>
+          <th>휴무일</th>
+          <td>
+            <input type="text" name="tRestDay" th:value="${view.tRestDay}" readonly />
+            <button type="button" class="chip-btn" id="changeRestDay">변경</button>
+          </td>
+        </tr>
+
+        <tr>
+          <th>맡을 학년</th>
+          <td>
+            <input type="text" name="tGrade" th:value="${view.tGrade}" readonly />
+            <button type="button" class="chip-btn" id="changeGrade">변경</button>
+          </td>
+        </tr>
+
+        <tr>
+          <th>과목</th>
+          <td>
+            <input type="text" name="tSubject" th:value="${view.tSubject}" readonly />
+            <button type="button" class="chip-btn" id="changeSubject">변경</button>
+          </td>
+        </tr>
+
+        <tr>
+          <th>레벨</th>
+          <td>
+            <input type="text" name="tLevel" th:value="${view.tLevel}" readonly />
+            <button type="button" class="chip-btn" id="changeLevel">변경</button>
+          </td>
+        </tr>
+      </table>
+
+      <div class="footer-actions">
+        <input type="submit" value="수정된 정보 저장" class="btn-primary" disabled />
+      </div>
+      <br>
+    </form>
+  </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script>
+  $(document).ready(function () {
+    const submitButton = $(".btn-primary");
+
+    $(".chip-btn").click(function () {
+      const inputField = $(this).closest("td").find("input");
+
+      if (inputField.prop("readonly")) {
+        inputField.prop("readonly", false).css("background-color", "#ffffff");
+        $(this).text("취소");
+      } else {
+        inputField.prop("readonly", true).css("background-color", "#e0f2fe");
+        $(this).text("변경");
+      }
+
+      checkEditable();
+    });
+
+    function checkEditable() {
+      const editable = $("td input:not([readonly])").length > 0;
+      submitButton.prop("disabled", !editable);
+    }
+  });
+</script>
+
+</body>
+</html>

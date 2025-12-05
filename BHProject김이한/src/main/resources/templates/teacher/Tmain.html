@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방학</title>
+  <link rel="stylesheet" href="/css/Tmain.css">
+  <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+</head>
+<body>
+<header>
+  <nav>
+    <div th:if="${session.teacherLoginId eq null}">
+      <ul>
+        <li><a href="/resume/rwrite">입사지원</a></li>
+        <li><a href="/bWriteFormT">문의</a></li>
+      </ul>
+    </div>
+    <!--    <a th:href="@{/pView/{pId}(pId=${session.parentLoginId})}" id="parent">마이 페이지</a>-->
+    <div th:if="${session.teacherLoginId ne null}">
+      <ul>
+        <li><a th:href="@{/tMySchedule/{tId}(tId=${session.teacherLoginId})}">스케줄</a></li>
+        <li><a th:href="@{/tStudents/{tId}(tId=${session.teacherLoginId})}">학생관리</a></li>
+        <li><a th:href="@{/tMyInfo/{tId}(tId=${session.teacherLoginId})}">마이 페이지</a></li>
+        <li><a href="/bWriteFormT">문의</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="logo">
+    <a href="/teacher/Tmain"><img src="/File/logo_white.png" alt="로고"></a>
+  </div>
+
+  <div th:if="${session.teacherLoginId eq null}">
+    <a id="login">로그인</a>
+  </div>
+
+  <div th:if="${session.teacherLoginId ne null}">
+    <input type="hidden" id="loginId" name="loginId" th:value="${session.teacherLoginId}"/>
+    <!--    <button id="teacher">마이 페이지</button>-->
+    <a href="/tLogout" id="logout">로그아웃</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="slider">
+      <div class="slides">
+        <div class="slide">
+          <img src="/File/main_banner/T배너01수정본.jpg" alt="광고1">
+        </div>
+        <div class="slide">
+          <img src="/File/main_banner/T배너02.png" alt="광고2">
+        </div>
+        <!--<div class="slide">
+          <img src="/File/main_banner/광고3.png" alt="광고3">
+        </div>-->
+      </div>
+      <a href="javascript:void(0)" id="prev" class="prev"></a>
+      <a href="javascript:void(0)" id="next" class="next"></a>
+    </div>
+
+    <!-- Scroll Down 표시 추가 -->
+    <div class="scroll-down-indicator">
+      <span class="scroll-text">Scroll Down</span>
+      <span class="scroll-arrow">▼</span>
+    </div>
+  </section>
+
+
+  <section class="features">
+    <h1 class="features-title"></h1>
+    <img src="/File/방학 선생님 메인.png" />
+    <div class="route">
+      <img src="/File/최적경로.png" />
+      <div class="features-text">
+        <h2>01</h2>
+        <strong>이제 이동도 스마트하게!</strong>
+        <h3>경로 최적화를 이용한 편리한 동선, 이동 관리</h3>
+        <p>
+          방.학에서는 이동 경로를 최적화하는 맞춤형 솔루션을 제공합니다.</br>
+          가장 짧고 빠른 이동 경로를 추천하여 불필요한 시간 소모를 줄이고,</br>
+          에너지를 효율적으로 사용할 수 있습니다.</br>
+          선생님들은 이제 수업 준비에만 집중하세요.
+        </p>
+      </div>
+    </div>
+
+    <div class="student">
+      <img src="/File/학생모집&관리.png" />
+      <div class="features-text">
+        <h2>02</h2>
+        <strong>학생 관리와 모집도 클릭 몇 번으로 끝!</strong>
+        <h3>사이트를 이용한 손쉬운 학생 관리 및 모집</h3>
+        <p>
+          방.학은 효율적으로 학생을 관리하고 모집할 수 있도록 스마트한 플랫폼을 제공합니다.</br>
+          복잡한 문서 작업이나 개별적인 연락은 이제 필요없습니다.</br>
+          학생들의 수업 일정, 학습 진도, 과제 상황 등을 한눈에 확인할 수 있는</br>
+          학생 관리 시스템과 자동화된 모집 기능은</br>
+          새로운 학생과의 만남을 간편하게 만들어 드립니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="counsel">
+      <img src="/File/학부모상담.png" />
+      <div class="features-text">
+        <h2>03</h2>
+        <strong>학부모 소통도 저희가 맡습니다!</strong>
+        <h3>학부모 상담 및 관리도 방학에서</h3>
+        <p>
+          학부모와의 상담은 선생님들에게 많은 시간과 감정적인 부담을 요구합니다.</br>
+          그래서 방.학이 학부모 상담을 대신 처리하여</br>
+          선생님들이 교육에만 몰두할 수 있는 환경을 제공합니다.</br>
+          시스템에서 학부모의 다양한 요구나 의견을 반영하고</br>
+          선생님들께서는 교육에만 집중할 수 있도록 돕겠습니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="main-button">
+    <a href="/resume/rwrite"><button class="application">입사지원하러 가기 →</button></a>
+  </div>
+</main>
+
+<div class="quick-menu" style="transform: matrix(1, 0, 0, 1, 0, -300);">
+  <!-- 입사지원 -->
+  <div class="quick-item">
+    <a href="/resume/rwrite">
+      <img src="/File/지원.png" alt="입사지원">
+      <p>입사지원</p>
+    </a>
+  </div>
+
+  <!-- 채팅 -->
+  <div class="quick-item">
+    <a th:if="${session.teacherLoginId != null}" th:href="@{/teacher/tChat/{tId}(tId=${session.teacherLoginId})}">
+      <img src="/File/채팅.png" alt="채팅">
+      <p>채팅</p>
+    </a>
+    <a th:if="${session.teacherLoginId == null}" th:href="@{/tLoginForm}" onclick="alert('로그인 후 이용해주세요.');">
+      <img src="/File/채팅.png" alt="채팅">
+      <p>채팅</p>
+    </a>
+  </div>
+
+  <!-- 상담신청 -->
+  <!--<div class="quick-item">
+    <a href="/signup/form">
+      <img src="/File/상담.png" alt="상담신청">
+      <p>상담신청</p>
+    </a>
+  </div>-->
+
+  <!-- 상단 이동 -->
+  <p class="top" onclick="window.scrollTo(0,0);">TOP</p>
+</div>
+
+
+<footer class="common-footer">
+  <div class="inner-footer">
+    <div class="footer-wrap">
+      <div class="info-cont">
+        <p class="info-txt">고객센터 <strong>1588-9956</strong> 평일 09:00~18:00(공휴일 제외)</p>
+        <p class="address">※고객센터(콜센터) 이용 시 통신요금이 부과 됩니다.</p>
+        <ul class="footer-menu">
+          <li style="color:deepskyblue; font-weight:bold;"><a href="/Etc/Privacy">개인정보 처리방침</a></li>
+          <li><a href="/Etc/Clause">서비스약관</a></li>
+          <li><a href="/Inquiry/OnlineInquiry">고객센터</a></li>
+          <li><a href="/Customer/BusinessWrite">제휴문의</a></li>
+          <li><a href="/Etc/SiteMap">사이트맵</a></li>
+        </ul>
+        <address class="address">
+          인천 미추홀구 매소홀로488번길 6-32 태승빌딩 5층 (주)방학
+          <span>통신판매업 신고 : 제 2025-인천미추홀구-1567호</span>
+        </address>
+      </div>
+      <div class="etc-cont">
+        <!-- [s] 2024.06.11 SNS 바로가기 수정 -->
+        <div class="btn-group sns">
+          <p class="sns-title">SNS</p>
+          <a href="https://www.instagram.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                  class="fa-brands fa-instagram"></i><span class="hide"> 인스타그램</span></a>
+          <a href="https://www.youtube.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                  class="fa-brands fa-youtube"></i><span class="hide"> 유튜브</span></a>
+          <a href="https://section.blog.naver.com" title="새창열기" target="_blank" class="sns-btn instar"><i
+                  class="fa-brands fa-facebook-f"></i><span class="hide"> 페이스북</span></a>
+
+        </div>
+      </div>
+    </div>
+    <div class="copy-cont">
+      Copyright © Bang.Hak All Right Reserved
+    </div>
+
+  </div>
+</footer>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+  // 슬라이드 배너 기능
+  const slides = document.querySelector('.slides');
+  const slideItems = document.querySelectorAll('.slide');
+  const slideCount = slideItems.length;
+
+  let currentIndex = 0;
+  let autoSlideInterval;
+
+  // 슬라이드 클론 생성 (앞뒤에 추가)
+  const firstClone = slideItems[0].cloneNode(true);
+  const lastClone = slideItems[slideCount - 1].cloneNode(true);
+
+  slides.appendChild(firstClone);
+  slides.insertBefore(lastClone, slides.firstChild);
+
+  const updatedSlideCount = document.querySelectorAll('.slide').length;
+
+  // 슬라이드 컨테이너 너비 설정
+  slides.style.width = `${updatedSlideCount * 100}%`;
+  slides.style.transform = `translateX(-100%)`; // 클론 때문에 1번째 슬라이드로 위치 이동
+
+  // 슬라이드 이동 함수
+  function updateSlidePosition() {
+    slides.style.transition = 'transform 0.5s ease-in-out';
+    slides.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
+  }
+
+  // 슬라이드 재설정 함수 (클론에서 실제 슬라이드로 이동)
+  function resetSlidePosition() {
+    slides.style.transition = 'none';
+    if (currentIndex === -1) {
+      currentIndex = slideCount - 1; // 마지막 슬라이드로 이동
+      slides.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
+    } else if (currentIndex === slideCount) {
+      currentIndex = 0; // 첫 번째 슬라이드로 이동
+      slides.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
+    }
+  }
+
+  // 다음 슬라이드로 이동
+  function goToNextSlide() {
+    currentIndex++;
+    updateSlidePosition();
+    setTimeout(resetSlidePosition, 500); // 애니메이션이 끝난 후 재설정
+  }
+
+  // 이전 슬라이드로 이동
+  function goToPrevSlide() {
+    currentIndex--;
+    updateSlidePosition();
+    setTimeout(resetSlidePosition, 500); // 애니메이션이 끝난 후 재설정
+  }
+
+  // 버튼 클릭 이벤트
+  document.querySelector('.next').addEventListener('click', () => {
+    goToNextSlide();
+    resetAutoSlide();
+  });
+
+  document.querySelector('.prev').addEventListener('click', () => {
+    goToPrevSlide();
+    resetAutoSlide();
+  });
+
+  // 자동 슬라이드 시작
+  function startAutoSlide() {
+    autoSlideInterval = setInterval(goToNextSlide, 4000); // 4초마다 이동
+  }
+
+  // 자동 슬라이드 재설정
+  function resetAutoSlide() {
+    clearInterval(autoSlideInterval);
+    startAutoSlide();
+  }
+
+  // 초기화
+  startAutoSlide();
+
+  // 스크롤 시 애니매이션 효과 추가
+  document.addEventListener("DOMContentLoaded", () => {
+    const header = document.querySelector(".features-title");
+    const routeSection = document.querySelector(".route");
+    const studentSection = document.querySelector(".student");
+    const counselSection = document.querySelector(".counsel");
+
+    const handleScroll = () => {
+      // Header 애니메이션 처리
+      const headerRect = header.getBoundingClientRect();
+      if (headerRect.top < window.innerHeight - 100) {
+        header.classList.add("visible");
+      }
+
+      // Route Section 애니메이션 처리
+      const routeRect = routeSection.getBoundingClientRect();
+      if (routeRect.top < window.innerHeight - 100) {
+        routeSection.classList.add("visible");
+      }
+
+      // Student Section 애니메이션 처리
+      const studentRect = studentSection.getBoundingClientRect();
+      if (studentRect.top < window.innerHeight - 100) {
+        studentSection.classList.add("visible");
+      }
+
+      // Counsel Section 애니메이션 처리
+      const counselRect = counselSection.getBoundingClientRect();
+      if (counselRect.top < window.innerHeight - 100) {
+        counselSection.classList.add("visible");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // 초기 상태 확인
+    handleScroll();
+  });
+
+  /*document.addEventListener("DOMContentLoaded", () => {
+    const header = document.querySelector(".features-title");
+    const aboutContents = document.querySelectorAll(".route");
+    const teacherSection = document.querySelectorAll(".student");  // teacher section 추가
+    const teacherContent = document.querySelectorAll(".counsel");  // 관련 요소들 추가
+
+    const handleScroll = () => {
+      // Header 애니메이션 처리
+      const headerRect = header.getBoundingClientRect();
+      if (headerRect.top < window.innerHeight - 100) {
+        header.classList.add("visible");
+      }
+
+      // About Content 애니메이션 처리
+      if (header.classList.contains("visible")) {
+        aboutContents.forEach((content) => {
+          const rect = content.getBoundingClientRect();
+          if (rect.top < window.innerHeight - 100) {
+            content.classList.add("visible");
+          }
+        });
+      }
+
+      // Teacher Section 애니메이션 처리
+      const teacherRect = teacherSection.getBoundingClientRect();
+      if (teacherRect.top < window.innerHeight - 100) {
+        teacherContent.forEach((content) => {
+          content.classList.add("visible");
+        });
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // 초기 상태 확인
+    handleScroll();
+  });*/
+
+  // 로그인, 회원가입 등 기본 기능
+  let loginId = $("#loginId").val();
+  //
+  $('#logout').click(() => {
+    location.href = '/tLogout';
+  });
+
+  $('#teacher').click(() => {
+    location.href = '/tView/' + loginId;
+  });
+
+  $('#login').click(() => {
+    location.href = '/tLoginForm';
+  });
+
+  $('#write').click(() => {
+    location.href = "/bWriteForm";
+  });
+
+  // $('#resume').click(() => {
+  //     location.href = "/resume/rwrite";
+  // });
+
+  $('#resumeList').click(() => {
+    location.href = "/resume/list";
+  });
+
+</script>
+</html>

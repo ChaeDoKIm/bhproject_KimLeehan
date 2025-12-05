@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <title>학부모 회원가입</title>
+
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f5f6fa;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 16px 80px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+            color: #1f1f1f;
+        }
+
+        /* Outer shell card */
+        .form-shell {
+            width: 100%;
+            max-width: 720px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            padding: 24px 24px 32px;
+        }
+
+        /* Header Section */
+        .header-block {
+            margin-bottom: 24px;
+        }
+
+        .console-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6b7280;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+        }
+
+        .page-hint {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            line-height: 1.4;
+            margin-top: 6px;
+        }
+
+        /* Table layout */
+        .info-table-wrapper {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        table.info-table th {
+            width: 140px;
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4b5563;
+            line-height: 1.4;
+            padding: 12px 16px;
+            vertical-align: top;
+        }
+
+        table.info-table td {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.85rem;
+            color: #1f2937;
+            line-height: 1.4;
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+
+        table.info-table tr:last-child th,
+        table.info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Input controls */
+        .input-text,
+        .input-password,
+        .input-email,
+        .input-number,
+        .textarea-field {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #1f2937;
+            padding: 10px 12px;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .input-text:focus,
+        .input-password:focus,
+        .input-email:focus,
+        .input-number:focus,
+        .textarea-field:focus {
+            border-color: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
+        }
+
+        /* 아이디 입력 + 메시지 */
+        .id-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            row-gap: 6px;
+            column-gap: 8px;
+        }
+
+        .id-container .id-field {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .id-container .id-check-message {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #6b7280;
+            min-width: 100px;
+        }
+
+        /* 이메일 인증 줄 */
+        .inline-flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .verify-btn,
+        .verify-confirm-btn,
+        .addr-btn {
+            flex-shrink: 0;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            line-height: 1.2;
+            padding: 9px 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .verify-btn:hover,
+        .verify-confirm-btn:hover,
+        .addr-btn:hover {
+            border-color: #34a853;
+            color: #34a853;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+        }
+
+        /* 주소 입력 영역 */
+        .address-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .address-line-hint {
+            font-size: 0.7rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        /* Footer buttons */
+        .form-footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-submit,
+        .btn-reset {
+            appearance: none;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.2;
+            padding: 10px 16px;
+            cursor: pointer;
+            background-color: #ffffff;
+            color: #111827;
+            transition: all 0.15s ease;
+        }
+
+        .btn-submit {
+            background-color: #34a853;
+            border-color: #34a853;
+            color: #ffffff;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+        }
+
+        .btn-submit:hover {
+            background-color: #2d8c47;
+            border-color: #2d8c47;
+            box-shadow: 0 12px 24px rgba(45,140,71,0.28);
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            border-color: #6b7280;
+            color: #6b7280;
+            box-shadow: 0 8px 16px rgba(107,114,128,0.15);
+        }
+
+        @media (max-width: 500px) {
+            table.info-table th {
+                width: 110px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="form-shell">
+
+    <!-- 상단 헤더 -->
+    <div class="header-block">
+        <div class="console-label">Sign Up</div>
+        <div class="page-title">학부모 회원가입</div>
+        <div class="page-hint">
+            서비스 이용을 위해 기본 정보를 입력해주세요.
+        </div>
+    </div>
+
+    <form action="pJoin" method="POST" enctype="multipart/form-data" name="pJoinForm">
+
+        <div class="info-table-wrapper">
+            <table class="info-table">
+                <tr>
+                    <th>아이디</th>
+                    <td>
+                        <div class="id-container">
+                            <div class="id-field">
+                                <input type="text" id="pId" name="pId" class="input-text"/>
+                            </div>
+                            <div class="id-check-message" id="check1">
+                                <!-- "사용가능한 아이디입니다" / "사용할 수 없는 아이디입니다" 표시 -->
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>비밀번호</th>
+                    <td>
+                        <input type="password" id="pPass" name="pPass" class="input-password"/>
+                        <!-- <div id="check2" style="margin-top:6px; font-size:0.75rem; color:#6b7280;"></div> -->
+                    </td>
+                </tr>
+
+                <!-- 비밀번호 확인을 다시 살리고 싶으면 이 블록 주석 해제 -->
+                <!--
+                <tr>
+                    <th>비밀번호 확인</th>
+                    <td>
+                        <input type="password" id="pwCheck" class="input-password"/>
+                        <div id="check3" style="margin-top:6px; font-size:0.75rem; color:#6b7280;"></div>
+                    </td>
+                </tr>
+                -->
+
+                <tr>
+                    <th>이름</th>
+                    <td>
+                        <input type="text" id="pName" name="pName" class="input-text"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>이메일</th>
+                    <td>
+                        <div class="inline-flex-wrap" id="emailWrap">
+                            <input type="email" id="pEmail" name="pEmail" class="input-email"/>
+                            <button type="button" class="verify-btn" id="checkEmail">
+                                인증번호 발송
+                            </button>
+                        </div>
+                        <div id="check4" style="margin-top:8px;">
+                            <!-- 인증번호 입력창/결과 메시지 동적으로 삽입 -->
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>연락처</th>
+                    <td>
+                        <input type="text"
+                               name="pPhone"
+                               id="pPhone"
+                               class="input-text"
+                               placeholder="010-0000-0000"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>주소</th>
+                    <td>
+                        <div class="address-block">
+                            <button type="button"
+                                    class="addr-btn"
+                                    onclick="sample6_execDaumPostcode()">
+                                주소 검색
+                            </button>
+
+                            <input type="text"
+                                   id="sample6_address"
+                                   class="input-text"
+                                   placeholder="기본 주소"
+                                   required />
+
+                            <input type="text"
+                                   id="sample6_detailAddress"
+                                   class="input-text"
+                                   placeholder="상세 주소"
+                                   required />
+
+                            <!-- 서버로 보낼 실제 주소 전체 -->
+                            <input type="hidden" id="pAddress" name="pAddress"/>
+
+                            <div class="address-line-hint">
+                                검색된 주소 + 상세 주소가 합쳐져서 저장됩니다.
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="form-footer">
+            <button type="reset" class="btn-reset">초기화</button>
+            <button type="button" id="submitForm" class="btn-submit">가입</button>
+        </div>
+
+    </form>
+</div>
+
+<!-- Daum 주소 API -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+<!-- jQuery -->
+<script
+        src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+
+<script>
+    // ============================
+    // 주소 검색
+    // ============================
+    function sample6_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                let addr = (data.userSelectedType === 'R') ? data.roadAddress : data.jibunAddress;
+                document.getElementById("sample6_address").value = addr;
+                document.getElementById("sample6_detailAddress").focus();
+            }
+        }).open();
+    }
+
+    // ============================
+    // 이메일 인증
+    // ============================
+    let pEmail = $('#pEmail');
+    let checkEmail = $('#checkEmail');
+    let check4 = $('#check4');
+    let check_email = false;
+
+    checkEmail.click(() => {
+        if (!pEmail.val()) {
+            alert('이메일을 입력해주세요.');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "emailCheck",
+            data: {"pEmail": pEmail.val()},
+            dataType: "text",
+            success: (uuid) => {
+                console.log("이메일 인증코드:", uuid);
+
+                check4.html(`
+                    <div class="inline-flex-wrap">
+                        <input type="text"
+                               id="uuid1"
+                               class="input-text"
+                               style="max-width:140px;"
+                               placeholder="인증번호 입력"/>
+                        <button type="button"
+                                class="verify-confirm-btn"
+                                id="btnUUID"
+                                data-value="${uuid}">
+                            인증
+                        </button>
+                    </div>
+                `);
+            },
+            error: () => {
+                alert('인증번호 발송에 실패했습니다.');
+            }
+        });
+    });
+
+    // 인증번호 확인
+    $(document).on('click', '#btnUUID', function () {
+        let serverCode = $(this).data("value");
+        let enteredCode = $('#uuid1').val();
+
+        if (!enteredCode) {
+            alert('인증번호를 입력해주세요.');
+            return;
+        }
+
+        if (serverCode == enteredCode) {
+            alert('이메일이 인증되었습니다.');
+            check4.html('<div style="font-size:0.75rem; color:#34a853; font-weight:500;">인증 완료</div>');
+            pEmail.attr('readonly', true);
+            check_email = true;
+        } else {
+            alert('인증번호가 올바르지 않습니다. 다시 확인해주세요.');
+            $('#uuid1').val("");
+            check_email = false;
+        }
+    });
+
+    // ============================
+    // 아이디 중복 체크 (key up 이벤트)
+    // ============================
+    let pId = $('#pId');
+    let check1 = $('#check1');
+    let check_id = false;
+
+    pId.on('keyup', () => {
+        $.ajax({
+            type: "POST",
+            url: "idCheck",
+            data: {"pId": pId.val()},
+            dataType: "text",
+            success: function (result) {
+                if (result === "OK") {
+                    check1.text("사용 가능한 아이디입니다.");
+                    check1.css('color', '#34a853');
+                    check_id = true;
+                } else {
+                    check1.text("이미 사용 중인 아이디입니다.");
+                    check1.css('color', '#dc2626');
+                    check_id = false;
+                }
+            },
+            error: function () {
+                alert('아이디 중복 확인에 실패했습니다.');
+            }
+        });
+    });
+
+    // ============================
+    // 가입 버튼 클릭
+    // ============================
+    $('#submitForm').click(() => {
+        // 주소 합치기
+        let addr1 = $('#sample6_address').val();
+        let addr2 = $('#sample6_detailAddress').val();
+        $('#pAddress').val(addr1 + (addr2 ? ', ' + addr2 : ''));
+
+        if (!check_id) {
+            alert('아이디 중복 확인을 진행해주세요.');
+            pId.focus();
+            return;
+        }
+
+        if (!check_email) {
+            alert('이메일 인증을 완료해주세요.');
+            pEmail.focus();
+            return;
+        }
+
+        if (!addr1 || !addr2) {
+            alert('주소를 정확히 입력해주세요.');
+            $('#sample6_detailAddress').focus();
+            return;
+        }
+
+        document.pJoinForm.submit();
+    });
+</script>
+
+</body>
+</html>

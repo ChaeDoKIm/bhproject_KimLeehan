@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <!--    <link rel="stylesheet" href="css/style.css">-->
+    <link rel="stylesheet" href="/css/login.css"/>
+    <link rel="shortcut icon" href="favicon/favicon.ico" type="image/x-icon">
+    <title>학부모 로그인</title>
+    <script>
+        if (performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD) {
+            window.location.reload(true);
+        }
+    </script>
+
+</head>
+
+<body>
+<div class="loginForm" id="parentForm">
+    <form action="/pLogin" method="POST">
+        <h2>학부모 로그인</h2>
+        ID <input type="text" id="pId" name="pId"/>
+        <br/>
+        PW <input type="password" id="pPass" name="pPass"/>
+        <br/><br/>
+        <input type="submit" value="로그인"/>
+        <input type="button" class="goBack" value="뒤로가기" onclick="window.location.href='/main';"/>
+
+    </form>
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+
+    // 학부모 로그인
+    $("#parentLogin").click(() => {
+        $(".loginBtn").hide();
+        $(".loginForm#parentForm").show();
+    });
+
+    // 뒤로가기 클릭
+    $(".goBack").click(() => {
+        $(".loginBtn").show();
+        $(".loginForm").hide();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch('/api/session')
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    alert("잘못된 접근입니다.");
+                    location.href = "/";
+                }
+            })
+            .catch(error => console.error('Error checking session:', error));
+    });
+
+
+</script>
+
+</html>

@@ -1,0 +1,796 @@
+/* 기본적인 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: 1400px;
+    box-sizing: border-box;
+    font-family: 'Nanum Gothic', sans-serif;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+header {
+    background: linear-gradient(90deg, #a3d9b1, #87ceeb);
+    color: white;
+    padding: 20px 10px; /* 내부 여백 증가 */
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+    width: 100%;
+    height: 130px;
+    position: relative; /* 로고를 중앙에 고정하기 위한 설정 */
+}
+
+header .logo {
+    position: absolute; /* 로고를 중앙에 고정 */
+    left: 50%; /* 가로 중앙으로 이동 */
+    transform: translateX(-50%); /* 정중앙 배치 */
+}
+
+header .logo img {
+    height: 100px;
+    width: 100px;
+}
+
+header nav {
+    flex: 1; /* 네비게이션이 왼쪽 끝으로 밀리도록 */
+}
+
+header nav ul {
+    list-style: none;
+    display: flex; /* 가로 정렬 */
+    gap: 5px; /* 항목 간 간격 */
+}
+
+header nav ul li {
+    margin: 60px 14px 0px 14px; /* 좌우 간격 */
+}
+
+header nav ul li a {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'NanumGothic', 'Noto Sans KR', monospace, Corbel, Dotum, AppleGothic, Helvetica, sans-serif;
+}
+
+/* 반응형 처리 (작은 화면에서 요소 크기 조정) */
+@media (max-width: 768px) {
+    header {
+        padding: 15px 20px; /* 헤더 패딩 크기 조정 */
+    }
+
+    header .logo {
+        font-size: 20px; /* 로고 폰트 크기 조정 */
+    }
+
+    header nav {
+        gap: 20px; /* 네비게이션 아이템 간 간격 줄이기 */
+    }
+
+    header nav a {
+        font-size: 16px; /* 네비게이션 링크 폰트 크기 줄이기 */
+        padding: 6px 12px; /* 네비게이션 링크 패딩 크기 줄이기 */
+    }
+}
+
+.t-l-j {
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    align-items: center; /* 가로 중앙 정렬 */
+    margin: 0 auto; /* 양옆 공백 동일 */
+    padding-right: 30px;
+    gap: 3px; /* 항목 간 간격 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    width: fit-content; /* 내용 크기에 맞게 폭 조정 */
+}
+
+.teacher-page a {
+    text-decoration: none;
+    color: lightyellow;
+    font-size: 11px;
+    font-weight: bold;
+
+    position: relative; /* 상대 위치 조정 */
+    bottom: 20px; /* 위에서 아래로 20px 이동 */
+}
+
+.auth-buttons {
+    display: flex; /* 가로 정렬 */
+    justify-content: center; /* 버튼을 중앙 정렬 */
+    gap: 10px; /* 버튼 간 간격 */
+    width: 100%; /* 필요 시 조정 가능 */
+}
+
+#login, #join, #parent, #teacher, #logout {
+    color: white;
+    padding: 6px 8px;
+    margin: 0; /* 여백 초기화 */
+    font-family: 'NanumGothic', 'Noto Sans KR', monospace, Corbel, Dotum, AppleGothic, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+
+    position: relative; /* 상대 위치 조정 */
+    top: 20px; /* 위에서 아래로 20px 이동 */
+}
+
+.hero {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    /*background-color: #333;*/
+    color: white;
+}
+
+/* Scroll Down 인디케이터 스타일 */
+.scroll-down-indicator {
+    position: absolute;
+    bottom: 20px; /* 화면 하단에서의 거리 */
+    left: 48.5%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: #fff; /* 텍스트 색상 */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    animation: fadeInUp 2s infinite;
+}
+
+.scroll-down-indicator .scroll-text {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.scroll-down-indicator .scroll-arrow {
+    font-size: 24px;
+    animation: bounce 2s infinite;
+}
+
+/* 화살표의 점프 애니메이션 */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* 텍스트와 화살표의 페이드 인 애니메이션 */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.slide {
+    min-width: 100%;
+    height: 100%; /* 슬라이더 높이에 맞춤 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.slide img {
+    width: 100%; /* 슬라이더 너비에 맞춤 */
+    height: 100%; /* 슬라이더 높이에 맞춤 */
+    object-fit: cover; /* 이미지가 영역을 채우도록 설정 */
+    max-width: 4000px; /* 이미지 원본 크기 제한 */
+    max-height: 800px; /* 이미지 원본 크기 제한 */
+}
+
+.hero-text .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff6b6b;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+a.prev, a.next {
+    display: block; /* 크기 조절 가능하도록 block 설정 */
+    width: 50px; /* 원하는 크기 */
+    height: 50px; /* 원하는 크기 */
+    background-size: cover; /* 이미지가 영역에 꽉 차도록 */
+    background-repeat: no-repeat; /* 이미지 반복 방지 */
+    position: absolute; /* 슬라이더 내 위치 조정 */
+    top: 50%; /* 슬라이더 높이의 중앙 */
+    transform: translateY(-50%); /* 중앙 정렬 */
+    z-index: 10; /* 슬라이드 위에 표시되도록 */
+}
+
+a.prev {
+    left: 10px; /* 왼쪽으로 위치 설정 */
+    background-image: url('../File/left.png'); /* 왼쪽 화살표 이미지 */
+}
+
+a.next {
+    right: 10px; /* 오른쪽으로 위치 설정 */
+    background-image: url('../File/right.png'); /* 오른쪽 화살표 이미지 */
+}
+
+/*회사 소개*/
+.about-company {
+    position: relative; /* 배경 도형 기준 */
+    overflow: hidden; /* 배경 넘치는 부분 숨기기 */
+    padding: 50px 20px;
+    text-align: center;
+    color: #333;
+    margin-top: 190px;
+}
+
+.container {
+    position: relative; /* 콘텐츠를 배경 위에 배치 */
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.about-header {
+    margin-top: 100px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.about-header.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.about-header h2 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.about-header h3 {
+    padding-bottom: 30px;
+}
+
+.about-header p {
+    font-size: 18px;
+    color: #555;
+}
+
+.about-content {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.background-shape1 {
+    position: absolute;
+    top: 100px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* 콘텐츠 뒤로 보이도록 설정 */
+    overflow: hidden;
+}
+
+.background-shape1 svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+}
+
+.about-content::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0));
+    z-index: 0;
+}
+
+.about-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.about-image {
+    position: relative;
+    z-index: 2;
+    margin-top: 20px;
+    flex: 1 1 45%;
+    text-align: center;
+}
+
+.about-image img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.about-text {
+    flex: 1 1 45%;
+    position: relative;
+    left: -100px;
+    margin-top: 60px;
+    text-align: left;
+}
+
+.about-text h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.about-text p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.about-text ul {
+    list-style: none;
+    padding: 0;
+}
+
+.about-text ul li {
+    font-size: 16px;
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+    color: #555;
+}
+
+.about-text ul li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #ff6b6b;
+    font-size: 20px;
+    line-height: 1;
+}
+/*선생님 소개*/
+.teacher {
+    padding: 50px 20px;
+    text-align: center;
+    color: #333;
+}
+
+.teacher-container {
+    position: relative; /* 부모 요소에 상대 위치 설정 */
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    z-index: 1; /* 도형보다 앞에 배치 */
+}
+
+.about-teacher {
+    margin-top: 100px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.about-teacher.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.about-teacher h2 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.about-teacher h3 {
+    font-size: 18px;
+    color: #555;
+}
+
+.about-teacher-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.about-teacher-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.teacher-image {
+    flex: 1 1 45%;
+    margin: 20px;
+    text-align: center;
+    position: relative; /* 버튼의 위치를 조정하기 위해 상대적 위치 지정 */
+}
+
+.teacher-image img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.background-shape2 {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* 콘텐츠 뒤로 보이도록 설정 */
+    overflow: hidden; /* 도형이 영역을 넘어가지 않도록 설정 */
+}
+
+.background-shape2 svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+}
+
+.about-teacher::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), rgba(0, 0, 0, 0));
+    z-index: 0;
+}
+
+.teacher-image .more-info {
+    position: absolute;
+    bottom: -30px;
+    left: 50%; /* 수평 중앙 정렬 */
+    transform: translateX(-50%); /* 중앙 정렬을 위한 수평 이동 */
+    background-color: yellowgreen;
+    color: white; /* 텍스트 색 */
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.teacher-image .more-info:hover {
+    background-color: #68A870; /* 호버 시 색 변경 */
+}
+
+.teacher-text {
+    position: relative;
+    left: 250px;
+    flex: 1 1 45%;
+    margin-top: 20px;
+    text-align: left; /* 텍스트 정렬을 왼쪽으로 설정 */
+}
+
+.teacher-text h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.teacher-text p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+/* .about-teacher-content에 flex-direction: row-reverse 추가하여 순서 반대로 변경 */
+.about-teacher-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    flex-direction: row-reverse; /* 이미지를 오른쪽으로, 텍스트를 왼쪽으로 배치 */
+}
+
+.about-teacher-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 반응형 처리 (이미지와 텍스트 크기 조정) */
+@media (max-width: 768px) {
+    .about-teacher-content {
+    }
+
+    .teacher-image, .teacher-text {
+        flex: 1 1 50%; /* 화면 크기에 맞게 50% 크기로 설정 (배치 유지) */
+        text-align: center; /* 텍스트를 가운데 정렬 */
+    }
+}
+
+.main-button {
+    display: flex; /* 가로로 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 150px; /* 버튼 간격 (기존 간격 유지) */
+    margin: 50px 0px; /* 버튼과 다른 콘텐츠 간격 */
+}
+
+.study-apply, .consultation, .introduce-teacher {
+    padding: 12px 25px;
+    font-size: 18px;
+    background-color: #4682B4;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* 반응형 처리 (작은 화면에서 크기 조정) */
+@media (max-width: 768px) {
+    .study-apply, .consultation, .introduce-teacher {
+        padding: 5px 15px; /* 작은 화면에서 패딩 크기 조정 */
+        font-size: 11px; /* 폰트 크기 비율로 조정 */
+    }
+
+    .main-button {
+        gap: 3px; /* 작은 화면에서 버튼 간격 축소 */
+    }
+}
+
+/*.main-button {
+    display: flex; !* 가로로 정렬 *!
+    justify-content: center; !* 가로 중앙 정렬 *!
+    align-items: center; !* 세로 중앙 정렬 *!
+    gap: 150px; !* 버튼 간격 *!
+    margin: 30px 0px; !* 버튼과 다른 콘텐츠 간격 *!
+}
+
+.study-apply, .consultation, .introduce-teacher {
+    padding: 12px 25px;
+    font-size: 18px;
+    background-color: #4682B4;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}*/
+
+.study-apply:hover, .consultation:hover, .introduce-teacher:hover {
+    background-color: #1E3A5F; /* 호버 시 색 변경 */
+}
+
+/* 퀵 메뉴 전체 스타일 */
+.quick-menu {
+    position: fixed; /* 화면 고정 */
+    bottom: -230px; /* 화면 하단에서 20px */
+    /*transform: translateY(-250px);*/
+    right: 20px; /* 화면 오른쪽에서 20px */
+    display: flex;
+    flex-direction: column; /* 세로 정렬 */
+    align-items: center;
+    z-index: 9999; /* 최상위 레이어 */
+}
+
+/* 개별 아이템 스타일 */
+.quick-item {
+    width: 90px; /* 버튼 너비 */
+    background-color: #ff2630; /* 빨간색 배경 */
+    border-radius: 10px; /* 테두리 둥글게 */
+    margin-bottom: 10px; /* 아이템 간격 */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(255, 38, 48, 0.63); /* 그림자 효과 */
+    overflow: hidden; /* 테두리를 넘는 내용 숨기기 */
+    transition: transform 0.3s ease; /* 호버 애니메이션 */
+}
+
+.quick-item:hover {
+    transform: scale(1.05); /* 호버 시 크기 확대 */
+}
+
+.quick-item img {
+    width: 50%;
+    height: 70%; /* 이미지 높이 고정 */
+    object-fit: cover; /* 이미지 비율 유지 */
+    padding-top: 10px;
+    justify-content: center;
+
+}
+
+.quick-item p {
+    margin: 0;
+    padding-bottom: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* 상단 이동 버튼 스타일 */
+.quick-menu .top {
+    margin-top: 10px;
+    font-size: 14px;
+    color: slategrey;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.quick-menu .top:hover {
+    color: #e30613; /* 빨간색으로 변경 */
+}
+
+footer {
+    background-color: grey;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 250px;
+}
+
+.common-footer {
+    color: white;
+    padding: 34px 0 20px;
+    /*background: #333;*/
+}
+
+.inner-footer {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-menu {
+    display: flex;
+    /*align-items: center;*/
+    justify-content: flex-start;  /* 'justify'를 'flex-start'로 수정 */
+    font-size: 12px;
+    margin: 10px 0 4px;
+}
+
+.info-cont ul {
+    list-style: none; /* 기본 불릿 제거 */
+    margin: 0;        /* 기본 마진 제거 (옵션) */
+    padding: 0;       /* 기본 패딩 제거 (옵션) */
+}
+
+.footer-menu li {
+    /*margin-left: 5px;*/
+}
+
+.footer-menu li:first-child {
+    /*margin-left: 0;*/
+}
+
+.footer-menu li:first-child a {
+    /*padding-left: 0;*/
+}
+
+.footer-menu li:first-child a::before {
+    display: none;
+}
+
+.address {
+    text-align: left;
+    font-style: normal;
+    font-size: 15px;
+    padding-bottom: 18px;
+}
+
+.info-txt {
+    text-align: left;
+    font-size: 24px;
+}
+
+.sns-title{
+    font-size: 20px;
+    text-align: left;
+    padding-bottom: 15px;
+}
+
+.sns-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 100%;
+    margin: 0 2px;
+}
+
+.etc-cont {
+    position: relative;
+    justify-content: left;
+}
+
+.btn-group.sns {
+    justify-content: left;
+    text-align: left;
+    padding-bottom: 80px;
+}
+
+.btn-group.etc {
+    justify-content: left;
+}
+
+.etc-btn {
+    width: 42%;
+    max-width: 160px;
+    height: 40px;
+    display: inline-block;
+    text-align: center;
+    padding: 12px 0 0;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 1);
+    font-size: 13px;
+    line-height: 1.1;
+}
+
+.copy-cont {
+    margin: 10px 0 0;
+    font-size: 9px; /* 'font'를 'font-size'로 수정 */
+    text-align: justify;
+    letter-spacing: 0;
+    color: #a3a3a3;
+}

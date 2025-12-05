@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/header-footer-teacher.css">
+    <link rel="stylesheet" href="/css/students.css">
+    <link rel="stylesheet" href="/css/commentstpage.css">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+
+    <title>학생 관리</title>
+
+</head>
+
+<body>
+<header>
+    <nav>
+        <div>
+            <ul>
+                <!--        th:href="@{/pView/{pId}(pId=${session.parentLoginId})}" -->
+                <li><a th:href="@{/tMySchedule/{tId}(tId=${session.teacherLoginId})}">스케줄</a></li>
+                <li><a th:href="@{/tStudents/{tId}(tId=${session.teacherLoginId})}" class="studentHead">학생관리</a></li>
+                <li><a th:href="@{/tMyInfo/{tId}(tId=${session.teacherLoginId})}">마이 페이지</a></li>
+                <li><a href="/bWriteFormT">문의</a></li>
+            </ul>
+            <input type="hidden" id="loginId" name="loginId" th:value="${session.teacherLoginId}"/>
+            <a href="/tLogout" id="logout">로그아웃</a>
+        </div>
+    </nav>
+
+    <div class="logo">
+        <a href="/teacher/Tmain"><img src="/File/logo_white.png" alt="로고"></a>
+    </div>
+</header>
+
+<div class="wrap" id="myStudentsAndClasses" style="margin-top: 20px;">
+    <h2 class="studentTitle">학생명단</h2>
+    <div class="container studentList" th:each="student : ${studentList}" style="display: flex">
+        <div class="outer_section student">
+            <!-- 클릭 파트 -->
+            <ul class="inner_section studentInfoCheck" style="cursor: pointer;">
+                <li>[[${student.sName}]] / [[${student.sGrade}]] / [[${student.sGender}]]</li>
+                <!--                <li>[[${student.sGrade}]]</li>-->
+                <!--                <li>[[${student.sGender}]]</li>-->
+            </ul>
+            <!-- 숨겨져 있다가 나타나는 파트 -->
+            <div class="outer_section myStudentInfo" style="display: none;">
+                <h2>학생정보</h2>
+                <div class="info">
+                    <div class="inner_section infoDetails">
+                        <p id="studentName" style="font-weight: bold">이름 : [[${student.sName}]]</p>
+                        <p id="studentGrade" style="font-weight: bold">학년 : [[${student.sGrade}]]</p>
+                        <p id="classProgStatus" style="font-weight: bold">과정 상태 : [[${student.clProgStatus}]]</p>
+                        <p id="classProgress" style="font-weight: bold">진행률 : [[${student.clProgPercent}]]%</p>
+                    </div>
+                    <div class="inner_section writeComment">
+                        <h2>코멘트 작성</h2>
+                        <form action="/addComment" method="post">
+                            <input type="hidden" id="clProgId" name="clProgId" th:value="${student.clProgId}"/>
+                            <input type="hidden" id="sId" name="sId" th:value="${student.sId}"/>
+                            <div th:if="${student.clProgPercent < 100}">
+                                <input type="text" name="cProgress"
+                                       th:value="${(student.cProgress + 1) + '&nbsp;' + '주차'}"
+                                       readonly/>
+                                <div th:switch="${student.clProgBook}">
+                                    <div th:case="null">
+                                        <input type="text" name="clProgBook" id="clProgBook" placeholder="교재 제목"/>
+                                    </div>
+                                    <div th:case="*">
+                                        <input type="text" name="clProgBook" th:value="${student.clProgBook}" readonly/>
+                                    </div>
+                                </div>
+                                <input type="text" name="cPage" id="cPage" placeholder="나간 진도"/>
+                                <input type="text" name="cClassContents" id="cClassContents" placeholder="수업 내용"/>
+                                <!-- textarea1 -->
+                                <textarea name="cContentsPrimary" id="cContentsPrimary"
+                                          placeholder="선생님 코멘트"></textarea>
+                                <!-- textarea2 -->
+                                <textarea name="cContentsSecondary" id="cContentsSecondary">✅ 추가 학습 추천:</textarea>
+                                <!-- textarea 1과 2 합친 후 -->
+                                <input type="hidden" name="cContents" id="cContents"/>
+
+                                <input type="submit" style="width: 100%"/>
+                            </div>
+                            <input type="button" value="코멘트 보기" class="getCommentList"/>
+                        </form>
+                    </div>
+                    <div class="inner_section commentList" style="display: none;">
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".writeComment form").forEach(function (form) {
+            const secondaryTextarea = form.querySelector("#cContentsSecondary");
+            const fixedText = "✅ 추가 학습 추천: ";
+
+            // 추가 학습 추천 문구 고정
+            if (!secondaryTextarea.value.startsWith(fixedText)) {
+                secondaryTextarea.value = fixedText;
+            }
+
+            // 초기 문구 삭제/수정 불가
+            secondaryTextarea.addEventListener("input", function () {
+                if (!secondaryTextarea.value.startsWith(fixedText)) {
+                    secondaryTextarea.value = fixedText; // 수정/삭제 되면 초기화
+                }
+            });
+
+            secondaryTextarea.addEventListener("keydown", function (event) {
+                if (secondaryTextarea.selectionStart < fixedText.length) {
+                    event.preventDefault(); // 지우기 막기
+                }
+            });
+
+            form.addEventListener("submit", function (event) {
+                let isValid = true;
+                let errorMessage = "다음 항목을 입력해주세요:\n";
+
+                // 특정된 input 요소 빼고 모든 input 요소가 비어있다면 에러문구 출력
+                form.querySelectorAll("input:not([type=hidden]):not([type=button]):not([type=submit]):not([readonly]), textarea").forEach(function (input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        errorMessage += `- ${input.placeholder || input.name}\n`;
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                    alert(errorMessage);
+                    return;
+                }
+
+                // 두 textarea 내용 불러오기
+                let primaryContent = form.querySelector("#cContentsPrimary").value.trim();
+                let secondaryContent = secondaryTextarea.value.trim();
+
+                // 고정 문구 이후 추가된 문구 추출
+                let userAddedText = secondaryContent.substring(fixedText.length).trim();
+
+                // 추가된 문구가 없다면 "없음"
+                if (userAddedText === "") {
+                    secondaryContent = fixedText + "없음";
+                }
+
+                // 합친 값을 cContents으로 설정
+                form.querySelector("#cContents").value = primaryContent + "\n\n" + secondaryContent;
+            });
+        });
+    });
+
+
+</script>
+
+<script>
+
+    /* 학생 정보 칸 */
+    $(document).ready(function () {
+        // 학생 정보 클릭 이벤트
+        $(document).on('click', '.studentInfoCheck', function () {
+
+            let studentInfo = $(this).closest('.student').find('.myStudentInfo');
+
+            // 다른 학생 정보 창을 닫음
+            $('.myStudentInfo').not(studentInfo).stop(true, true).animate({
+                maxHeight: "0px",
+                opacity: 0
+            }, 300, function () {
+                $(this).hide();
+            });
+
+            // 현재 클릭한 학생 정보 토글 (펼치거나 닫기)
+            if (studentInfo.is(":visible")) {
+                studentInfo.stop(true, true).animate({maxHeight: "0px", opacity: 0}, 300, function () {
+                    $(this).hide();
+                });
+            } else {
+                studentInfo.show().stop(true, true).animate({maxHeight: "620px", opacity: 1}, 300);
+            }
+        });
+
+        // 코멘트 목록 불러오기 & 토글 기능 개선
+        $(document).on('click', '.getCommentList', function () {
+
+            let parentSection = $(this).closest('.writeComment');
+            let commentList = parentSection.siblings('.commentList');
+            let button = $(this);
+
+            // 기본적으로 .commentList가 숨겨져 있어야 함
+            if (commentList.is(':visible')) {
+                loadCSS("/css/teachersCommentList.css");
+                // 코멘트 창이 열려 있으면 닫고 버튼 텍스트 변경
+                commentList.slideUp();
+                button.val("코멘트 보기");
+            } else {
+                loadCSS("/css/teachersCommentList.css");
+                // 1. 코멘트 창을 먼저 보여주고 "로딩 중..." 메시지 표시
+                commentList.html("<p>로딩 중...</p>").slideDown();
+                button.val("코멘트 닫기"); // 버튼을 미리 변경하여 반응성을 높임
+
+                let clProgId = parentSection.find('#clProgId').val();
+
+                // 2. 서버에서 코멘트 데이터를 불러오기
+                $.ajax({
+                    url: "/tCommentList",
+                    type: "post",
+                    data: {"clProgId": clProgId},
+                    dataType: "json",
+                    success: function (data) {
+                        loadCSS("/css/teachersCommentList.css");
+                        let html = '';
+                        html += `<div class="comments" id="displayChange" >`
+                        if (data && data.length > 0) {
+                            data.forEach(comment => {
+                                html += `
+                                <div class="comments" >
+                                    <div class="commentsContent">
+                                        <strong>${comment.cprogress}</strong> / <strong>진도</strong> : ${comment.cpage} 페이지
+                                    </div>
+                                     <div class="commentsContent">
+                                        <strong>내용</strong>: ${comment.cclassContents}
+                                    </div>
+                                     <div class="commentsContent">
+                                        <strong>작성일</strong>: ${comment.cdate.substring(0, 10)}
+                                    </div>
+                                     <div class="commentsContent written">${comment.ccontents}</div>
+                                </div>`;
+                            });
+                            html += `</div>`;
+                        } else {
+                            html = "<p>코멘트가 없습니다.</p>";
+                        }
+                        // 3. 데이터가 로드되면 내용 업데이트
+                        commentList.html(html);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        commentList.html("<p>오류 발생! 다시 시도해주세요.</p>");
+                    }
+                });
+            }
+        });
+
+        // 배경 이미지 크기 조정
+        window.addEventListener("load", () => {
+            const wrap = document.querySelector(".wrap");
+            const backgroundImage = new Image();
+            backgroundImage.src = "/images/학생목록.png";
+            const scaleFactor = 0.95;
+
+            backgroundImage.onload = () => {
+                wrap.style.width = `${backgroundImage.width * scaleFactor}px`;
+                wrap.style.height = `${backgroundImage.height * scaleFactor}px`;
+            };
+        });
+    });
+
+    function loadCSS(href) {
+        if (!$(`link[href='${href}']`).length) {
+            let link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.type = "text/css";
+            link.href = href;
+            document.head.appendChild(link);
+        }
+    }
+
+</script>
+
+</html>

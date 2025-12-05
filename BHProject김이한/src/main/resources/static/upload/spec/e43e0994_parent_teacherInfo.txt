@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <title>방학_TeacherInfo</title>
+</head>
+
+<style>
+    /* 컨테이너 */
+    .container {
+        max-width: 1580px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* 선생님 프로필 */
+    .teacher-profile {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 프로필 사진 */
+    .profile-picture img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border: 2px solid #76d7b2;
+        border-radius: 5px;
+    }
+
+    /* 선생님 정보 */
+    .teacher-details {
+        flex: 1;
+        margin-left: 20px;
+    }
+
+    .teacher-details p {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .teacher-details span {
+        font-weight: bold;
+        color: #555;
+    }
+
+    /* 신청하기 버튼 */
+    .apply-button {
+        text-align: center;
+    }
+
+    .apply-button button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .apply-button button:hover {
+        background-color: #0056b3;
+    }
+
+    /* 강의 커리큘럼 */
+    .lecture-section h3 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #76d7b2;
+        padding-bottom: 5px;
+    }
+
+    .lecture-list {
+        margin-top: 20px;
+    }
+
+    .lecture-item {
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .lecture-item h4 {
+        font-size: 18px;
+        color: #007bff;
+        margin-bottom: 10px;
+    }
+
+    .lecture-item p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #555;
+    }
+
+    /* 강의 섹션 */
+    .lecture-section {
+        margin-top: 30px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+
+    .lecture-section h3 {
+        font-size: 26px;
+        color: #333;
+        border-bottom: 3px solid #76d7b2;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* 강의 목록 */
+    .lecture-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 반응형 그리드 */
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    /* 강의 항목 */
+    .lecture-item {
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+    }
+
+    /* 강의 항목 호버 효과 */
+    .lecture-item:hover {
+        transform: translateY(-5px); /* 살짝 위로 올라감 */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        border-color: #76d7b2; /* 테두리 강조 */
+    }
+
+    /* 강의 제목 */
+    .lecture-item h4 {
+        font-size: 20px;
+        color: #007bff;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    /* 화살표 추가 */
+    .lecture-item h4::after {
+        content: "➔";
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 20px;
+        color: #76d7b2;
+    }
+
+    /* 강의 내용 */
+    .lecture-item p {
+        margin: 10px 0;
+        font-size: 14px;
+        color: #555;
+    }
+
+    /* 주요 정보 강조 */
+    .lecture-item strong {
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* 학습 목표 스타일 */
+    .lecture-item .lecture-goal {
+        background-color: #f0f8ff;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-size: 14px;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    /* 모서리 꾸미기 */
+    .lecture-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 100%;
+        background-color: #76d7b2;
+        border-radius: 10px 0 0 10px;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+        .lecture-item h4 {
+            font-size: 18px;
+        }
+
+        .lecture-item p {
+            font-size: 13px;
+        }
+
+        .lecture-section h3 {
+            font-size: 22px;
+        }
+    }
+
+    /* 모달 기본 스타일 */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    }
+
+    /* 모달 컨텐츠 스타일 */
+    .modal-content {
+        background-color: #ffffff;
+        margin: 5% auto;
+        padding: 20px 30px;
+        border-radius: 12px;
+        width: 40%;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+        animation: fadeIn 0.3s ease-in-out; /* 팝업 효과 */
+    }
+
+    /* 닫기 버튼 */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease-in-out;
+    }
+
+    .close:hover {
+        color: #000;
+    }
+
+    /* 모달 헤더 */
+    .modal-content h2 {
+        margin-top: 0;
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    /* 폼 스타일 */
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px; /* 입력 필드 간격 */
+    }
+
+    label {
+        font-size: 14px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    input:focus, select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+
+    button {
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffffff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px); /* 살짝 올라가는 효과 */
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+        .modal-content {
+            width: 90%;
+            padding: 15px;
+        }
+
+        .modal-content h2 {
+            font-size: 20px;
+        }
+
+        input, select, button {
+            font-size: 14px;
+        }
+    }
+
+    /* 팝업 애니메이션 */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* 주의 사항 박스 */
+    .notice {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-left: 4px solid #007bff;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .notice strong {
+        color: #333;
+    }
+
+    .notice p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+</style>
+
+
+<body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="/parent/classRequest">Teacher&Application</a></li>
+            <li><a href="/signup/form">Consultation</a></li>
+            <li><a href="#">Q&A</a></li>
+        </ul>
+    </nav>
+
+    <div class="logo">
+        <a href="/"><img src="/File/logo_white.png" alt="로고"></a>
+
+    </div>
+
+    <div class="t-l-j">
+        <div class="teacher-page">
+            <a href="/teacher/Tmain">선생님 페이지 바로가기→</a>
+        </div>
+
+        <div class="auth-buttons" th:if="${session.loginId eq null}">
+            <a id="login">로그인</a>
+            <a id="join">회원가입</a>
+        </div>
+    </div>
+
+    <div th:if="${session.loginId ne null}">
+        <input type="hidden" id="loginId" name="loginId" th:value="${session.loginId}"/>
+        <button id="parent">마이 페이지</button>
+        <button id="logout">로그아웃</button>
+    </div>
+
+</header>
+<br><br>
+
+<div class="container">
+    <!-- 선생님 프로필 -->
+    <div class="teacher-profile">
+        <div class="profile-picture">
+            <img th:src="${tInfoView.tProfile}" alt="선생님 프로필 사진">
+        </div>
+
+        <div class="teacher-details">
+            <p>이름: <span th:text="${tInfoView.tName}"></span></p>
+            <p>과목: <span th:text="${tInfoView.tSubject}"></span></p>
+            <p>담당 학년: <span th:text="${tInfoView.tGrade}"></span></p>
+            <p>레벨: <span th:text="${tInfoView.tLevel}"></span></p>
+        </div>
+
+        <!-- 신청하기 버튼 -->
+        <div class="apply-button">
+            <button id="applyBtn">신청하기</button>
+        </div>
+    </div>
+
+    <!-- 모달 -->
+    <div id="applyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>학습 신청</h2>
+
+            <br>
+            <!--학습신청 폼-->
+            <form id="classRequestForm" method="post" action="/submitClassRequest">
+                <label for="tName">선생님:</label>
+                <input type="text" id="tName" name="tName" th:value="${tInfoView.tName}" readonly>
+
+                <!-- 학생 선택 -->
+                <label for="studentId">학생 이름:</label>
+                <select id="studentId" name="sId" required>
+                    <option value="">학생을 선택하세요</option>
+                    <option th:each="student : ${studentList}" th:value="${student.sId}" th:text="${student.sName}"></option>
+                </select>
+
+
+                <label for="clReqPlace">희망 장소:</label>
+                <input type="text" id="clReqPlace" name="clReqPlace" placeholder="집 또는 기타 장소 입력" required>
+
+                <label for="clReqDay">희망 요일:</label>
+                <select id="clReqDay" name="clReqDay" required>
+                    <option value="월요일">월요일</option>
+                    <option value="화요일">화요일</option>
+                    <option value="수요일">수요일</option>
+                    <option value="목요일">목요일</option>
+                    <option value="금요일">금요일</option>
+                    <option value="토요일">토요일</option>
+                    <option value="일요일">일요일</option>
+                </select>
+
+                <!-- 주의 사항 -->
+                <div class="notice">
+                    <p>
+                        <strong>📌 유의사항:</strong><br>
+                        희망 요일은 신청 선택 가능합니다.
+                        <br>그러나 시간대는 선생님 스케줄에 따라 랜덤 배정됩니다.
+                        <br>신청 전 이 점 양해 부탁드립니다. 🙏
+                    </p>
+                </div>
+                <br>
+
+                <button type="submit">신청하기</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 강의 정보 -->
+    <div class="lecture-section">
+        <h3>강의 커리큘럼</h3>
+        <div class="lecture-list">
+            <div class="lecture-item">
+                <h4>1. 기본 개념 학습</h4>
+                <p>기초 개념을 탄탄히 다지기 위한 강의입니다. 기본 공식과 원리를 쉽게 설명합니다.</p>
+                <p><strong>강의 시간:</strong> 1주차~2주차</p>
+                <p><strong>학습 목표:</strong> 기본 이론과 공식 이해</p>
+            </div>
+            <div class="lecture-item">
+                <h4>2. 문제 풀이 기초</h4>
+                <p>기초 개념을 바탕으로 간단한 문제를 해결하며 문제 접근 방식을 배웁니다.</p>
+                <p><strong>강의 시간:</strong> 3주차~4주차</p>
+                <p><strong>학습 목표:</strong> 문제 풀이 기본 능력 향상</p>
+            </div>
+            <div class="lecture-item">
+                <h4>3. 문제 풀이 심화</h4>
+                <p>다양한 유형의 문제를 해결하며 대표 문제의 풀이법과 응용 능력을 학습합니다.</p>
+                <p><strong>강의 시간:</strong> 5주차~6주차</p>
+                <p><strong>학습 목표:</strong> 대표 유형 문제의 심화 학습</p>
+            </div>
+            <div class="lecture-item">
+                <h4>4. 실전 문제 풀이 훈련</h4>
+                <p>시험과 유사한 문제를 통해 실전 문제 풀이 능력과 시간 관리 능력을 키웁니다.</p>
+                <p><strong>강의 시간:</strong> 7주차~8주차</p>
+                <p><strong>학습 목표:</strong> 실전 감각 및 효율적인 시간 관리</p>
+            </div>
+            <div class="lecture-item">
+                <h4>5. 모의고사 풀이</h4>
+                <p>실제 시험과 유사한 환경에서 모의고사를 풀어보며 부족한 부분을 점검합니다.</p>
+                <p><strong>강의 시간:</strong> 9주차~10주차</p>
+                <p><strong>학습 목표:</strong> 실전 시험 준비와 약점 보완</p>
+            </div>
+            <div class="lecture-item">
+                <h4>6. 개별 질의응답</h4>
+                <p>학생 개개인이 궁금한 점이나 이해가 부족한 부분을 해결하기 위한 시간을 제공합니다.</p>
+                <p><strong>강의 시간:</strong> 11주차~12주차</p>
+                <p><strong>학습 목표:</strong> 개인화된 피드백 제공 및 개별 약점 개선</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+
+<script>
+    // 모달 열기/닫기 제어
+    document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("applyModal");
+        const openBtn = document.getElementById("applyBtn");
+        const closeBtn = document.querySelector(".close");
+
+        // "신청하기" 버튼 클릭 시 모달 열기
+        openBtn.addEventListener("click", () => {
+            modal.style.display = "block";
+        });
+
+        // 닫기 버튼 클릭 시 모달 닫기
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        // 모달 외부 클릭 시 닫기
+        window.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+</script>
+</html>

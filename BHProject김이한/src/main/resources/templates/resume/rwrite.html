@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <title>입사지원서 작성</title>
+
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f5f6fa;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 16px 80px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+            color: #1f1f1f;
+        }
+
+        /* Outer shell card */
+        .form-shell {
+            width: 100%;
+            max-width: 720px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow:
+                    0 20px 40px rgba(0,0,0,0.08),
+                    0 2px 4px rgba(0,0,0,0.04);
+            padding: 24px 24px 32px;
+        }
+
+        /* Header Section */
+        .header-block {
+            margin-bottom: 24px;
+        }
+
+        .console-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6b7280;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+        }
+
+        .page-hint {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            line-height: 1.4;
+            margin-top: 6px;
+        }
+
+        /* Table layout (label/value pairs) */
+        .info-table-wrapper {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        table.info-table th {
+            width: 140px;
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4b5563;
+            line-height: 1.4;
+            padding: 12px 16px;
+            vertical-align: top;
+        }
+
+        table.info-table td {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.85rem;
+            color: #1f2937;
+            line-height: 1.4;
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+
+        /* 마지막 행 border 제거 */
+        table.info-table tr:last-child th,
+        table.info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* form controls */
+        .input-text,
+        .input-password,
+        .input-email,
+        .input-number,
+        .input-file,
+        .textarea-field {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #1f2937;
+            padding: 10px 12px;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.15s ease;
+        }
+
+        .input-text:focus,
+        .input-password:focus,
+        .input-email:focus,
+        .input-number:focus,
+        .input-file:focus,
+        .textarea-field:focus {
+            border-color: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
+        }
+
+        .input-inline-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 이메일 인증 버튼 */
+        .verify-btn,
+        .verify-confirm-btn {
+            flex-shrink: 0;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            line-height: 1.2;
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .verify-btn:hover,
+        .verify-confirm-btn:hover {
+            border-color: #34a853;
+            color: #34a853;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+        }
+
+        /* Textarea (자기소개서) */
+        .textarea-field {
+            min-height: 160px;
+            resize: vertical;
+        }
+
+        /* Footer buttons */
+        .form-footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-submit,
+        .btn-reset {
+            appearance: none;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            line-height: 1.2;
+            padding: 10px 16px;
+            cursor: pointer;
+            background-color: #ffffff;
+            color: #111827;
+            transition: all 0.15s ease;
+        }
+
+        .btn-submit {
+            background-color: #34a853;
+            border-color: #34a853;
+            color: #ffffff;
+            box-shadow: 0 8px 16px rgba(52,168,83,0.18);
+        }
+
+        .btn-submit:hover {
+            background-color: #2d8c47;
+            border-color: #2d8c47;
+            box-shadow: 0 12px 24px rgba(45,140,71,0.28);
+            color: #ffffff;
+        }
+
+        .btn-reset:hover {
+            border-color: #6b7280;
+            color: #6b7280;
+            box-shadow: 0 8px 16px rgba(107,114,128,0.15);
+        }
+
+        @media (max-width: 500px) {
+            table.info-table th {
+                width: 100px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="form-shell">
+
+    <div class="header-block">
+
+        <div class="page-title">입사지원서</div></br>
+        <div class="console-label">당신의 열정과 전문성이 이곳에서 더 큰 가치를 만들 것입니다.</div>
+        <div class="page-hint">
+            아래 정보를 정확하게 입력해 주세요. 제출 후 수정이 제한될 수 있습니다.
+        </div>
+    </div>
+
+    <form action="/resume/submit" method="POST" enctype="multipart/form-data" name="resumeForm">
+
+        <div class="info-table-wrapper">
+            <table class="info-table">
+                <tr>
+                    <th>이름</th>
+                    <td>
+                        <input type="text" id="resName" name="resName" class="input-text" required />
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>비밀번호</th>
+                    <td>
+                        <input type="password" id="resPass" name="resPass" class="input-password" required />
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>나이</th>
+                    <td>
+                        <input type="number"
+                               id="resAge"
+                               name="resAge"
+                               class="input-number"
+                               min="20"
+                               max="100"
+                               required />
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>연락처</th>
+                    <td>
+                        <input type="text"
+                               id="resPhone"
+                               name="resPhone"
+                               class="input-text"
+                               placeholder="010-0000-0000"
+                               required />
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>이메일</th>
+                    <td>
+                        <div class="input-inline-wrap" id="emailWrap">
+                            <input type="email"
+                                   id="resEmail"
+                                   name="resEmail"
+                                   class="input-email"
+                                   placeholder="example@email.com"
+                                   required />
+                            <button type="button"
+                                    class="verify-btn"
+                                    id="checkEmail">
+                                인증번호 발송
+                            </button>
+                        </div>
+
+                        <!-- 인증 영역이 여기 교체/삽입됨 -->
+                        <div id="check4" style="margin-top:8px;"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>이력서 파일</th>
+                    <td>
+                        <input type="file"
+                               id="resFile"
+                               name="resFile"
+                               class="input-file"
+                               accept=".pdf,.doc,.docx"
+                               required />
+                        <div style="color:#6b7280; font-size:0.7rem; margin-top:4px; line-height:1.4;">
+                            PDF, Word(.doc/.docx) 파일만 첨부 가능합니다.
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>자기소개서</th>
+                    <td>
+                        <textarea id="resCoverLetter"
+                                  name="resCoverLetter"
+                                  class="textarea-field"
+                                  rows="6"
+                                  required></textarea>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="form-footer">
+            <button type="reset" class="btn-reset">초기화</button>
+            <button type="submit" class="btn-submit">제출</button>
+        </div>
+
+    </form>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+
+<script>
+    // 이메일 인증
+    let resEmail = $('#resEmail');
+    let checkEmail = $('#checkEmail');
+    let check4 = $('#check4');
+    let check_email = false;
+
+    // 1) 인증번호 발송
+    checkEmail.click(() => {
+        if (!resEmail.val()) {
+            alert('이메일을 입력해주세요.');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/resume/emailCheck",
+            data: {"resEmail": resEmail.val()},
+            dataType: "text",
+            success: (uuid) => {
+                console.log("인증코드:", uuid);
+
+                // 인증 입력 영역 동적 교체
+                check4.html(`
+                    <div class="input-inline-wrap">
+                        <input type="text"
+                               id="uuid1"
+                               class="input-text"
+                               style="max-width:140px;"
+                               placeholder="인증번호 입력"/>
+                        <button type="button"
+                                class="verify-confirm-btn"
+                                id="btnUUID"
+                                data-value="${uuid}">
+                            인증
+                        </button>
+                    </div>
+                `);
+            },
+            error: () => {
+                alert('인증 메일 전송에 실패했습니다.');
+            }
+        });
+    });
+
+    // 2) 인증번호 확인
+    $(document).on('click', '#btnUUID', function () {
+        let uuid = $(this).data("value");
+        let uuid1 = $('#uuid1').val();
+
+        if (!uuid1) {
+            alert('인증번호를 입력해주세요.');
+            return;
+        }
+
+        if (uuid == uuid1) {
+            alert('이메일이 인증되었습니다.');
+            check4.empty().html(
+                '<div style="font-size:0.75rem; color:#34a853; font-weight:500;">인증 완료</div>'
+            );
+            resEmail.attr('readonly', true);
+            check_email = true;
+        } else {
+            alert('인증번호가 올바르지 않습니다. 다시 확인해주세요.');
+            $('#uuid1').val("");
+            check_email = false;
+        }
+    });
+</script>
+</body>
+</html>
