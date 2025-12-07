@@ -8,29 +8,29 @@
 **프로젝트 기능 이해 및 평가에 참고**해주시면 감사하겠습니다.
 
 * 프로젝트 시연 영상 및 프로젝트 자료
-https://drive.google.com/drive/folders/16rWXCh_sWOQYsKvs6f4FqbY3H8XO3OuC?usp=drive_link
+  https://drive.google.com/drive/folders/16rWXCh_sWOQYsKvs6f4FqbY3H8XO3OuC?usp=drive_link
 
 * 졸업프로젝트 김이한 - 방.학 최종 발표 자료
-https://www.miricanvas.com/v2/design2/v/17498567-2828-41a9-807a-9e64065c2c0b
+  https://www.miricanvas.com/v2/design2/v/17498567-2828-41a9-807a-9e64065c2c0b
 
 *  방.학 사이트 
 
-(학부모)
-https://billable-unforgivingly-hadley.ngrok-free.dev
+  (학부모)
+  https://billable-unforgivingly-hadley.ngrok-free.dev
 
-로그인 예시 : PID001 / 1234
-
-
-(선생님)
-https://billable-unforgivingly-hadley.ngrok-free.dev/teacher/Tmain
-
-로그인 예시: TID5 / 1234
+  로그인 예시 : PID001 / 1234
 
 
-(관리자)
-https://billable-unforgivingly-hadley.ngrok-free.dev/adminlogin
+  (선생님)
+  https://billable-unforgivingly-hadley.ngrok-free.dev/teacher/Tmain
 
-로그인 : admin / admin123
+  로그인 예시: TID5 / 1234
+
+
+  (관리자)
+  https://billable-unforgivingly-hadley.ngrok-free.dev/adminlogin
+
+  로그인 : admin / admin123
 
 
 
