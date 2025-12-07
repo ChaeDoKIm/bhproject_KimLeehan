@@ -7,6 +7,8 @@
 압축 파일 형태로 업로드해두었으며,  
 **프로젝트 기능 이해 및 평가에 참고**해주시면 감사하겠습니다.
 
+* 프로젝트 시연 영상 및 프로젝트 자료
+https://drive.google.com/drive/folders/16rWXCh_sWOQYsKvs6f4FqbY3H8XO3OuC?usp=drive_link
 
 * 졸업프로젝트 김이한 - 방.학 최종 발표 자료
 https://www.miricanvas.com/v2/design2/v/17498567-2828-41a9-807a-9e64065c2c0b
