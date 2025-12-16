@@ -69,3 +69,7 @@ ngrok 환경 특성으로 인해 발생한 일시적인 문제인 점 양해 부
 10주차 발표 자료 - [김이한-_-방학-10주차(4)__제출본.pdf](https://github.com/user-attachments/files/23953845/-_-.-10.4.__.pdf)
 
 12주차 발표자료 - [김이한 - 12주차 발표(5)- 제출본.pdf](https://github.com/user-attachments/files/23953846/-.12.5.-.pdf)
+
+최종 발표 자료  -   https://drive.google.com/drive/folders/16rWXCh_sWOQYsKvs6f4FqbY3H8XO3OuC?usp=drive_link
+
+
